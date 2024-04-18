@@ -1,15 +1,27 @@
 import { RefreshingAuthProvider } from '@twurple/auth';
 import { ChatClient, ChatMessage } from '@twurple/chat';
 
+/**
+ * Origin of TwitchMIDI request
+ */
 export enum RequestSource {
     CHAT,
     REWARD
 }
 
+/**
+ * Function type for all TwitchMIDI request handling
+ */
 export type CommandHandlerType = (...commandParams: CommandParams) => unknown;
 
+/**
+ * Twitch message handler type
+ */
 export type MessageHandler = (channel: string, user: string, message: string, msg?: ChatMessage) => Promise<void> | void;
 
+/**
+ * Twitch user roles for a given broadcaster
+ */
 export type UserRoles = {
     /**
      * Whether the user is the broadcaster.
@@ -33,6 +45,9 @@ export type UserRoles = {
     isVip: boolean;
 };
 
+/**
+ * Parameters for a TwitchMIDI request
+ */
 export type CommandParams = [
     // Message
     message: string,
@@ -42,6 +57,9 @@ export type CommandParams = [
     twitch: TwitchParams
 ];
 
+/**
+ * Options and configuration parameters
+ */
 export interface CommandConfigParams {
     targetMIDIName: string;
     targetMIDIChannel: number;
@@ -49,6 +67,9 @@ export interface CommandConfigParams {
     silenceMessages: boolean;
 }
 
+/**
+ * Twitch related parameters
+ */
 export interface TwitchParams {
     chatClient: ChatClient;
     authProvider: RefreshingAuthProvider;

@@ -57,7 +57,7 @@ export async function initializeRewardsMode(broadcasterAuthProvider: RefreshingA
  * @param callCommand MessageHandler
  * @param authProvider Broadcaster authentication provider
  * @param { env, args, command } commandData Environment variables and command data
- * @param { redemptionId, rewardId, userId } rewardData Reward redemption data
+ * @param { redemptionId, rewardId, userName } rewardData Reward redemption data
  */
 async function _callCommandByRedeemption(
     callCommand: MessageHandler,
@@ -105,7 +105,7 @@ export async function createRewards(authProvider: RefreshingAuthProvider, userna
  * Enables/disables the rewards created by this tool
  * @param authProvider Authentication provider
  * @param username Broadcaster username
- * @param { isEnabled: boolean } rewardData Boolean to activate/deactivate rewards
+ * @param { isEnabled } optionData Boolean to activate/deactivate rewards
  */
 export async function toggleRewardsStatus(authProvider: RefreshingAuthProvider, username: string, { isEnabled }: { isEnabled: boolean }): Promise<void> {
     const apiClient = getApiClient(authProvider);
@@ -135,7 +135,7 @@ export async function toggleRewardsStatus(authProvider: RefreshingAuthProvider, 
  * Updates the status of a reward redemption
  * @param authProvider Authentication provider
  * @param username Broadcaster username
- * @param { rewardId, redemptionId, status} redemptionData Information about the redemption and new status
+ * @param { rewardId, redemptionId, status } redemptionData Information about the redemption and new status
  */
 export async function updateRedeemIdStatus(
     authProvider: RefreshingAuthProvider,
