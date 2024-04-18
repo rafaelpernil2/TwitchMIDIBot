@@ -26,6 +26,9 @@ export function connectChatClient(botAuthProvider: RefreshingAuthProvider, env: 
  */
 export function initializeChatMode(broadcasterAuthProvider: RefreshingAuthProvider, chatClient: ChatClient, env: ParsedEnvObject): void {
     // Chat code
+
+    // Due to the way twurple.js defines onMessage, its return value is considered "any" and ESLint throws an error
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     chatClient.onMessage(onMessageHandlerClosure(broadcasterAuthProvider, chatClient, env, RequestSource.CHAT));
 }
 
@@ -34,7 +37,7 @@ export function initializeChatMode(broadcasterAuthProvider: RefreshingAuthProvid
  * @param chatClient Twitch Chat Client
  * @param channel Twitch Chat channel
  * @param messageData [leading, content, trailing] Data for the message
- * @param { silenceMessages: boolean } options Parameters for customizing the behaviour
+ * @param { silenceMessages } options Parameters for customizing the behaviour
  */
 export function sayTwitchChatMessage(chatClient: ChatClient, channel: string, [leading = '', content = '', trailing = ''] = [], { silenceMessages } = { silenceMessages: false }) {
     // Do nothing if messages are muted
