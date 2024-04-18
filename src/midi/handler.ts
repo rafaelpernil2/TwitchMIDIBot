@@ -83,12 +83,13 @@ export async function triggerNoteList(rawNoteList: Array<[note: string, timeSubD
  * @param rawChordProgression Chord progression to trigger
  * @param targetMIDIChannel Virtual device MIDI channel
  * @param type 'sendloop' or 'sendchord'
+* @param { syncClock } options syncClock calls clock next to the first noteOn
  */
-export async function triggerChordList(
+export function triggerChordList(
     rawChordProgression: Array<[noteList: string[], timeSubDivision: number]>,
     targetMIDIChannel: number,
     type: Command.sendloop | Command.sendchord
-): Promise<void> {
+): void {
     // If the MIDI clock has not started yet, start it to make the chord progression sound
     autoStartClock(targetMIDIChannel);
     // Reset sync flag
@@ -98,20 +99,14 @@ export async function triggerChordList(
     try {
         const chordProgression = _processChordProgression(rawChordProgression, globalTempo);
 
-        // Blocking section
-        isChordInProgress.set(true);
-        for (const [noteList, timeout] of chordProgression) {
-            // Skip iteration if sync is on or request is no longer in queue
-            if (!syncMode.is(Sync.OFF)) continue;
-            await _sendMIDINoteListPromise(noteList, timeout, targetMIDIChannel);
-        }
-        // Move to next in queue
-        forwardQueue(type);
-        // Only the current request should be repeated after tempo change (repeat sync)
-        if (syncMode.is(Sync.REPEAT)) {
-            syncMode.set(Sync.OFF);
-        }
-        isChordInProgress.set(false);
+        // Trigger clock as close as possible to noteon
+        output?.clock();
+
+        // Play chord list on background
+        _playChordList(chordProgression, targetMIDIChannel, type, { syncClock: true });
+
+        // Return to continue clock
+        return;
     } catch (error) {
         // In case of error, we forward the queue and exit
         // This should happen when the request queue is cleared
@@ -186,25 +181,58 @@ export function autoStartClock(targetMIDIChannel: number): void {
     }
 }
 
+async function _playChordList(
+    chordProgression: Array<[noteList: string[], timeout: number]>,
+    targetMIDIChannel: number,
+    type: Command.sendloop | Command.sendchord,
+    { syncClock = false } = {}
+): Promise<void> {
+    // Blocking section
+    isChordInProgress.set(true);
+    for (const [noteList, timeout] of chordProgression) {
+        // Skip iteration if sync is on or request is no longer in queue
+        if (!syncMode.is(Sync.OFF)) continue;
+        await _sendMIDINoteListPromise(noteList, timeout, targetMIDIChannel, { syncClock });
+        syncClock = false;
+    }
+    // Move to next in queue
+    forwardQueue(type);
+    // Only the current request should be repeated after tempo change (repeat sync)
+    if (syncMode.is(Sync.REPEAT)) {
+        syncMode.set(Sync.OFF);
+    }
+    isChordInProgress.set(false);
+}
+
 /**
  * Sends a list of notes to the virtual MIDI device with a timeout between NoteOn and NoteOff
  * @param noteList Single note or list of notes
  * @param release Time between NoteOn and NoteOff
  * @param channels Target MIDI channel for the virtual MIDI device
+ * @param { syncClock } options syncClock calls clock next to the first noteOn
  */
-async function _sendMIDINoteListPromise(noteList: number | string | string[], release: number, channels: number): Promise<void> {
+async function _sendMIDINoteListPromise(noteList: number | string | string[], release: number, channels: number, { syncClock = false } = {}): Promise<void> {
     if (output == null) {
         throw new Error(ERROR_MSG.BOT_DISCONNECTED());
     }
     const parsedNoteList = !Array.isArray(noteList) ? [noteList] : noteList;
+
+    // Make clock and noteon as close a possible for perfect sync
+    // if (syncClock) {
+    //     output.clock();
+    // }
+
+    // Musical rest case
     if (parsedNoteList.length === 1 && parsedNoteList[0] === GLOBAL.MUSIC_REST_TOKEN) {
         await setTimeoutPromise(release);
         return;
     }
 
+    // Send notes
     for (const note of parsedNoteList) {
         output.noteOn(channels, note, globalVolume);
     }
+
     await setTimeoutPromise(release);
     for (const note of parsedNoteList) {
         output.noteOff(channels, note, globalVolume);

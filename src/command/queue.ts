@@ -9,7 +9,7 @@ import { GenericQueue } from '../queue/generic-queue/implementation.js';
 import { triggerChordList } from '../midi/handler.js';
 
 export const favoriteIdMap = Object.fromEntries(Object.values(Command).map((key) => [key, -1])) as Record<Command, number>;
-export let onBarLoopChange: () => Promise<void> = async () => {
+export let onBarLoopChange: () => void = () => {
     // Implement if needed
 };
 
@@ -21,7 +21,7 @@ export const queueMap = {
 } as const;
 
 export function createAutomaticClockSyncedQueue(targetMIDIChannel: number) {
-    const onCommandTurn = (type: Command.sendloop | Command.sendchord) => async () => {
+    const onCommandTurn = (type: Command.sendloop | Command.sendchord) => () => {
         const [turn] = queueMap[type].getCurrentTurn();
 
         const [chordProgression] = queueMap[type].getCurrent();
@@ -35,16 +35,16 @@ export function createAutomaticClockSyncedQueue(targetMIDIChannel: number) {
         const [currentTag] = queueMap[type].getTag(turn);
         _setRequestPlayingNow(type, currentTag ?? GLOBAL.EMPTY_MESSAGE);
 
-        await triggerChordList(chordProgression, targetMIDIChannel, type);
+        triggerChordList(chordProgression, targetMIDIChannel, type);
         return true;
     };
 
-    onBarLoopChange = async () => {
-        const sendchordHasPlayed = await onCommandTurn(Command.sendchord)();
+    onBarLoopChange = () => {
+        const sendchordHasPlayed = onCommandTurn(Command.sendchord)();
         // If sendchord has played, we have to wait until next tick for synchronization
         if (sendchordHasPlayed) return;
         // Otherwise, sendloop can be played
-        await onCommandTurn(Command.sendloop)();
+        onCommandTurn(Command.sendloop)();
     };
 }
 

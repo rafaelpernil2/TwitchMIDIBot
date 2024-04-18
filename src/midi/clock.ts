@@ -11,6 +11,7 @@ export const syncMode = new SharedVariable<Sync>(Sync.OFF);
 // Clock variables
 let timer = new NanoTimer();
 let tick = 0;
+let bar = 0;
 
 /**
  * MIDI Clock: Sends ticks synced with tempo at 24ppq following MIDI spec
@@ -50,6 +51,7 @@ export function isClockActive(): boolean {
 export function initClockData(): void {
     timer.clearInterval();
     tick = 0;
+    bar = 0;
 }
 
 /**
@@ -75,18 +77,20 @@ function _sendTick(output: ReturnType<JZZTypes['openMidiOut']>): () => void {
         // Constant time operations to ensure time stability
         const isInProgress = isChordInProgress.get();
         tick = (tick + 1) % 96; // 24ppq * 4 quarter notes
+        bar = tick === 0 && bar < 2 ? bar + 1 : bar; // Count bars
         // This way, the next condition always take the exact amout of time
-
-        output.clock();
-        // If is bar start and it's not executing blocking section
-        if (tick === 1 && !isInProgress) {
-            // Notify and send the current active mode
-            onBarLoopChange();
-        }
 
         if (isFirst) {
             output.start();
             isFirst = false;
+        }
+
+        // If is bar start and it's not executing blocking section
+        if (bar === 2 && tick === 1 && !isInProgress) {
+            // Notify and send the current active mode
+            onBarLoopChange();
+        } else {
+            output.clock();
         }
     };
 }
