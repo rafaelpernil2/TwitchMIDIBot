@@ -60,7 +60,7 @@ export async function midion(...[, { targetMIDIName, isRewardsMode }, { chatClie
         EVENT_EMITTER.on(EVENT.PLAYING_NOW, _onPlayingNowChange(chatClient, channel));
         areRequestsOpen.set(true);
         console.log(i18n.t('MIDION_LOG_ENABLED'));
-    } catch (error) {
+    } catch {
         throw new Error(ERROR_MSG.MIDI_CONNECTION_ERROR());
     }
     sayTwitchChatMessage(chatClient, channel, [, `${i18n.t('MIDION_ENABLED')} ${CONFIG.OP_SIGNATURE}`]);
@@ -84,7 +84,7 @@ export async function midioff(...[, { targetMIDIChannel, isRewardsMode }, { chat
         EVENT_EMITTER.removeAllListeners(EVENT.PLAYING_NOW);
         areRequestsOpen.set(false);
         console.log(i18n.t('MIDIOFF_LOG_DISABLED'));
-    } catch (error) {
+    } catch {
         throw new Error(ERROR_MSG.MIDI_DISCONNECTION_ERROR());
     }
     sayTwitchChatMessage(chatClient, channel, [, `${i18n.t('MIDIOFF_DISABLED')} ${CONFIG.OP_SIGNATURE}`]);
@@ -523,7 +523,7 @@ function _parseChordProgression(chordProgression: string): Array<[noteList: stri
             if (chordPart.toLowerCase() === GLOBAL.MUSIC_REST_TOKEN) return [[GLOBAL.MUSIC_REST_TOKEN], timeSubDivision];
 
             return [inlineChord(_parseChord(chordPart)), timeSubDivision];
-        } catch (error) {
+        } catch {
             throw new Error(ERROR_MSG.INVALID_CHORD(chord));
         }
     });
@@ -537,11 +537,16 @@ function _parseChordProgression(chordProgression: string): Array<[noteList: stri
  */
 function _parseCCCommand(ccCommand: string): [controller: number, value: number, time: number] {
     const [rawController, rawValue] = ccCommand.toLowerCase().trim().split(GLOBAL.SPACE_SEPARATOR);
+    // If rawValue is null, the command is invalid
+    if (rawValue == null){
+        throw new Error(ERROR_MSG.BAD_CC_MESSAGE());
+    }
+
     // Controller
     const parsedController = ALIASES_DB.select(CC_CONTROLLERS_KEY, rawController) ?? rawController.replace(GLOBAL.CC_CONTROLLER, '');
     const controller = _parseMIDIValue(parsedController);
 
-    // Value
+    // Value and Time
     const [ccValue, time] = _splitTokenTime(rawValue);
     const parsedValue = TOGGLE_MIDI_VALUES[ccValue] ?? ccValue; // Parse toggle values (on/off)
     const value = _parseMIDIValue(parsedValue);
