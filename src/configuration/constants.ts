@@ -1,7 +1,7 @@
 import { JSONDatabase } from '../database/jsondb/implementation.js';
 import { AliasesType, PermissionsType, RewardsType } from '../database/jsondb/types.js';
 import EventEmitter from 'events';
-import { Command } from '../command/types.js';
+import type { Command } from '../command/types.js';
 import i18n from '../i18n/loader.js';
 import { AccessToken } from '@twurple/auth';
 

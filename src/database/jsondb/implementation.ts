@@ -125,7 +125,7 @@ export class JSONDatabase<T extends CustomObject<T>> implements Database<T> {
             await fs.writeFile(this._filePath, JSON.stringify(this._dbCommit, null, 4), { encoding: 'utf-8' });
             await this.fetchDB();
             return ResponseStatus.Ok;
-        } catch (error) {
+        } catch {
             return ResponseStatus.Error;
         }
     }

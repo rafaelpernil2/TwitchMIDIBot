@@ -112,7 +112,7 @@ export async function triggerChordList(
             syncMode.set(Sync.OFF);
         }
         isChordInProgress.set(false);
-    } catch (error) {
+    } catch {
         // In case of error, we forward the queue and exit
         // This should happen when the request queue is cleared
         forwardQueue(type);
@@ -263,7 +263,7 @@ function _processCCCommandList(rawCCCommandList: CCCommand[]): Array<CCCommand> 
  * @param tempo Tempo to check against
  * @returns Length in nanoseconds
  */
-function _calculateTimeout(timeDivision: number, tempo: number): number {
+function _calculateTimeout(timeDivision: number, tempo: number): number {    
     const parsedTimeDivision = timeDivision === 0 ? 4 : timeDivision;
     return Math.round((60_000_000_000 * parsedTimeDivision) / tempo);
 }

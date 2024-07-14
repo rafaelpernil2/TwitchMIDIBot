@@ -90,7 +90,7 @@ function _onExitProcessAfterInit(broadcasterAuthProvider: RefreshingAuthProvider
     return async () => {
         try {
             stopAllMidi(env.TARGET_MIDI_CHANNEL);
-        } catch (error) {
+        } catch {
             // Do nothing
         }
         if (env.REWARDS_MODE) {

@@ -39,7 +39,7 @@ export async function httpsRequestPromise<T>(options: https.RequestOptions): Pro
                 if (statusCode != null && statusCode >= 200 && statusCode <= 299) {
                     resolve({ statusCode, headers, body: isJsonString(body) ? (JSON.parse(body) as T) : body });
                 } else {
-                    reject(i18n.t('ERROR_REQUEST_FAILED') + String(statusCode) + ', body: ' + body);
+                    reject(new Error(i18n.t('ERROR_REQUEST_FAILED') + String(statusCode) + ', body: ' + body));
                 }
             });
         });

@@ -72,7 +72,7 @@ async function _callCommandByRedeemption(
         // Execute command and mark as fulfilled once finished
         await callCommand(`${GLOBAL.POUND}${env.TARGET_CHANNEL}`, userName, `${command} ${args}`);
         await updateRedeemIdStatus(authProvider, env.TARGET_CHANNEL, { rewardId, redemptionId, status: 'FULFILLED' });
-    } catch (error) {
+    } catch {
         // Cancel redemption if any error occurs
         await updateRedeemIdStatus(authProvider, env.TARGET_CHANNEL, { rewardId, redemptionId, status: 'CANCELED' });
     }
@@ -96,7 +96,7 @@ export async function createRewards(authProvider: RefreshingAuthProvider, userna
     });
     try {
         await Promise.allSettled(createPromiseMap);
-    } catch (error) {
+    } catch {
         // Implement if needed
     }
 }
@@ -125,7 +125,7 @@ export async function toggleRewardsStatus(authProvider: RefreshingAuthProvider, 
     });
     try {
         await Promise.all(updatePromiseMap);
-    } catch (error) {
+    } catch {
         // Implement if needed
     }
     areRewardsOn = isEnabled;
@@ -146,7 +146,7 @@ export async function updateRedeemIdStatus(
     const userId = await getBroadcasterId(authProvider, username);
     try {
         await apiClient.channelPoints.updateRedemptionStatusByIds(userId, rewardId, [redemptionId], status);
-    } catch (error) {
+    } catch {
         // Implement if needed
     }
 }

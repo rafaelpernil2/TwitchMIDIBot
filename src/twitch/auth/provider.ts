@@ -49,7 +49,7 @@ async function _loadLatestTokens(
         const tokensPath = kind === 'BOT' ? CONFIG.BOT_TOKENS_PATH : CONFIG.BROADCASTER_TOKENS_PATH;
         const { accessToken, refreshToken } = JSON.parse(await fs.readFile(tokensPath, { encoding: 'utf-8' })) as AccessToken;
         return [accessToken ?? envAccessToken, refreshToken ?? envRefreshToken];
-    } catch (error) {
+    } catch {
         return [envAccessToken, envRefreshToken];
     }
 }

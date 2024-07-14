@@ -117,7 +117,7 @@ export async function downloadDefaultFileFromRepo<T>(db: JSONDatabase<T>): Promi
         DEFAULT_CONFIG_FILE_CACHE[fileName] = data;
 
         return data;
-    } catch (error) {
+    } catch {
         throw new Error(ERROR_MSG.BAD_CONFIG_DOWNLOAD());
     }
 }

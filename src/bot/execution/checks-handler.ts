@@ -21,7 +21,7 @@ export async function checkUpdates(): Promise<[localVersion: string, remoteVersi
         const { version: remoteVersion } = (await httpsRequestPromise(options))?.body as { version: string };
         // Return old and new version
         return [localVersion, remoteVersion];
-    } catch (error) {
+    } catch {
         // If any read error occurs, return same empty message as local and remote version
         return [GLOBAL.EMPTY_MESSAGE, GLOBAL.EMPTY_MESSAGE];
     }
