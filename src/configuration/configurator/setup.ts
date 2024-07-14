@@ -122,7 +122,7 @@ export async function setupConfiguration(currentVariables: EnvObject): Promise<E
     // Delete the original file first
     try {
         await fs.unlink(CONFIG.DOT_ENV_PATH);
-    } catch (error) {
+    } catch {
         // Do nothing if file didn't exist
     }
     await fs.appendFile(CONFIG.DOT_ENV_PATH, 'CLIENT_ID=' + CLIENT_ID + '\n');
@@ -177,7 +177,7 @@ function validateEnv(env: EnvObject): EnvObject {
         try {
             VALIDATORS?.[key as keyof typeof VALIDATORS]?.(value);
             return [key, value];
-        } catch (error) {
+        } catch {
             // If it throws an error, it means it is invalid
             return [key, null];
         }
@@ -228,7 +228,7 @@ async function deleteTokenJSONs() {
     try {
         await fs.unlink(CONFIG.BOT_TOKENS_PATH);
         await fs.unlink(CONFIG.BROADCASTER_TOKENS_PATH);
-    } catch (error) {
+    } catch {
         // Do nothing if file didn't exist
     }
 }
@@ -293,7 +293,7 @@ function _createAuthServer(host: string, port: number): http.Server {
  */
 function _createAuthURL(client_id: string): string {
     // Obtains the scopes from the template file
-    const scope = CONFIG.TOKENS_TEMPLATE.scope.reduce((acc, curr) => (acc += '+' + curr));
+    const scope = CONFIG.TOKENS_TEMPLATE.scope.reduce((acc, curr) => acc + '+' + curr);
     const authParams = new URLSearchParams({
         response_type: 'code',
         client_id,

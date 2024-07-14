@@ -260,8 +260,11 @@ async function _setRequestPlayingNow(type: Command.sendloop | Command.sendchord,
 function _processQueue(type: Command.sendloop | Command.sendchord): [type: Command.sendloop | Command.sendchord, request: string][] {
     const queue: Array<string | null> = [];
     const [tagEntries] = queueMap[type].tagEntries();
-    tagEntries.map(([key, value]) => (queue[Number(key)] = value));
     const [currentTurn] = queueMap[type].getCurrentTurn();
+
+    for (const [key, value] of tagEntries) {
+        queue[Number(key)] = value;
+    }
 
     return queue
         .slice(currentTurn)
