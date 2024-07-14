@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [TwitchMIDI]
 
-## [3.0.0] - 2024-01-12
+## [3.0.0] - 2024-07-14
 ### Added
 - Macro feature: Now you can trigger a set of commands with different timeouts just using a single command or "macro"
 - aliases.json has a new section called "macros". Not a breaking change because it is fixed automatically by this update
@@ -33,12 +33,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Minor refactors for easier translations. The ASCII logo of TwitchMIDI now is saved as a constant
 - Minor naming refactors
 - Improved setTimeoutPromise with a default case for 0ns
-- Updated all dependencies (Twurple.js, i18next, JZZ, PKG...)
-- Migrated all code to Node 20, Typescript 5.3 and ESModule
+- Updated all dependencies (Twurple.js, i18next, JZZ, PKG, ESLint...)
+- Migrated all code to Node 20, Typescript 5.5 and ESModule
 - Replaced NCC with ESBuild for a reduced build time
 - Now !fetchdb also regenerates rewards in case there is a change
 ### Fixed
 - Rewards disable bug. Before, it only disabled the current rewards from rewards.json file. If any reward were changed while running TwitchMIDI, it would stay active forever. Now it disables all rewards created by TwitchMIDI (new behaviour) and enables only the ones from rewards.json file (as before)
+- Control Change error handling, now requests without value give a meaningful error
 ### Removed
 - Max loop queue length. Before it was limited by the EventEmitter to 10 items waiting in queue. Now there is no limit since there are no EventEmitters in use.
 - Queue clear rollback function that was unused. Now the logic is simpler
