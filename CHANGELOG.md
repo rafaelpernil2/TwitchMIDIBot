@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rewards disable bug. Before, it only disabled the current rewards from rewards.json file. If any reward were changed while running TwitchMIDI, it would stay active forever. Now it disables all rewards created by TwitchMIDI (new behaviour) and enables only the ones from rewards.json file (as before)
 - Control Change error handling, now requests without value give a meaningful error
 ### Removed
+- Documentation page from this repository. Now any documentation change does not require a new version release
 - Max loop queue length. Before it was limited by the EventEmitter to 10 items waiting in queue. Now there is no limit since there are no EventEmitters in use.
 - Queue clear rollback function that was unused. Now the logic is simpler
 - All config files from final artifact (TwitchMIDI.zip file)
