@@ -17,7 +17,7 @@ import {
 import { CCCommand, Command } from './types.js';
 import harmonics from 'harmonics';
 const { inlineChord } = harmonics;
-import { CC_COMMANDS_KEY, CC_CONTROLLERS_KEY, CHORD_PROGRESSIONS_KEY } from '../database/jsondb/types.js';
+import { CC_COMMANDS_KEY, CC_CONTROLLERS_KEY, CHORD_PROGRESSIONS_KEY, PERMISSIONS_MAP, PermissionsTable } from '../database/jsondb/types.js';
 import { ChatClient } from '@twurple/chat';
 import { areRequestsOpen } from './guards.js';
 import i18n from '../i18n/loader.js';
@@ -387,6 +387,92 @@ export async function fetchdb(...[, { silenceMessages, isRewardsMode }, { chatCl
 }
 
 /**
+ * Bans a user from using TwitchMIDI
+ * @param commandParams [message, // Command arguments
+ *         common: { silenceMessages }, // Configuration parameters
+ *         twitch: { chatClient, channel } // Twitch chat and user data
+ *         ]
+ */
+export async function midibanuser(...[message, { silenceMessages }, { chatClient, channel }]: CommandParams): Promise<void> {
+    const [userToBanRaw, ...rest] = splitCommandArguments(message);
+
+    if (userToBanRaw == null || rest.length > 0) {
+        throw new Error(ERROR_MSG.INVALID_BAN_USER());
+    }
+
+    const userToBan = userToBanRaw.toLowerCase();
+    const currentPermissionMap = PERMISSIONS_DB.selectAll(PERMISSIONS_MAP);
+
+    if (currentPermissionMap == null) {
+        throw new Error(ERROR_MSG.RUNTIME_PERMISSIONS());
+    }
+
+    // Ban access to all commands
+    const targetPermissionMap = {} as Record<Command, PermissionsTable>;
+    const commandList = Object.values(Command);
+    for (const command of commandList) {
+        // If command permissions do not exist, skip (this should not happen)
+        const permissions = currentPermissionMap[command];
+        if (permissions == null) continue;
+
+        const commandPermissions = {
+            ...permissions,
+            blacklist: removeDuplicates([...permissions.blacklist, userToBan])
+        };
+
+        targetPermissionMap[command] = commandPermissions;
+    }
+    PERMISSIONS_DB.upsert(PERMISSIONS_MAP, { ...currentPermissionMap, ...targetPermissionMap });
+
+    await PERMISSIONS_DB.commit();
+
+    sayTwitchChatMessage(chatClient, channel, [userToBan + '\t', i18n.t('MIDIBANUSER_OK')], { silenceMessages });
+}
+
+/**
+ * Unbans a previously banned user from using TwitchMIDI
+ * @param commandParams [message, // Command arguments
+ *         common: { silenceMessages }, // Configuration parameters
+ *         twitch: { chatClient, channel } // Twitch chat and user data
+ *         ]
+ */
+export async function midiunbanuser(...[message, { silenceMessages }, { chatClient, channel }]: CommandParams): Promise<void> {
+    const [userToUnbanRaw, ...rest] = splitCommandArguments(message);
+
+    if (userToUnbanRaw == null || rest.length > 0) {
+        throw new Error(ERROR_MSG.INVALID_UNBAN_USER());
+    }
+
+    const userToUnban = userToUnbanRaw.toLowerCase();
+    const currentPermissionMap = PERMISSIONS_DB.selectAll(PERMISSIONS_MAP);
+
+    if (currentPermissionMap == null) {
+        throw new Error(ERROR_MSG.RUNTIME_PERMISSIONS());
+    }
+
+    // Unban access to all commands
+    const targetPermissionMap = {} as Record<Command, PermissionsTable>;
+    const commandList = Object.values(Command);
+    for (const command of commandList) {
+        // If command permissions do not exist, skip (this should not happen)
+        const permissions = currentPermissionMap[command];
+        if (permissions == null) continue;
+
+        const commandPermissions = {
+            ...permissions,
+            blacklist: permissions.blacklist.filter((user) => user !== userToUnban)
+        };
+
+        targetPermissionMap[command] = commandPermissions;
+    }
+    PERMISSIONS_DB.upsert(PERMISSIONS_MAP, { ...currentPermissionMap, ...targetPermissionMap });
+
+    await PERMISSIONS_DB.commit();
+
+    sayTwitchChatMessage(chatClient, channel, [userToUnban + '\t', i18n.t('MIDIUNBANUSER_OK')], { silenceMessages });
+}
+
+/**
  * PRIVATE METHODS
  *
  */
@@ -538,7 +624,7 @@ function _parseChordProgression(chordProgression: string): Array<[noteList: stri
 function _parseCCCommand(ccCommand: string): [controller: number, value: number, time: number] {
     const [rawController, rawValue] = ccCommand.toLowerCase().trim().split(GLOBAL.SPACE_SEPARATOR);
     // If rawValue is null, the command is invalid
-    if (rawValue == null){
+    if (rawValue == null) {
         throw new Error(ERROR_MSG.BAD_CC_MESSAGE());
     }
 

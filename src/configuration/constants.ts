@@ -86,7 +86,10 @@ export const ERROR_MSG = {
     INVALID_AFFIXES: () => i18n.t('ERROR_INVALID_AFFIXES'),
     COMMAND_MESSAGE_EMPTY: () => i18n.t('ERROR_COMMAND_MESSAGE_EMPTY'),
     INSTANCE_ALREADY_RUNNING: () => i18n.t('ERROR_INSTANCE_ALREADY_RUNNING'),
-    BAD_CONFIG_DOWNLOAD: () => i18n.t('ERROR_BAD_CONFIG_DOWNLOAD')
+    BAD_CONFIG_DOWNLOAD: () => i18n.t('ERROR_BAD_CONFIG_DOWNLOAD'),
+    INVALID_BAN_USER: () => i18n.t('ERROR_INVALID_BAN_USER'),
+    INVALID_UNBAN_USER: () => i18n.t('ERROR_INVALID_UNBAN_USER'),
+    RUNTIME_PERMISSIONS: () => i18n.t('ERROR_RUNTIME_PERMISSIONS')
 };
 
 export const TOGGLE_MIDI_VALUES: Record<string, string> = { on: '127', off: '0' };
@@ -127,7 +130,9 @@ export const COMMAND_DESCRIPTIONS: Record<(typeof Command)[keyof typeof Command]
     midicurrentrequest: () => i18n.t('HELP_MIDICURRENTREQUEST'),
     midirequestqueue: () => i18n.t('HELP_MIDIREQUESTQUEUE'),
     midipause: () => i18n.t('HELP_MIDIPAUSE'),
-    midiresume: () => i18n.t('HELP_MIDIRESUME')
+    midiresume: () => i18n.t('HELP_MIDIRESUME'),
+    midibanuser: () => i18n.t('HELP_MIDIBANUSER'),
+    midiunbanuser: () => i18n.t('HELP_MIDIUNBANUSER')
 } as const;
 
 export const SAFE_COMMANDS: Record<(typeof Command)[keyof typeof Command], boolean> = {
@@ -151,7 +156,9 @@ export const SAFE_COMMANDS: Record<(typeof Command)[keyof typeof Command], boole
     midicurrentrequest: true,
     midirequestqueue: true,
     midipause: false,
-    midiresume: false
+    midiresume: false,
+    midibanuser: false,
+    midiunbanuser: false
 } as const;
 
 export const ALIASES_DB = new JSONDatabase<AliasesType>(CONFIG.ALIASES_DB_PATH, { ignoreFileNotFound: true });
