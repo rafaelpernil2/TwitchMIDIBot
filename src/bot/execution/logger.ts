@@ -4,6 +4,7 @@ import { ParsedEnvObject } from '../../configuration/env/types.js';
 import { checkUpdates } from './checks-handler.js';
 import i18n from '../../i18n/loader.js';
 import { askUserInput } from '../../utils/promise.js';
+import { getTextByBoolean } from '../../utils/generic.js';
 
 /**
  * Shows welcome messages in the terminal
@@ -25,9 +26,9 @@ export function showInitReadyMessages(env: ParsedEnvObject): void {
 
     // Flags
     console.log(chalk.gray(i18n.t('INIT_CURRENT_FLAGS')));
-    console.log(chalk.magenta(i18n.t('INIT_REWARDS_CHANNELPOINTS_MODE')), chalk.magentaBright(String(env.REWARDS_MODE)));
-    console.log(chalk.magenta(i18n.t('INIT_VIP_REWARDS_CHANNELPOINTS_MODE')), chalk.magentaBright(String(env.VIP_REWARDS_MODE)));
-    console.log(chalk.magenta(i18n.t('INIT_SEND_UNAUTHORIZED_MESSAGE_FLAG')), chalk.magentaBright(String(env.SEND_UNAUTHORIZED_MESSAGE)));
+    console.log(chalk.magenta(i18n.t('INIT_REWARDS_CHANNELPOINTS_MODE')), chalk.magentaBright(getTextByBoolean(env.REWARDS_MODE)));
+    console.log(chalk.magenta(i18n.t('INIT_VIP_REWARDS_CHANNELPOINTS_MODE')), chalk.magentaBright(getTextByBoolean(env.VIP_REWARDS_MODE)));
+    console.log(chalk.magenta(i18n.t('INIT_SEND_UNAUTHORIZED_MESSAGE_FLAG')), chalk.magentaBright(getTextByBoolean(env.SEND_UNAUTHORIZED_MESSAGE)));
 
     // Support message
     console.log(chalk.blueBright(i18n.t('INIT_SEPARATOR')));

@@ -1,4 +1,5 @@
 import { CONFIG, ERROR_MSG, GLOBAL } from '../configuration/constants.js';
+import i18n from '../i18n/loader.js';
 
 /**
  * Checks if the argument is an empty object
@@ -31,6 +32,15 @@ export function getBooleanByString(value: string): boolean {
  */
 export function getBooleanByStringList(...valueList: string[]): boolean[] {
     return valueList.map(getBooleanByString);
+}
+
+/**
+ * Convert a boolean to a Yes or No with internationalization
+ * @param value
+ * @returns
+ */
+export function getTextByBoolean(value: boolean): string {
+    return value ? i18n.t('YES') : i18n.t('NO');
 }
 
 /**

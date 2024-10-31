@@ -52,7 +52,13 @@ export async function setupConfiguration(currentVariables: EnvObject): Promise<E
     // STEP 1
     if (isStep1Invalid(targetEnv)) {
         console.log(chalk.greenBright(i18n.t('SETUP_STEP_1')));
-        console.log(chalk.magenta(i18n.t('SETUP_STEP_1_TEXT')));
+        console.log(
+            chalk.magentaBright(i18n.t('SETUP_STEP_1_TEXT')) +
+                chalk.bgMagentaBright(CONFIG.TWITCH_CONSOLE_APPS_URL) +
+                chalk.magentaBright(i18n.t('SETUP_STEP_1_AFTER_LINK')) +
+                chalk.bgMagentaBright(CONFIG.REDIRECT_URI) +
+                chalk.magentaBright(i18n.t('SETUP_STEP_1_AFTER_REDIRECT_LINK'))
+        );
 
         CLIENT_ID = await _makeQuestion(rl, i18n.t('SETUP_STEP_1_CLIENT_ID_QUESTION'), CLIENT_ID);
         CLIENT_SECRET = await _makeQuestion(rl, i18n.t('SETUP_STEP_1_CLIENT_SECRET_QUESTION'), CLIENT_SECRET);
@@ -61,11 +67,11 @@ export async function setupConfiguration(currentVariables: EnvObject): Promise<E
     // STEP 2
     if (isStep2Invalid(targetEnv)) {
         console.log(chalk.greenBright(i18n.t('SETUP_STEP_2')));
-        console.log(chalk.magenta(i18n.t('SETUP_STEP_2_TEXT')));
+        console.log(chalk.magentaBright(i18n.t('SETUP_STEP_2_TEXT')));
         // This server awaits the response from the URL
         const server = _createAuthServer(CONFIG.LOCAL_SERVER_HOST, CONFIG.LOCAL_SERVER_PORT);
         const authUrl = _createAuthURL(CLIENT_ID);
-        console.log(chalk.magenta(i18n.t('SETUP_STEP_2_LINK') + authUrl));
+        console.log(chalk.magentaBright(i18n.t('SETUP_STEP_2_LINK')) + chalk.bgMagentaBright(authUrl));
 
         // Wait until user clicks and authorizes
         const BROADCASTER_CODE = await _getAuthCode();
@@ -79,7 +85,7 @@ export async function setupConfiguration(currentVariables: EnvObject): Promise<E
         BOT_REFRESH_TOKEN = BROADCASTER_REFRESH_TOKEN;
         if (isBotDifferent) {
             console.log(chalk.greenBright(i18n.t('SETUP_STEP_2_BOT_TEXT_1')));
-            console.log(chalk.magenta(i18n.t('SETUP_STEP_2_BOT_TEXT_2') + authUrl));
+            console.log(chalk.magentaBright(i18n.t('SETUP_STEP_2_BOT_TEXT_2')) + chalk.bgMagentaBright(authUrl));
             // Wait until user clicks and authorizes
             const BOT_CODE = await _getAuthCode();
             const { access_token, refresh_token } = await _requestTokenByCode(CLIENT_ID, CLIENT_SECRET, BOT_CODE);
@@ -95,7 +101,7 @@ export async function setupConfiguration(currentVariables: EnvObject): Promise<E
     // STEP 3
     if (isStep3Invalid(targetEnv)) {
         console.log(chalk.greenBright(i18n.t('SETUP_STEP_3')));
-        console.log(chalk.magenta(i18n.t('SETUP_STEP_3_TEXT')));
+        console.log(chalk.magentaBright(i18n.t('SETUP_STEP_3_TEXT')));
         TARGET_CHANNEL = ((await _makeQuestion(rl, i18n.t('SETUP_STEP_3_TARGET_CHANNEL_QUESTION'), TARGET_CHANNEL)) || '').toLowerCase();
 
         const sendUnauthorizedMessage = (await _makeQuestion(rl, i18n.t('SETUP_STEP_3_UNAUTHORIZED_MESSAGE_QUESTION'), SEND_UNAUTHORIZED_MESSAGE)) || 'N';
@@ -114,7 +120,7 @@ export async function setupConfiguration(currentVariables: EnvObject): Promise<E
     // STEP 4
     if (isStep4Invalid(targetEnv)) {
         console.log(chalk.greenBright(i18n.t('SETUP_STEP_4')));
-        console.log(chalk.magenta(i18n.t('SETUP_STEP_4_TEXT')));
+        console.log(chalk.magentaBright(i18n.t('SETUP_STEP_4_TEXT')));
         TARGET_MIDI_NAME = (await _makeQuestion(rl, i18n.t('SETUP_STEP_4_TARGET_MIDI_NAME_QUESTION'), TARGET_MIDI_NAME)) || 'loopMIDI Port';
         TARGET_MIDI_CHANNEL = (await _makeQuestion(rl, i18n.t('SETUP_STEP_4_TARGET_MIDI_CHANNEL_QUESTION'), TARGET_MIDI_CHANNEL)) || '1';
     }
@@ -141,7 +147,7 @@ export async function setupConfiguration(currentVariables: EnvObject): Promise<E
 
     rl.close();
     console.log(chalk.greenBright(i18n.t('SETUP_STEP_END')));
-    console.log(chalk.magenta(i18n.t('SETUP_STEP_END_READY')));
+    console.log(chalk.magentaBright(i18n.t('SETUP_STEP_END_READY')));
     console.log(
         chalk.yellowBright(`
     ***** ${i18n.t('SETUP_STEP_END_CREDITS')} ${CONFIG.OP_SIGNATURE} ***** 

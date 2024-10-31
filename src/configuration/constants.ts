@@ -36,6 +36,7 @@ export const CONFIG = {
     LOCAL_SERVER_PORT: 8000,
     REDIRECT_URI: 'http://localhost:8000',
     TWITCH_BASE_AUTH_URL: 'https://id.twitch.tv/oauth2/',
+    TWITCH_CONSOLE_APPS_URL: 'https://dev.twitch.tv/console/apps',
     GITHUB_CONTENT_BASE_URL: 'raw.githubusercontent.com',
     REMOTE_PACKAGE_JSON_PATH: '/rafaelpernil2/TwitchMIDI/master/package.json',
     REMOTE_CONFIG_JSON_FOLDER_PATH: '/rafaelpernil2/TwitchMIDI/master/config',
