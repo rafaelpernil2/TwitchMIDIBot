@@ -9,9 +9,7 @@ import { GenericQueue } from '../queue/generic-queue/implementation.js';
 import { triggerChordList } from '../midi/handler.js';
 
 export const favoriteIdMap = Object.fromEntries(Object.values(Command).map((key) => [key, -1])) as Record<Command, number>;
-export let onBarLoopChange: () => Promise<void> = async () => {
-    // Implement if needed
-};
+export let onBarLoopChange: () => Promise<void>;
 
 let requestPlayingNow: { type: Command.sendloop | Command.sendchord; request: string } | null;
 
@@ -20,7 +18,12 @@ export const queueMap = {
     sendloop: new GenericQueue<Array<[noteList: string[], timeSubDivision: number]>>()
 } as const;
 
-export function createAutomaticClockSyncedQueue(targetMIDIChannel: number) {
+export function createAutomaticClockSyncedQueue(targetMIDIChannel: number): void {
+    // Only set the function once
+    if (onBarLoopChange != null) {
+        return;
+    }
+
     const onCommandTurn = (type: Command.sendloop | Command.sendchord) => async () => {
         const [turn] = queueMap[type].getCurrentTurn();
 
