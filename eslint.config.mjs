@@ -15,6 +15,7 @@ const compat = new FlatCompat({
     allConfig: js.configs.all
 });
 
+// ignore unused exports default
 export default [...compat.extends(
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",

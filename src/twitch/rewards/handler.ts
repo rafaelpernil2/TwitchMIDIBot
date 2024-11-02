@@ -30,7 +30,7 @@ export async function initializeRewardsMode(broadcasterAuthProvider: RefreshingA
 
     // Now let's add an onRedemption listener for the rewards
     const pubSubClient = new PubSubClient({ authProvider: broadcasterAuthProvider });
-    const broadcasterUserId = await getBroadcasterId(broadcasterAuthProvider, env.TARGET_CHANNEL);
+    const broadcasterUserId = await _getBroadcasterId(broadcasterAuthProvider, env.TARGET_CHANNEL);
 
     pubSubClient.onRedemption(broadcasterUserId, async ({ id: redemptionId, rewardId, rewardTitle, message: args, userName }: PubSubRedemptionMessage) => {
         // Look up the command
@@ -68,13 +68,13 @@ async function _callCommandByRedeemption(
     try {
         // In case the method does not end or error in X seconds, it is considered fulfilled
         // For example, !sendloop request do not resolve until another request comes along
-        setTimeout(() => updateRedeemIdStatus(authProvider, env.TARGET_CHANNEL, { rewardId, redemptionId, status: 'FULFILLED' }), CONFIG.FULFILL_TIMEOUT_MS);
+        setTimeout(() => _updateRedeemIdStatus(authProvider, env.TARGET_CHANNEL, { rewardId, redemptionId, status: 'FULFILLED' }), CONFIG.FULFILL_TIMEOUT_MS);
         // Execute command and mark as fulfilled once finished
         await callCommand(`${GLOBAL.POUND}${env.TARGET_CHANNEL}`, userName, `${command} ${args}`);
-        await updateRedeemIdStatus(authProvider, env.TARGET_CHANNEL, { rewardId, redemptionId, status: 'FULFILLED' });
+        await _updateRedeemIdStatus(authProvider, env.TARGET_CHANNEL, { rewardId, redemptionId, status: 'FULFILLED' });
     } catch {
         // Cancel redemption if any error occurs
-        await updateRedeemIdStatus(authProvider, env.TARGET_CHANNEL, { rewardId, redemptionId, status: 'CANCELED' });
+        await _updateRedeemIdStatus(authProvider, env.TARGET_CHANNEL, { rewardId, redemptionId, status: 'CANCELED' });
     }
 }
 
@@ -84,8 +84,8 @@ async function _callCommandByRedeemption(
  * @param username Broadcaster username
  */
 export async function createRewards(authProvider: RefreshingAuthProvider, username: string): Promise<void> {
-    const apiClient = getApiClient(authProvider);
-    const userId = await getBroadcasterId(authProvider, username);
+    const apiClient = _getApiClient(authProvider);
+    const userId = await _getBroadcasterId(authProvider, username);
 
     const rewardEntries = Object.entries(REWARDS_DB.selectAll(REWARD_TITLE_COMMAND) ?? {});
     const createPromiseMap = rewardEntries.map(([title, [command, cost]]) => {
@@ -108,8 +108,8 @@ export async function createRewards(authProvider: RefreshingAuthProvider, userna
  * @param { isEnabled } optionData Boolean to activate/deactivate rewards
  */
 export async function toggleRewardsStatus(authProvider: RefreshingAuthProvider, username: string, { isEnabled }: { isEnabled: boolean }): Promise<void> {
-    const apiClient = getApiClient(authProvider);
-    const userId = await getBroadcasterId(authProvider, username);
+    const apiClient = _getApiClient(authProvider);
+    const userId = await _getBroadcasterId(authProvider, username);
     const allRewards = await apiClient.channelPoints.getCustomRewards(userId, true);
 
     // Only treat our rewards
@@ -130,61 +130,6 @@ export async function toggleRewardsStatus(authProvider: RefreshingAuthProvider, 
     }
     areRewardsOn = isEnabled;
 }
-
-/**
- * Updates the status of a reward redemption
- * @param authProvider Authentication provider
- * @param username Broadcaster username
- * @param { rewardId, redemptionId, status } redemptionData Information about the redemption and new status
- */
-export async function updateRedeemIdStatus(
-    authProvider: RefreshingAuthProvider,
-    username: string,
-    { rewardId, redemptionId, status }: { rewardId: string; redemptionId: string; status: HelixCustomRewardRedemptionTargetStatus }
-): Promise<void> {
-    const apiClient = getApiClient(authProvider);
-    const userId = await getBroadcasterId(authProvider, username);
-    try {
-        await apiClient.channelPoints.updateRedemptionStatusByIds(userId, rewardId, [redemptionId], status);
-    } catch {
-        // Implement if needed
-    }
-}
-
-/**
- * Creates or returns the created ApiClient to interact with TwitchAPI
- * @param authProvider Authentication provider
- * @returns ApiClient
- */
-export function getApiClient(authProvider: RefreshingAuthProvider): ApiClient {
-    if (apiClient != null) {
-        return apiClient;
-    }
-
-    apiClient = new ApiClient({ authProvider });
-    return apiClient;
-}
-
-/**
- * Calls TwitchAPI and returns the broadcaster user id
- * @param authProvider Twurple AuthProvider
- * @param username Broadcaster username
- * @returns Broadcaster user id
- */
-export async function getBroadcasterId(authProvider: RefreshingAuthProvider, username: string): Promise<string> {
-    if (broadcasterId != null) {
-        return broadcasterId;
-    }
-
-    const apiClient = getApiClient(authProvider);
-    const broadcaster = await apiClient.users.getUserByName(username);
-    if (broadcaster == null) {
-        throw new Error(ERROR_MSG.BROADCASTER_USER_NOT_FOUND());
-    }
-    broadcasterId = broadcaster.id;
-    return broadcasterId;
-}
-
 /**
  * Reloads the rewards from the rewards file
  * @param authProvider Authentication provider
@@ -201,4 +146,59 @@ export async function reloadRewards(authProvider: RefreshingAuthProvider, target
     await createRewards(authProvider, targetChannel);
     // Now re-enable only if rewards were enabled before, otherwise, disable them again
     await toggleRewardsStatus(authProvider, targetChannel, { isEnabled: wereRewardsOn });
+}
+
+
+/**
+ * Updates the status of a reward redemption
+ * @param authProvider Authentication provider
+ * @param username Broadcaster username
+ * @param { rewardId, redemptionId, status } redemptionData Information about the redemption and new status
+ */
+async function _updateRedeemIdStatus(
+    authProvider: RefreshingAuthProvider,
+    username: string,
+    { rewardId, redemptionId, status }: { rewardId: string; redemptionId: string; status: HelixCustomRewardRedemptionTargetStatus }
+): Promise<void> {
+    const apiClient = _getApiClient(authProvider);
+    const userId = await _getBroadcasterId(authProvider, username);
+    try {
+        await apiClient.channelPoints.updateRedemptionStatusByIds(userId, rewardId, [redemptionId], status);
+    } catch {
+        // Implement if needed
+    }
+}
+
+/**
+ * Creates or returns the created ApiClient to interact with TwitchAPI
+ * @param authProvider Authentication provider
+ * @returns ApiClient
+ */
+function _getApiClient(authProvider: RefreshingAuthProvider): ApiClient {
+    if (apiClient != null) {
+        return apiClient;
+    }
+
+    apiClient = new ApiClient({ authProvider });
+    return apiClient;
+}
+
+/**
+ * Calls TwitchAPI and returns the broadcaster user id
+ * @param authProvider Twurple AuthProvider
+ * @param username Broadcaster username
+ * @returns Broadcaster user id
+ */
+async function _getBroadcasterId(authProvider: RefreshingAuthProvider, username: string): Promise<string> {
+    if (broadcasterId != null) {
+        return broadcasterId;
+    }
+
+    const apiClient = _getApiClient(authProvider);
+    const broadcaster = await apiClient.users.getUserByName(username);
+    if (broadcaster == null) {
+        throw new Error(ERROR_MSG.BROADCASTER_USER_NOT_FOUND());
+    }
+    broadcasterId = broadcaster.id;
+    return broadcasterId;
 }

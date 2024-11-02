@@ -27,9 +27,9 @@ export async function setupConfigFiles(): Promise<void> {
         await fs.mkdir(CONFIG.CONFIG_FOLDER_PATH);
     }
 
-    await validateFileGeneric(ALIASES_DB, [COMMANDS_KEY, CHORD_PROGRESSIONS_KEY, CC_COMMANDS_KEY, CC_CONTROLLERS_KEY, MACROS_KEY]);
-    await validateFileGeneric(REWARDS_DB, [REWARD_TITLE_COMMAND]);
-    await validatePermissionsFile();
+    await _validateFileGeneric(ALIASES_DB, [COMMANDS_KEY, CHORD_PROGRESSIONS_KEY, CC_COMMANDS_KEY, CC_CONTROLLERS_KEY, MACROS_KEY]);
+    await _validateFileGeneric(REWARDS_DB, [REWARD_TITLE_COMMAND]);
+    await _validatePermissionsFile();
 }
 
 /**
@@ -38,7 +38,7 @@ export async function setupConfigFiles(): Promise<void> {
  * @param sections Sections to validate
  * @returns
  */
-export async function validateFileGeneric<T, P extends keyof T>(db: JSONDatabase<T>, sections: P[]): Promise<void> {
+async function _validateFileGeneric<T, P extends keyof T>(db: JSONDatabase<T>, sections: P[]): Promise<void> {
     let isModified = false;
     // Check each section and fix structure if needed
     for (const section of sections) {
@@ -48,7 +48,7 @@ export async function validateFileGeneric<T, P extends keyof T>(db: JSONDatabase
 
         isModified = true;
 
-        const defaultFile = (await downloadDefaultFileFromRepo(db)) ?? ({} as T);
+        const defaultFile = (await _downloadDefaultFileFromRepo(db)) ?? ({} as T);
         db.upsert(section, defaultFile[section]);
     }
 
@@ -63,7 +63,7 @@ export async function validateFileGeneric<T, P extends keyof T>(db: JSONDatabase
  * Validates and writes permissions file
  * @returns
  */
-export async function validatePermissionsFile(): Promise<void> {
+async function _validatePermissionsFile(): Promise<void> {
     let isModified = false;
     // Check each section and fix structure if needed
     const currentPermissionsMap = PERMISSIONS_DB.selectAll(PERMISSIONS_MAP) ?? ({} as PermissionsType['permissionsMap']);
@@ -74,7 +74,7 @@ export async function validatePermissionsFile(): Promise<void> {
 
         isModified = true;
 
-        const defaultFile = (await downloadDefaultFileFromRepo(PERMISSIONS_DB)) ?? ({} as PermissionsType);
+        const defaultFile = (await _downloadDefaultFileFromRepo(PERMISSIONS_DB)) ?? ({} as PermissionsType);
         const defaultPermissions = defaultFile[PERMISSIONS_MAP];
         const commandPermissions = { [command]: defaultPermissions[command] } as Record<Command, PermissionsTable>;
 
@@ -93,7 +93,7 @@ export async function validatePermissionsFile(): Promise<void> {
  * @param db JSONDatabase where to store file/select which one to download
  * @returns File data
  */
-export async function downloadDefaultFileFromRepo<T>(db: JSONDatabase<T>): Promise<T | undefined> {
+async function _downloadDefaultFileFromRepo<T>(db: JSONDatabase<T>): Promise<T | undefined> {
     try {
         // Read GitHub's master <config-file>.json
         const fileName = db.fileName;

@@ -2,21 +2,6 @@ import { CONFIG, ERROR_MSG, GLOBAL } from '../configuration/constants.js';
 import i18n from '../i18n/loader.js';
 
 /**
- * Checks if the argument is an empty object
- * @param obj
- * @returns
- */
-export function isEmptyObject(obj: object): boolean {
-    // because Object.keys(new Date()).length === 0;
-    // we have to do some additional check
-    return (
-        obj && // 👈 null and undefined check
-        Object.keys(obj).length === 0 &&
-        Object.getPrototypeOf(obj) === Object.prototype
-    );
-}
-
-/**
  * Convert a string to a boolean
  * @param value
  * @returns
@@ -83,14 +68,27 @@ export function buildChunkedMessage([leading = '', content = '', trailing = ''] 
         throw new Error(ERROR_MSG.INVALID_AFFIXES());
     }
 
-    const [first, ...restOfChunks] = splitMessage(content, limit - leadingLength - trailingLength - GLOBAL.ETC.length * 2).map((chunk) => chunk.trim());
+    const [first, ...restOfChunks] = _splitMessage(content, limit - leadingLength - trailingLength - GLOBAL.ETC.length * 2).map((chunk) => chunk.trim());
 
     if (restOfChunks.length === 0) {
         return [[leading, first, trailing].join(GLOBAL.EMPTY_MESSAGE)];
     }
 
-    const splittedContent = [first + GLOBAL.ETC, ...restOfChunks.slice(0, -1).map((chunk) => GLOBAL.ETC + chunk + GLOBAL.ETC), GLOBAL.ETC + restOfChunks[restOfChunks.length - 1]];
+    const splittedContent = [
+        first + GLOBAL.ETC,
+        ...restOfChunks.slice(0, -1).map((chunk) => GLOBAL.ETC + chunk + GLOBAL.ETC),
+        GLOBAL.ETC + restOfChunks[restOfChunks.length - 1]
+    ];
     return splittedContent.map((contentChunk) => [leading, contentChunk, trailing].join(GLOBAL.EMPTY_MESSAGE));
+}
+
+/**
+ * Checks if a value is null, undefined or empty string.
+ * It differs from !!value because 0 is a valid value
+ * @param value A value to check
+ */
+export function isNullish(value: unknown): boolean {
+    return value == null || value === GLOBAL.EMPTY_MESSAGE;
 }
 
 /**
@@ -100,7 +98,7 @@ export function buildChunkedMessage([leading = '', content = '', trailing = ''] 
  * @param blockSize Size of each chunk
  * @returns Splitted message
  */
-export function splitMessage(message: string, blockSize: number): string[] {
+function _splitMessage(message: string, blockSize: number): string[] {
     const messageLength = message.length;
     const [blockChunkCount, extraChunkLength] = [Math.floor(messageLength / blockSize), messageLength % blockSize];
 
@@ -115,13 +113,4 @@ export function splitMessage(message: string, blockSize: number): string[] {
     }
 
     return splittedMessage;
-}
-
-/**
- * Checks if a value is null, undefined or empty string.
- * It differs from !!value because 0 is a valid value
- * @param value A value to check
- */
-export function isNullish(value: unknown): boolean {
-    return value == null || value === GLOBAL.EMPTY_MESSAGE;
 }

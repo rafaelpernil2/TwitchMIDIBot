@@ -26,27 +26,6 @@ export function getCommand(message: string): [command: Command | null, args: str
 }
 
 /**
- * Obtains a command and arguments from chat message
- * @param message
- * @returns [command?: Command, args?: string]
- */
-export function getMacro(message: string): Array<[command: Command | null, args: string, delay: number]> {
-    const [command] = message.slice(1).split(GLOBAL.SPACE_SEPARATOR);
-    const parsedCommand = command.toLowerCase();
-
-    // If there's no exclamation mark, it's an invalid macro. Ignore the arguments
-    if (!message.startsWith(GLOBAL.EXCLAMATION_MARK)) {
-        return [];
-    }
-
-    // Obtain list of messages from the macro
-    const messageList = ALIASES_DB.select(MACROS_KEY, parsedCommand) ?? [];
-
-    // Parse all messages with delay in nanoseconds
-    return messageList.map(([message, delay]) => [...getCommand(message), delay * 1_000_000]);
-}
-
-/**
  * Get command by alias or return current command if not found
  * @param command Alias of command or command
  * @returns Command
@@ -65,7 +44,7 @@ export function getCommandList(message: string): [isMacroMessage: boolean, comma
 
     // Macro case - It is not a valid single command by itself
     if (command == null) {
-        return [true, getMacro(message)];
+        return [true, _getMacro(message)];
     }
 
     // Common case - Single command, delay of 0ns
@@ -79,4 +58,25 @@ export function getCommandList(message: string): [isMacroMessage: boolean, comma
  */
 export function splitCommandArguments(commandArguments: string): string[] {
     return commandArguments.split(GLOBAL.SPACE_SEPARATOR).filter((value) => value !== GLOBAL.EMPTY_MESSAGE);
+}
+
+/**
+ * Obtains a command and arguments from chat message
+ * @param message
+ * @returns [command?: Command, args?: string]
+ */
+function _getMacro(message: string): Array<[command: Command | null, args: string, delay: number]> {
+    const [command] = message.slice(1).split(GLOBAL.SPACE_SEPARATOR);
+    const parsedCommand = command.toLowerCase();
+
+    // If there's no exclamation mark, it's an invalid macro. Ignore the arguments
+    if (!message.startsWith(GLOBAL.EXCLAMATION_MARK)) {
+        return [];
+    }
+
+    // Obtain list of messages from the macro
+    const messageList = ALIASES_DB.select(MACROS_KEY, parsedCommand) ?? [];
+
+    // Parse all messages with delay in nanoseconds
+    return messageList.map(([message, delay]) => [...getCommand(message), delay * 1_000_000]);
 }

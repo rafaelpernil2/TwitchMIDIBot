@@ -20,14 +20,6 @@ export function acquireLock(): void {
 }
 
 /**
- * Deletes the execution lock to indicate that the program has exited
- * @returns
- */
-export function releaseLock(): void {
-    return rmSync(CONFIG.DOT_LOCK, { force: true });
-}
-
-/**
  * Attaches a callback before initialization to exit process signals
  * @param broadcasterAuthProvider Broadcaster auth provider
  * @param env Environment variables
@@ -68,6 +60,15 @@ export function attachExitCallbacksAfterInit(broadcasterAuthProvider: Refreshing
 }
 
 /**
+ * Deletes the execution lock to indicate that the program has exited
+ * @returns
+ */
+function _releaseLock(): void {
+    return rmSync(CONFIG.DOT_LOCK, { force: true });
+}
+
+
+/**
  * Disables all rewards (if enabled) and exits. It is used for sudden closes of this application
  * @param broadcasterAuthProvider Broadcaster auth provider
  * @param env Environment variables
@@ -75,7 +76,7 @@ export function attachExitCallbacksAfterInit(broadcasterAuthProvider: Refreshing
 function _onExitProcessBeforeInit(): () => void {
     // Before initialization only check lock
     return () => {
-        releaseLock();
+        _releaseLock();
         process.exit();
     };
 }
@@ -96,7 +97,7 @@ function _onExitProcessAfterInit(broadcasterAuthProvider: RefreshingAuthProvider
         if (env.REWARDS_MODE) {
             await toggleRewardsStatus(broadcasterAuthProvider, env.TARGET_CHANNEL, { isEnabled: false });
         }
-        releaseLock();
+        _releaseLock();
         process.exit();
     };
 }

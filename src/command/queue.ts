@@ -79,20 +79,9 @@ export function forwardQueue(type: Command.sendloop | Command.sendchord): void {
     queueMap[type].forward();
 
     // If there's no chord progression or loop next, let's clear requestPlayingNow
-    if (isCurrentLast(Command.sendchord) && isCurrentLast(Command.sendloop)) {
+    if (_isCurrentLast(Command.sendchord) && _isCurrentLast(Command.sendloop)) {
         requestPlayingNow = null;
     }
-}
-
-/**
- * Checks if a request is still in queue
- * @param type
- * @param turn
- * @returns If the queued request is not null
- */
-export function isInQueue(type: Command.sendloop | Command.sendchord, turn: number): boolean {
-    const [isInQueue] = queueMap[type].has(turn);
-    return isInQueue;
 }
 
 /**
@@ -109,16 +98,6 @@ export function getCurrentRequestPlaying(): { type: Command.sendloop | Command.s
  */
 export function getRequestQueue(): [type: Command.sendloop | Command.sendchord, request: string][] {
     return [..._processQueue(Command.sendchord), ..._processQueue(Command.sendloop)];
-}
-
-/**
- * Checks if queue is empty
- * @param type
- * @returns
- */
-export function isCurrentLast(type: Command.sendloop | Command.sendchord): boolean {
-    const [isEmpty] = queueMap[type].isCurrentLast();
-    return isEmpty;
 }
 
 /**
@@ -191,6 +170,27 @@ export async function saveRequest(type: Command.sendloop | Command.sendchord, tu
     }
     await ALIASES_DB.commit();
 }
+/**
+ * Checks if a request is still in queue
+ * @param type
+ * @param turn
+ * @returns If the queued request is not null
+ */
+function _isInQueue(type: Command.sendloop | Command.sendchord, turn: number): boolean {
+    const [isInQueue] = queueMap[type].has(turn);
+    return isInQueue;
+}
+
+/**
+ * Checks if queue is empty
+ * @param type
+ * @returns
+ */
+function _isCurrentLast(type: Command.sendloop | Command.sendchord): boolean {
+    const [isEmpty] = queueMap[type].isCurrentLast();
+    return isEmpty;
+}
+
 
 /**
  * Checks if the given request turn is the favorite one
@@ -198,7 +198,7 @@ export async function saveRequest(type: Command.sendloop | Command.sendchord, tu
  * @param turn
  * @returns
  */
-export function isFavoriteRequest(type: Command.sendloop | Command.sendchord, turn: number): boolean {
+function _isFavoriteRequest(type: Command.sendloop | Command.sendchord, turn: number): boolean {
     return favoriteIdMap[type] === turn;
 }
 
@@ -209,7 +209,7 @@ export function isFavoriteRequest(type: Command.sendloop | Command.sendchord, tu
  */
 function _isCollisionFree(type: Command.sendloop | Command.sendchord): boolean {
     // If it has "sendloop" type, it has to wait until "sendchord" queue is empty
-    return type !== Command.sendloop || isCurrentLast(Command.sendchord);
+    return type !== Command.sendloop || _isCurrentLast(Command.sendchord);
 }
 
 /**
@@ -222,7 +222,7 @@ function _isCollisionFree(type: Command.sendloop | Command.sendchord): boolean {
 function _mustRepeatRequest(type: Command.sendloop | Command.sendchord, currentTurn: number, nextTurn: number): boolean {
     return (
         type === Command.sendloop && // Is a !sendloop request
-        isInQueue(type, currentTurn) && // Current !sendloop request still exists
+        _isInQueue(type, currentTurn) && // Current !sendloop request still exists
         // eslint-disable-next-line prettier/prettier
         (
             syncMode.is(Sync.REPEAT) ||
@@ -230,10 +230,10 @@ function _mustRepeatRequest(type: Command.sendloop | Command.sendchord, currentT
             (
                 syncMode.is(Sync.OFF) &&
                 (
-                    !isInQueue(type, nextTurn) ||
+                    !_isInQueue(type, nextTurn) ||
                     !areRequestsOpen.get() ||
-                    !isCurrentLast(Command.sendchord) ||
-                    isFavoriteRequest(type, currentTurn)
+                    !_isCurrentLast(Command.sendchord) ||
+                    _isFavoriteRequest(type, currentTurn)
                 )
             )
         )
