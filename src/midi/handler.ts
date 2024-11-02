@@ -105,17 +105,19 @@ export async function triggerChordList(
             if (!syncMode.is(Sync.OFF)) continue;
             await _sendMIDINoteListPromise(noteList, timeout, targetMIDIChannel);
         }
+    } catch {
+        // In case of error, we forward the queue and exit
+        // This should happen when the request queue is cleared
+
+        // But this is done either way in "finally" block
+    }
+    finally {
         // Move to next in queue
         forwardQueue(type);
         // Only the current request should be repeated after tempo change (repeat sync)
         if (syncMode.is(Sync.REPEAT)) {
             syncMode.set(Sync.OFF);
         }
-        isChordInProgress.set(false);
-    } catch {
-        // In case of error, we forward the queue and exit
-        // This should happen when the request queue is cleared
-        forwardQueue(type);
         isChordInProgress.set(false);
     }
 }
