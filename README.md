@@ -2,7 +2,7 @@
 
 A full-featured configurable Twitch bot to connect with your MIDI equipment while streaming. Allow your viewers to be part of your musical creations!
 
-[![Twitch MIDI Demo](https://feranern.sirv.com/Images/twitchmidicropshort.gif)](https://www.youtube.com/watch?v=3JK5JukHRn0)
+[![Twitch MIDI Demo](./img/demo.gif)](https://www.youtube.com/watch?v=3JK5JukHRn0)
 
 ## Table of Contents
 - [ TwitchMIDI](#-twitchmidi)
@@ -53,7 +53,7 @@ Latest release - [TwitchMIDI for Windows, Linux & MacOS (x86-64)](https://github
 * Run TwitchMIDI-yourplatform (e.g TwitchMIDI-win.exe)
 * Follow the configuration steps to link this bot to your account. You will see something like this:
 
-[![](https://feranern.sirv.com/Images/TwitchMIDI_initConfig.png)](#installation)
+[![](./img/init_config.webp)](#installation)
 
 * Done. Have fun!
 
