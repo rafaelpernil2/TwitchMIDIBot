@@ -29,6 +29,14 @@
             "whitelist": [],
             "blacklist": []
         },
+        "midibanuser": {
+            "requirements": [
+                "isBroadcaster",
+                "isMod"
+            ],
+            "whitelist": [],
+            "blacklist": []
+        },
         "midicurrentrequest": {
             "requirements": [],
             "whitelist": [],
@@ -70,6 +78,14 @@
         "midiresume": {
             "requirements": [
                 "isBroadcaster"
+            ],
+            "whitelist": [],
+            "blacklist": []
+        },
+        "midiunbanuser": {
+            "requirements": [
+                "isBroadcaster",
+                "isMod"
             ],
             "whitelist": [],
             "blacklist": []
