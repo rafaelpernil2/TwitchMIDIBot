@@ -116,6 +116,7 @@ export async function triggerChordList(
         // In case of error, we forward the queue and exit
         // This should happen when the request queue is cleared
         forwardQueue(type);
+        isChordInProgress.set(false);
     }
 }
 
