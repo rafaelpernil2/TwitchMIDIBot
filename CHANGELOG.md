@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [TwitchMIDI]
 
-## [3.0.0] - 2024-10-31
+## [3.0.0] - 2024-11-02
 ### Added
 - Macro feature: Now you can trigger a set of commands with different timeouts just using a single command or "macro"
 - aliases.json has a new section called "macros". Not a breaking change because it is fixed automatically by this update
@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Remove items from the queue
   - Save request from the queue with any alias you like
   - Select a favorite request to keep repeating 
+  - Reload configuration from files (./config)
+  - Set tempo
+  - Set MIDI volume
 - Automatic config file (re)generation and integrity checks. The config files are downloaded and merged from the master branch to fix any compatibility issues while keeping your settings. Updates are now as simple as getting the latest binary!
 - Single-instance enforcement through .lock file: Now you can only run one instance of TwitchMIDI at any time to avoid undefined behaviour
 - Embedded README.txt inside binary zip. It explains how to install and run TwitchMIDI in basic terms
