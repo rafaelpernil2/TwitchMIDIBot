@@ -37,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated all dependencies (Twurple.js, i18next, JZZ, PKG, ESLint...)
 - Migrated all code to Node 20, Typescript 5.6 and ESModule
 - Replaced NCC with ESBuild for a reduced build time
-- Now !fetchdb also regenerates rewards in case there is a change
+- Now !fetchdb also disables and regenerates rewards on Twitch in case there is a change
 - Improved readability of initial setup links using magenta background as highlight and other text color changes
 - Migrated from @vercel/pkg to @yao/pkg due to deprecation
 ### Fixed
@@ -49,6 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Queue clear rollback function that was unused. Now the logic is simpler
 - All config files from final artifact (TwitchMIDI.zip file)
 - Unnecessary template files
+- Dead code
 
 
 ## [2.7.2] - 2022-09-28
