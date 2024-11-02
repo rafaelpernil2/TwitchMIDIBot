@@ -8,7 +8,7 @@ import { ResponseStatus } from '../types/generic.js';
 import { GenericQueue } from '../queue/generic-queue/implementation.js';
 import { triggerChordList } from '../midi/handler.js';
 import { SharedVariable } from '../shared-variable/implementation.js';
-import { UserRoles } from 'src/twitch/command/types.js';
+import { UserRoles } from '../twitch/command/types.js';
 
 export const requestTimeout = new SharedVariable<number>(CONFIG.DEFAULT_REQUEST_TIMEOUT);
 

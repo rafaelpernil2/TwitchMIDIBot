@@ -56,6 +56,14 @@ export function checkMIDIConnection(): void {
 }
 
 /**
+ * Retrieves the MIDI volume between 0 and 127
+ * @returns 
+ */
+export function getMIDIVolume(): number {
+    return globalVolume;
+}
+
+/**
  * Sets the MIDI volume
  * @param value Number between 0 and 100
  */
@@ -137,6 +145,15 @@ export function triggerCCCommandList(rawCCCommandList: CCCommand[], targetMIDICh
     }
 }
 
+
+/**
+ * Retrieves the tempo
+ * @returns 
+ */
+export function getTempo(): number {
+    return globalTempo;
+}
+
 /**
  * Starts/resets the clock with the given tempo
  * @param targetMIDIChannel Virtual MIDI device channel
@@ -147,7 +164,7 @@ export function triggerClock(targetMIDIChannel: number, newTempo?: number): void
         throw new Error(ERROR_MSG.BOT_DISCONNECTED());
     }
     if (newTempo != null) {
-        globalTempo = newTempo;
+        _setTempo(newTempo);
     }
     startClock(targetMIDIChannel, output, globalTempo);
 }
@@ -187,6 +204,18 @@ export function autoStartClock(targetMIDIChannel: number): void {
     if (!isClockActive()) {
         startClock(targetMIDIChannel, output, globalTempo);
     }
+}
+
+/**
+ * Validates and sets a new tempo value
+ * @param newTempo number
+ */
+function _setTempo(newTempo: number): void {
+    if (isNaN(newTempo) || newTempo < CONFIG.MIN_TEMPO || newTempo > CONFIG.MAX_TEMPO) {
+        throw new Error(ERROR_MSG.INVALID_TEMPO());
+    }
+
+    globalTempo = newTempo;
 }
 
 /**

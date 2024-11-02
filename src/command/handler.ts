@@ -345,9 +345,6 @@ export function fullstopmidi(...[, { targetMIDIChannel, silenceMessages }, { cha
  */
 export function settempo(...[message, { targetMIDIChannel, silenceMessages }, { chatClient, channel }]: CommandParams): void {
     const newTempo = Number(splitCommandArguments(message)[0]);
-    if (isNaN(newTempo) || newTempo < CONFIG.MIN_TEMPO || newTempo > CONFIG.MAX_TEMPO) {
-        throw new Error(ERROR_MSG.INVALID_TEMPO());
-    }
     // Generates a MIDI clock
     triggerClock(targetMIDIChannel, newTempo);
 

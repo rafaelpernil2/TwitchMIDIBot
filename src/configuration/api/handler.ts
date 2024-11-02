@@ -7,6 +7,7 @@ import { clearQueue, favoriteIdMap, markAsFavorite, queueMap, removeFromQueue, s
 import { Command } from '../../command/types.js';
 import { reloadRewards } from '../../twitch/rewards/handler.js';
 import { ParsedEnvObject } from '../env/types.js';
+import { getMIDIVolume, getTempo, setMIDIVolume, triggerClock } from '../../midi/handler.js';
 
 /**
  * Creates an HTTP server that implements Configuration API
@@ -19,7 +20,7 @@ import { ParsedEnvObject } from '../env/types.js';
  */
 export function initiateConfigAPI(authProvider: RefreshingAuthProvider, env: ParsedEnvObject): void {
     // Create server
-    const server = http.createServer(_onRequest(authProvider, env.TARGET_CHANNEL));
+    const server = http.createServer(_onRequest(authProvider, env.TARGET_CHANNEL, env.TARGET_MIDI_CHANNEL));
     // Listen from server
     server.listen(() => {
         const address = server.address();
@@ -39,7 +40,7 @@ export function initiateConfigAPI(authProvider: RefreshingAuthProvider, env: Par
  * @param targetChannel Target channel
  * @returns A request listener for a HTTP server
  */
-function _onRequest(authProvider: RefreshingAuthProvider, targetChannel: string): (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void> {
+function _onRequest(authProvider: RefreshingAuthProvider, targetChannel: string, targetMIDIChannel: number): (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void> {
     // Map of file name with the correspondent DB
     const configFileMap = {
         aliases: ALIASES_DB,
@@ -183,6 +184,71 @@ function _onRequest(authProvider: RefreshingAuthProvider, targetChannel: string)
                         return _buildResponse(res, 405);
                 }
             }
+
+            case '/tempo': {
+                // Obtain name of command to check
+                const tempo = url.searchParams.get('tempo');
+
+                switch (req.method) {
+                    case 'GET': {
+                        // Obtain tempo
+                        const jsonData = JSON.stringify({ tempo: getTempo() });
+
+                        // Happy path, all OK! :)
+                        res.setHeader('Content-Type', 'application/json');
+                        return _buildResponse(res, 200, jsonData);
+                    }
+                    case 'PUT': {
+                        // Validate request
+                        const newTempo = Number(tempo);
+                        if (tempo == null || isNaN(newTempo)) {
+                            return _buildResponse(res, 400, i18n.t('API_BAD_DATA'));
+                        }
+
+                        try {
+                            triggerClock(targetMIDIChannel, newTempo)
+                        } catch (error) {
+                            return _buildResponse(res, 400, i18n.t('API_BAD_DATA') + " " + error);
+                        }
+                        
+                        // Happy path, all OK! :)
+                        return _buildResponse(res, 200, i18n.t('API_OK'));
+                    }
+                    default:
+                        return _buildResponse(res, 405);
+                }
+            }
+
+
+            case '/volume': {
+                // Obtain name of command to check
+                const volume = url.searchParams.get('volume');
+
+                switch (req.method) {
+                    case 'GET': {
+                        // Obtain midi volume
+                        const jsonData = JSON.stringify({ volume: getMIDIVolume() });
+
+                        // Happy path, all OK! :)
+                        res.setHeader('Content-Type', 'application/json');
+                        return _buildResponse(res, 200, jsonData);
+                    }
+                    case 'PUT': {
+                        // Validate request
+                        const newVolume = parseInt(volume ?? "");
+                        try {
+                            setMIDIVolume(newVolume);
+                        } catch (error) {
+                            return _buildResponse(res, 400, i18n.t('API_BAD_DATA') + " " + error);
+                        }
+                        // Happy path, all OK! :)
+                        return _buildResponse(res, 200, i18n.t('API_OK'));
+                    }
+                    default:
+                        return _buildResponse(res, 405);
+                }
+            }
+
             default:
                 return _buildResponse(res, 400, i18n.t('API_ERROR_NOT_A_METHOD'));
         }
