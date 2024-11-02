@@ -266,6 +266,17 @@ Answer:
 
 >Delete `bot-tokens.json` and `broadcaster-tokens.json` from your `config` folder. If that does not work, remove BROADCASTER_REFRESH_TOKEN, BROADCASTER_ACCESS_TOKEN, BOT_REFRESH_TOKEN and BOT_ACCESS_TOKEN from your `.env` file and re-configure it again
 
+---
+
+Question: My Twitch channel points rewards do not load correctly. What is happening?
+
+Answer:
+
+> If you changed your client ID or updated from an old version, rewards may not load. To fix that, go to [Channel Points](https://link.twitch.tv/myChannelPoints), click on "Manage Rewards", scroll to the bottom and remove all TwitchMIDI rewards (they start by default with `MIDI - something`)
+> [![Twitch Channel Point Rewards](https://assets.help.twitch.tv/article/img/000002245-07u.png)](https://help.twitch.tv/s/article/channel-points-guide?language=en_US#managing) 
+> ![](https://feranern.sirv.com/Images/manage_rewards.webp)
+
+
 ## Contributing
 There is no plan regarding contributions in this project.
 
