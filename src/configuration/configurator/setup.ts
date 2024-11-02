@@ -120,7 +120,13 @@ export async function setupConfiguration(currentVariables: EnvObject): Promise<E
     // STEP 4
     if (isStep4Invalid(targetEnv)) {
         console.log(chalk.greenBright(i18n.t('SETUP_STEP_4')));
-        console.log(chalk.magentaBright(i18n.t('SETUP_STEP_4_TEXT')));
+        console.log(
+            chalk.magentaBright(i18n.t('SETUP_STEP_4_TEXT')) +
+            chalk.bgMagentaBright(CONFIG.LOOPMIDI_URL) +
+            chalk.magentaBright(i18n.t('SETUP_STEP_4_AFTER_LOOPMIDI')) +
+            chalk.bgMagentaBright(CONFIG.LOOPBE1_URL) +
+            chalk.magentaBright(i18n.t('SETUP_STEP_4_AFTER_LOOPBE1'))
+        );
         TARGET_MIDI_NAME = (await _makeQuestion(rl, i18n.t('SETUP_STEP_4_TARGET_MIDI_NAME_QUESTION'), TARGET_MIDI_NAME)) || 'loopMIDI Port';
         TARGET_MIDI_CHANNEL = (await _makeQuestion(rl, i18n.t('SETUP_STEP_4_TARGET_MIDI_CHANNEL_QUESTION'), TARGET_MIDI_CHANNEL)) || '1';
     }

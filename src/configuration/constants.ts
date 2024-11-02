@@ -37,6 +37,8 @@ export const CONFIG = {
     REDIRECT_URI: 'http://localhost:8000',
     TWITCH_BASE_AUTH_URL: 'https://id.twitch.tv/oauth2/',
     TWITCH_CONSOLE_APPS_URL: 'https://dev.twitch.tv/console/apps',
+    LOOPMIDI_URL: 'https://www.tobias-erichsen.de/software/loopmidi.html',
+    LOOPBE1_URL: 'https://nerds.de/en/loopbe1.html',
     GITHUB_CONTENT_BASE_URL: 'raw.githubusercontent.com',
     REMOTE_PACKAGE_JSON_PATH: '/rafaelpernil2/TwitchMIDI/master/package.json',
     REMOTE_CONFIG_JSON_FOLDER_PATH: '/rafaelpernil2/TwitchMIDI/master/config',
