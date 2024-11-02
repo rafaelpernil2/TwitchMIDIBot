@@ -34,6 +34,8 @@ A full-featured configurable Twitch bot to connect with your MIDI equipment whil
       - [!settempo](#settempo)
       - [!syncmidi](#syncmidi)
       - [!fetchdb](#fetchdb)
+      - [!midibanuser](#midibanuser)
+      - [!midiunbanuser](#midiunbanuser)
   - [Troubleshooting](#troubleshooting)
   - [Contributing](#contributing)
   - [Support](#support)
@@ -239,6 +241,22 @@ So far, this first version does all that, keep reading the features for more det
 
 #### !fetchdb
 &nbsp;&nbsp;&nbsp;&nbsp;Refreshes aliases, rewards and permissions configurations from the respective files.
+
+
+#### !midibanuser
+&nbsp;&nbsp;&nbsp;&nbsp;Blocks access to TwitchMIDI commands and rewards to a given username.
+
+&nbsp;&nbsp;&nbsp;&nbsp;Syntax:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;````!midibanuser username````
+
+
+#### !midiunbanuser
+&nbsp;&nbsp;&nbsp;&nbsp;Unblocks access to TwitchMIDI commands and rewards to a previously blocked user. Syntax: !midiunbanuser username
+
+&nbsp;&nbsp;&nbsp;&nbsp;Syntax:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;````!midiunbanuser username````
 
 ## Troubleshooting
 
