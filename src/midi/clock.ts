@@ -81,7 +81,7 @@ function _sendTick(output: ReturnType<JZZTypes['openMidiOut']>): () => void {
         // If is bar start and it's not executing blocking section
         if (tick === 1 && !isInProgress) {
             // Notify and send the current active mode
-            onBarLoopChange();
+            onBarLoopChange?.();
         }
 
         if (isFirst) {

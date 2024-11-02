@@ -84,15 +84,15 @@ function _onRequest(authProvider: RefreshingAuthProvider, targetChannel: string)
                     case 'GET': {
                         // Obtain queue details
                         const sendChordEntries = [...queueMap.sendchord.tagEntries()[0]];
-                        const sendchord: Record<number, string> = {};
-                        for (const [turn, tag] of sendChordEntries) {
-                            sendchord[turn] = tag;
+                        const sendchord: Record<number, { requesterUser: string, tag: string }> = {};
+                        for (const [turn, tag, requesterUser] of sendChordEntries) {
+                            sendchord[turn] = { requesterUser, tag };
                         }
 
                         const sendLoopEntries = [...queueMap.sendloop.tagEntries()[0]];
-                        const sendloop: Record<number, string> = {};
-                        for (const [turn, tag] of sendLoopEntries) {
-                            sendloop[turn] = tag;
+                        const sendloop: Record<number, { requesterUser: string, tag: string }> = {};
+                        for (const [turn, tag, requesterUser] of sendLoopEntries) {
+                            sendloop[turn] = { requesterUser, tag };
                         }
 
                         const total = { sendloop, sendchord };

@@ -82,6 +82,14 @@
             "whitelist": [],
             "blacklist": []
         },
+        "miditimeout": {
+            "requirements": [
+                "isBroadcaster",
+                "isMod"
+            ],
+            "whitelist": [],
+            "blacklist": []
+        },
         "midiunbanuser": {
             "requirements": [
                 "isBroadcaster",

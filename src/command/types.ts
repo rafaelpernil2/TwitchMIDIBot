@@ -21,7 +21,8 @@ export enum Command {
     midipause = 'midipause',
     midiresume = 'midiresume',
     midibanuser = 'midibanuser',
-    midiunbanuser = 'midiunbanuser'
+    midiunbanuser = 'midiunbanuser',
+    miditimeout = 'miditimeout'
 }
 
 export type CCCommand = [controller: number, value: number, time: number];

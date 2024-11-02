@@ -92,6 +92,19 @@ export function isNullish(value: unknown): boolean {
 }
 
 /**
+ * Checks if a given timestamp is past a past timestamp + timeout in seconds
+ * @param srcTimestamp Source timestamp
+ * @param dstTimestamp Destination timestamp
+ * @param timeout Timeout in seconds
+ * @returns If timestamp is expired
+ */
+export function isTimestampExpired(srcTimestamp: Date, dstTimestamp: Date, timeout: number) {
+    const maxValidDate = srcTimestamp.getTime() + timeout * 1000;
+
+    return dstTimestamp.getTime() > maxValidDate;
+}
+
+/**
  * Splits a message in fixed size chunks
  * Except for the last one, which can be smaller
  * @param message Full message

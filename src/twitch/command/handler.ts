@@ -41,7 +41,7 @@ export const onMessageHandlerClosure = (authProvider: RefreshingAuthProvider, ch
                     authProvider,
                     user,
                     targetChannel: env.TARGET_CHANNEL,
-                    userRoles: msg?.userInfo ?? CONFIG.DEFAULT_USER_ROLES
+                    userRoles: msg?.userInfo ?? CONFIG.DEFAULT_USER_ROLES(user, env.TARGET_CHANNEL)
                 };
                 // Checks if the user has enough permissions
                 checkCommandAccess(command, twitch, source, env);

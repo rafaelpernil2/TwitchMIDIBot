@@ -1,5 +1,5 @@
 import { ALIASES_DB, COMMAND_DESCRIPTIONS, CONFIG, ERROR_MSG, EVENT, EVENT_EMITTER, GLOBAL, PERMISSIONS_DB, REWARDS_DB, TOGGLE_MIDI_VALUES } from '../configuration/constants.js';
-import { queue, getCurrentRequestPlaying, getRequestQueue, createAutomaticClockSyncedQueue, clearAllQueues } from './queue.js';
+import { enqueue, getCurrentRequestPlaying, getRequestQueue, createAutomaticClockSyncedQueue, clearAllQueues, requestTimeout } from './queue.js';
 import { isValidCommand, deAliasCommand, splitCommandArguments } from './utils.js';
 import { CommandParams } from '../twitch/command/types.js';
 import { removeDuplicates } from '../utils/generic.js';
@@ -202,13 +202,13 @@ export async function sendnote(...[message, { targetMIDIChannel, silenceMessages
  *         twitch: { chatClient, channel, user, userRoles } // Twitch chat and user data
  *         ]
  */
-export function sendchord(...[message, { targetMIDIChannel, silenceMessages }, { chatClient, channel }]: CommandParams): void {
+export function sendchord(...[message, { targetMIDIChannel, silenceMessages }, { chatClient, channel, user, userRoles }]: CommandParams): void {
     _checkMessageNotEmpty(message);
     checkMIDIConnection();
     // Lookup previously saved chord progressions
     const chordProgression = _getChordProgression(message);
 
-    queue(message, chordProgression, Command.sendchord);
+    enqueue(message, chordProgression, user, userRoles, Command.sendchord);
     autoStartClock(targetMIDIChannel);
     createAutomaticClockSyncedQueue(targetMIDIChannel);
     sayTwitchChatMessage(chatClient, channel, [, i18n.t('SENDCHORD')], { silenceMessages });
@@ -221,12 +221,12 @@ export function sendchord(...[message, { targetMIDIChannel, silenceMessages }, {
  *         twitch: { chatClient, channel, user, userRoles } // Twitch chat and user data
  *         ]
  */
-export function sendloop(...[message, { targetMIDIChannel, silenceMessages }, { chatClient, channel }]: CommandParams): void {
+export function sendloop(...[message, { targetMIDIChannel, silenceMessages }, { chatClient, channel, user, userRoles }]: CommandParams): void {
     _checkMessageNotEmpty(message);
     checkMIDIConnection();
     // Queue chord progression petition
     const chordProgression = _getChordProgression(message);
-    queue(message, chordProgression, Command.sendloop);
+    enqueue(message, chordProgression, user, userRoles, Command.sendloop);
     autoStartClock(targetMIDIChannel);
     createAutomaticClockSyncedQueue(targetMIDIChannel);
     sayTwitchChatMessage(chatClient, channel, [, i18n.t('SENDLOOP')], { silenceMessages });
@@ -470,6 +470,22 @@ export async function midiunbanuser(...[message, { silenceMessages }, { chatClie
     await PERMISSIONS_DB.commit();
 
     sayTwitchChatMessage(chatClient, channel, [userToUnban + '\t', i18n.t('MIDIUNBANUSER_OK')], { silenceMessages });
+}
+
+/**
+ * Sets the timeout between requests per users in seconds
+ * @param commandParams [message, // Command arguments
+ *         common: { targetMIDIName, targetMIDIChannel }, // Configuration parameters
+ *         twitch: { chatClient, channel, user, userRoles } // Twitch chat and user data
+ *         ]
+ */
+export function miditimeout(...[message, { silenceMessages }, { chatClient, channel }]: CommandParams): void {
+    const newTimeout = Number(splitCommandArguments(message)[0]);
+    if (isNaN(newTimeout) || newTimeout < CONFIG.MIN_TIMEOUT || newTimeout > CONFIG.MAX_TIMEOUT) {
+        throw new Error(ERROR_MSG.INVALID_TIMEOUT());
+    }
+    requestTimeout.set(newTimeout);
+    sayTwitchChatMessage(chatClient, channel, [, i18n.t('MIDITIMEOUT_1') + ' ' + String(newTimeout) + i18n.t('MIDITIMEOUT_2')], { silenceMessages });
 }
 
 /**

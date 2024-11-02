@@ -6,7 +6,7 @@ export interface Queue<T extends CustomObject<T>> {
      * @param tag Tag or alias for the item
      * @param value Value of the item
      */
-    enqueue(tag: string, value: T): Result<number>;
+    enqueue(tag: string, value: T, requesterUser: string, { isBroadcaster }: { isBroadcaster: boolean }): Result<number>;
     /**
      * Removes item from queue
      * @param turn Position in queue
@@ -67,12 +67,14 @@ export interface Queue<T extends CustomObject<T>> {
     /**
      * Returns the tag from all items in queue in entries format
      */
-    tagEntries(): Result<Array<[turn: number, tag: string]>>;
+    tagEntries(): Result<Array<[turn: number, tag: string, requesterUser: string]>>;
 }
 
 export type QueueNode<T> = {
     tag: string;
     value: T;
+    requesterUser: string;
+    timestamp: Date;
     previousTurn: number;
     nextTurn: number;
 };

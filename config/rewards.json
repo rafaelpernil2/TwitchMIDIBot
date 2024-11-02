@@ -27,6 +27,10 @@
         "MIDI - Macro fadeout": [
             "!fadeout",
             20
+        ],
+        "MIDI - Bossa nova": [
+            "!bossanova",
+            100
         ]
     }
 }

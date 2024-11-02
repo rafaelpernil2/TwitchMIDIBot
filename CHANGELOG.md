@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - aliases.json has a new section called "macros". Not a breaking change because it is fixed automatically by this update
 - New .env flag - SILENCE_MACRO_MESSAGES for new Macro feature. It disables message output for macro commands
 - !midibanuser and !midiunbanuser to forbid usage to some users
+- !miditimeout to rate-limit requests per user
 - Revamped and extended Config API (for TwitchMIDI+). Now you can:
   - Query what's in the queue
   - Clear the queue
@@ -22,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Single-instance enforcement through .lock file: Now you can only run one instance of TwitchMIDI at any time to avoid undefined behaviour
 - Embedded README.txt inside binary zip. It explains how to install and run TwitchMIDI in basic terms
 - Debug profile for VSCode. A launch.json file for easier debugging with VSCode
-- New internal queue interface and implementation to improve performance and simplify code
+- New internal queue interface and implementation to improve performance and simplify code. Also now any item can be removed from the queue and the app knows which request to play next properly.
 - Logo in README title
 - package.json script to find unused exports. This helps remove unused code or reduce code visibility
 ### Changed
@@ -44,6 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Rewards disable bug. Before, it only disabled the current rewards from rewards.json file. If any reward were changed while running TwitchMIDI, it would stay active forever. Now it disables all rewards created by TwitchMIDI (new behaviour) and enables only the ones from rewards.json file (as before)
 - Control Change error handling, now requests without value give a meaningful error
+- Bad request bug. If you request "H" it is registered as a valid chord however, JZZ treats it as invalid and the queue stops working. Now it works well!
 ### Removed
 - Documentation page from this repository. Now any documentation change does not require a new version release
 - Max loop queue length. Before it was limited by the EventEmitter to 10 items waiting in queue. Now there is no limit since there are no EventEmitters in use.

@@ -29,6 +29,9 @@ export const CONFIG = {
     MAX_TEMPO: 400,
     DEFAULT_TEMPO: 120,
     DEFAULT_SWEEP_FREQUENCY: 60,
+    MIN_TIMEOUT: 0,
+    MAX_TIMEOUT: 86400,
+    DEFAULT_REQUEST_TIMEOUT: 10,
     MAX_QUEUE_LENGTH: 100,
     MAX_TWITCH_MESSAGE_LENGTH: 500,
     FULFILL_TIMEOUT_MS: 10000,
@@ -54,7 +57,13 @@ export const CONFIG = {
       |_| \\_/\\_/ |_|\\__\\___|_| |_|_|  |_|_____|_____/_____|
 
                                 - Rafael Pernil (@rafaelpernil2)`,
-    DEFAULT_USER_ROLES: { isBroadcaster: false, isMod: false, isSubscriber: false, isVip: false, isFounder: false }
+    DEFAULT_USER_ROLES: (user: string, targetChannel: string) => ({
+        isBroadcaster: user === targetChannel,
+        isMod: false,
+        isSubscriber: false,
+        isVip: false,
+        isFounder: false
+    })
 };
 
 export const ERROR_MSG = {
@@ -68,9 +77,11 @@ export const ERROR_MSG = {
     BAD_MIDI_NOTE: () => i18n.t('ERROR_BAD_MIDI_NOTE'),
     INVALID_VOLUME: () => i18n.t('ERROR_INVALID_VOLUME'),
     INVALID_TEMPO: () =>
-        `${i18n.t('ERROR_INVALID_TEMPO_1')} ${CONFIG.MIN_TEMPO} ${i18n.t('ERROR_INVALID_TEMPO_2')} ${CONFIG.MAX_TEMPO} ${i18n.t('ERROR_INVALID_TEMPO_3')} ${
-            CONFIG.DEFAULT_TEMPO
+        `${i18n.t('ERROR_INVALID_TEMPO_1')} ${CONFIG.MIN_TEMPO} ${i18n.t('ERROR_INVALID_TEMPO_2')} ${CONFIG.MAX_TEMPO} ${i18n.t('ERROR_INVALID_TEMPO_3')} ${CONFIG.DEFAULT_TEMPO
         }${i18n.t('ERROR_INVALID_TEMPO_4')}`,
+    INVALID_TIMEOUT: () =>
+        `${i18n.t('ERROR_INVALID_TIMEOUT_1')} ${CONFIG.MIN_TIMEOUT} ${i18n.t('ERROR_INVALID_TIMEOUT_2')} ${CONFIG.MAX_TIMEOUT} ${i18n.t('ERROR_INVALID_TIMEOUT_3')} ${CONFIG.DEFAULT_REQUEST_TIMEOUT
+        }${i18n.t('ERROR_INVALID_TIMEOUT_4')}`,
     CHORD_PROGRESSION_NOT_FOUND: () => i18n.t('ERROR_CHORD_PROGRESSION_NOT_FOUND'),
     CHORD_PROGRESSION_BAD_INSERTION: () => i18n.t('ERROR_CHORD_PROGRESSION_BAD_INSERTION'),
     INVALID_CHORD: (chord: string) => i18n.t('ERROR_INVALID_CHORD') + ' ' + chord,
@@ -84,6 +95,7 @@ export const ERROR_MSG = {
     INVALID_REWARD: () => i18n.t('ERROR_INVALID_REWARD'),
     BAD_SETUP_PROCESS: () => i18n.t('ERROR_BAD_SETUP_PROCESS'),
     DUPLICATE_REQUEST: () => i18n.t('ERROR_DUPLICATE_REQUEST'),
+    TIMEOUT_REQUEST: (timeout: number) => `${i18n.t('ERROR_TIMEOUT_REQUEST_1')} ${timeout} ${i18n.t('ERROR_TIMEOUT_REQUEST_2')}`,
     BROADCASTER_USER_NOT_FOUND: () => i18n.t('ERROR_BROADCASTER_USER_NOT_FOUND'),
     INVALID_AFFIXES: () => i18n.t('ERROR_INVALID_AFFIXES'),
     COMMAND_MESSAGE_EMPTY: () => i18n.t('ERROR_COMMAND_MESSAGE_EMPTY'),
@@ -134,7 +146,8 @@ export const COMMAND_DESCRIPTIONS: Record<(typeof Command)[keyof typeof Command]
     midipause: () => i18n.t('HELP_MIDIPAUSE'),
     midiresume: () => i18n.t('HELP_MIDIRESUME'),
     midibanuser: () => i18n.t('HELP_MIDIBANUSER'),
-    midiunbanuser: () => i18n.t('HELP_MIDIUNBANUSER')
+    midiunbanuser: () => i18n.t('HELP_MIDIUNBANUSER'),
+    miditimeout: () => i18n.t('HELP_MIDITIMEOUT')
 } as const;
 
 export const SAFE_COMMANDS: Record<(typeof Command)[keyof typeof Command], boolean> = {
@@ -160,7 +173,8 @@ export const SAFE_COMMANDS: Record<(typeof Command)[keyof typeof Command], boole
     midipause: false,
     midiresume: false,
     midibanuser: false,
-    midiunbanuser: false
+    midiunbanuser: false,
+    miditimeout: false
 } as const;
 
 export const ALIASES_DB = new JSONDatabase<AliasesType>(CONFIG.ALIASES_DB_PATH, { ignoreFileNotFound: true });

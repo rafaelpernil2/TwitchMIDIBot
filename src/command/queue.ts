@@ -1,5 +1,5 @@
 import { CHORD_PROGRESSIONS_KEY } from '../database/jsondb/types.js';
-import { ALIASES_DB, ERROR_MSG, EVENT, EVENT_EMITTER, GLOBAL } from '../configuration/constants.js';
+import { ALIASES_DB, CONFIG, ERROR_MSG, EVENT, EVENT_EMITTER, GLOBAL } from '../configuration/constants.js';
 import { syncMode } from '../midi/clock.js';
 import { Sync } from '../midi/types.js';
 import { areRequestsOpen } from './guards.js';
@@ -7,6 +7,10 @@ import { Command } from './types.js';
 import { ResponseStatus } from '../types/generic.js';
 import { GenericQueue } from '../queue/generic-queue/implementation.js';
 import { triggerChordList } from '../midi/handler.js';
+import { SharedVariable } from '../shared-variable/implementation.js';
+import { UserRoles } from 'src/twitch/command/types.js';
+
+export const requestTimeout = new SharedVariable<number>(CONFIG.DEFAULT_REQUEST_TIMEOUT);
 
 export const favoriteIdMap = Object.fromEntries(Object.values(Command).map((key) => [key, -1])) as Record<Command, number>;
 export let onBarLoopChange: () => Promise<void>;
@@ -57,8 +61,8 @@ export function createAutomaticClockSyncedQueue(targetMIDIChannel: number): void
  * @param type
  * @returns
  */
-export function queue(tag: string, value: Array<[noteList: string[], timeSubDivision: number]>, type: Command.sendloop | Command.sendchord): number {
-    const [turn] = queueMap[type].enqueue(tag, value);
+export function enqueue(tag: string, value: Array<[noteList: string[], timeSubDivision: number]>, requesterUser: string, { isBroadcaster }: UserRoles, type: Command.sendloop | Command.sendchord): number {
+    const [turn] = queueMap[type].enqueue(tag, value, requesterUser, { isBroadcaster });
     return turn;
 }
 
@@ -75,8 +79,8 @@ export function forwardQueue(type: Command.sendloop | Command.sendchord): void {
         return;
     }
 
-    removeFromQueue(type, currentTurn);
     queueMap[type].forward();
+    removeFromQueue(type, currentTurn);
 
     // If there's no chord progression or loop next, let's clear requestPlayingNow
     if (_isCurrentLast(Command.sendchord) && _isCurrentLast(Command.sendloop)) {
