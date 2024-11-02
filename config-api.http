@@ -1,0 +1,92 @@
+
+# Get port from file .apiPort
+
+# REFRESH CONFIG
+###
+POST http://localhost:53543/refreshConfig
+?file=aliases
+
+HTTP/1.1
+content-type: application/json
+
+
+# QUEUE
+###
+GET http://localhost:53543/queue HTTP/1.1
+content-type: application/json
+
+### 
+DELETE http://localhost:53543/queue
+?command=sendloop
+&turn=11
+
+HTTP/1.1
+content-type: application/json
+
+
+# FAVORITE
+###
+GET http://localhost:53543/favorite
+?command=sendloop
+
+HTTP/1.1
+content-type: application/json
+
+###
+PUT http://localhost:53543/favorite
+?command=sendloop
+&turn=5
+
+HTTP/1.1
+content-type: application/json
+
+###
+DELETE http://localhost:53543/favorite
+?command=sendloop
+
+HTTP/1.1
+content-type: application/json
+
+
+# SAVE REQUEST
+
+###
+POST http://localhost:52967/saveRequest
+?command=sendloop
+&turn=1
+&alias=a
+
+HTTP/1.1
+content-type: application/json
+
+
+
+# TEMPO
+###
+GET http://localhost:53543/tempo
+
+HTTP/1.1
+content-type: application/json
+
+###
+PUT http://localhost:53543/tempo
+?tempo=40
+
+HTTP/1.1
+content-type: application/json
+
+
+
+# VOLUME
+###
+GET http://localhost:53543/volume
+
+HTTP/1.1
+content-type: application/json
+
+###
+PUT http://localhost:53543/volume
+?volume=100
+
+HTTP/1.1
+content-type: application/json
