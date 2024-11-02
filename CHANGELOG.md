@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Debug profile for VSCode. A launch.json file for easier debugging with VSCode
 - New internal queue interface and implementation to improve performance and simplify code
 - Logo in README title
+- package.json script to find unused exports. This helps remove unused code or reduce code visibility
 ### Changed
 - BREAKING CHANGE: /refreshConfig API now works via POST
 - Improved clock precision by removing eventlistener-per-request logic. Now there is no event listener for this logic and the request queue is handled by an in-memory queue without nested promises. EventEmitters are not precise enough for music timing.
