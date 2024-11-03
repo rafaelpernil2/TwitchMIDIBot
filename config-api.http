@@ -3,7 +3,7 @@
 
 # REFRESH CONFIG
 ###
-POST http://localhost:53543/refreshConfig
+POST http://localhost:52578/refreshConfig
 ?file=aliases
 
 HTTP/1.1
@@ -12,11 +12,11 @@ content-type: application/json
 
 # QUEUE
 ###
-GET http://localhost:53543/queue HTTP/1.1
+GET http://localhost:52578/queue HTTP/1.1
 content-type: application/json
 
 ### 
-DELETE http://localhost:53543/queue
+DELETE http://localhost:52578/queue
 ?command=sendloop
 &turn=11
 
@@ -63,13 +63,13 @@ content-type: application/json
 
 # TEMPO
 ###
-GET http://localhost:53543/tempo
+GET http://localhost:52578/tempo
 
 HTTP/1.1
 content-type: application/json
 
 ###
-PUT http://localhost:53543/tempo
+PUT http://localhost:52578/tempo
 ?tempo=40
 
 HTTP/1.1
@@ -79,14 +79,22 @@ content-type: application/json
 
 # VOLUME
 ###
-GET http://localhost:53543/volume
+GET http://localhost:52578/volume
 
 HTTP/1.1
 content-type: application/json
 
 ###
-PUT http://localhost:53543/volume
+PUT http://localhost:52578/volume
 ?volume=100
+
+HTTP/1.1
+content-type: application/json
+
+
+# IS ACTIVE
+###
+GET http://localhost:52578/isActive
 
 HTTP/1.1
 content-type: application/json

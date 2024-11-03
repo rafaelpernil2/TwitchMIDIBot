@@ -7,7 +7,7 @@ import { clearQueue, favoriteIdMap, markAsFavorite, queueMap, removeFromQueue, s
 import { Command } from '../../command/types.js';
 import { reloadRewards } from '../../twitch/rewards/handler.js';
 import { ParsedEnvObject } from '../env/types.js';
-import { getMIDIVolume, getTempo, setMIDIVolume, triggerClock } from '../../midi/handler.js';
+import { checkMIDIConnection, getMIDIVolume, getTempo, setMIDIVolume, triggerClock } from '../../midi/handler.js';
 
 /**
  * Creates an HTTP server that implements Configuration API
@@ -243,6 +243,28 @@ function _onRequest(authProvider: RefreshingAuthProvider, targetChannel: string,
                         }
                         // Happy path, all OK! :)
                         return _buildResponse(res, 200, i18n.t('API_OK'));
+                    }
+                    default:
+                        return _buildResponse(res, 405);
+                }
+            }
+
+            case '/isActive': {
+                switch (req.method) {
+                    case 'GET': {
+                        let isActive = false;
+                        try {
+                            checkMIDIConnection()
+                            isActive = true;
+                        } catch {
+                            isActive = false;
+                        }
+
+                        const jsonData = JSON.stringify({ isActive });
+
+                        // Happy path, all OK! :)
+                        res.setHeader('Content-Type', 'application/json');
+                        return _buildResponse(res, 200, jsonData);
                     }
                     default:
                         return _buildResponse(res, 405);
