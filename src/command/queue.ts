@@ -128,6 +128,10 @@ export function clearAllQueues(): void {
  * @returns
  */
 export function removeFromQueue(type: Command.sendloop | Command.sendchord, turn: number): void {
+    // Remove from favorites if it matches
+    if (favoriteIdMap[type] === turn) {
+        unmarkFavorite(type);
+    }
     queueMap[type].dequeue(turn);
 }
 
