@@ -9,6 +9,8 @@ A full-featured configurable Twitch bot to connect with your MIDI equipment whil
   - [Table of Contents](#table-of-contents)
   - [Download](#download)
   - [Installation](#installation)
+    - [Binary without external dependencies (recommended)](#binary-without-external-dependencies-recommended)
+    - [Using Node.js](#using-nodejs)
   - [Update](#update)
   - [Why?](#why)
   - [Features](#features)
@@ -50,6 +52,8 @@ Latest release - [TwitchMIDI for Windows, Linux & MacOS (x86-64)](https://github
 
 ## Installation
 
+### Binary without external dependencies (recommended)
+
 * Extract the zip
 * Run TwitchMIDI-yourplatform (e.g TwitchMIDI-win.exe)
 * Follow the configuration steps to link this bot to your account. You will see something like this:
@@ -60,6 +64,19 @@ Latest release - [TwitchMIDI for Windows, Linux & MacOS (x86-64)](https://github
 
 > Note: For MacOS, open a terminal, "cd" into the extracted folder and then execute it from there with "./TwitchMIDI-macos".
 > Otherwise you will get an error like: "no such file or directory, open './config/aliases.json'"
+
+---
+
+### Using Node.js
+
+If you want to use this app with your installation of Node.js, feel free to do it. 
+
+> Tested with Node.js 20 LTS and 22 LTS
+
+* Clone this project or download it
+* Run `npm install`
+* Run `npm run build`
+* And finally to execute run `npm run start`
 
 ## Update
 
