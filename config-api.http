@@ -26,14 +26,14 @@ content-type: application/json
 
 # FAVORITE
 ###
-GET http://localhost:53543/favorite
+GET http://localhost:55869/favorite
 ?command=sendloop
 
 HTTP/1.1
 content-type: application/json
 
 ###
-PUT http://localhost:53543/favorite
+PUT http://localhost:55869/favorite
 ?command=sendloop
 &turn=5
 
@@ -41,7 +41,7 @@ HTTP/1.1
 content-type: application/json
 
 ###
-DELETE http://localhost:53543/favorite
+DELETE http://localhost:55869/favorite
 ?command=sendloop
 
 HTTP/1.1

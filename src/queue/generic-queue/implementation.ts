@@ -9,6 +9,7 @@ export class GenericQueue<T> implements Queue<T> {
     private _lastQueuePositionByUserMap: Map<string, number>;
     private _currentTurn: number;
     private _lastQueuedTurn: number;
+    private _lastValidTurn: number;
 
     constructor() {
         // Initialize variables
@@ -16,6 +17,7 @@ export class GenericQueue<T> implements Queue<T> {
         this._lastQueuePositionByUserMap = new Map();
         this._currentTurn = 0;
         this._lastQueuedTurn = -1;
+        this._lastValidTurn = -1;
     }
 
     isMyTurn(turn: number): Result<boolean> {
@@ -56,11 +58,11 @@ export class GenericQueue<T> implements Queue<T> {
     isCurrentLast(): Result<boolean> {
         const currentNode = this._queueMap.get(this._currentTurn);
         // Initial case where currentTurn is empty
-        if (currentNode == null) {
+        if (currentNode == null && this._queueMap.size === 0) {
             return [true, ResponseStatus.Error];
         }
 
-        const nextNode = this._queueMap.get(currentNode.nextTurn);
+        const nextNode = this._queueMap.get(currentNode?.nextTurn ?? -1);
         return [nextNode == null, ResponseStatus.Ok];
     }
 
@@ -77,7 +79,7 @@ export class GenericQueue<T> implements Queue<T> {
         }
 
         // Get turns
-        const previousTurn = this._lastQueuedTurn;
+        const previousTurn = this._lastValidTurn;
         const insertTurn = this._getNewTurn();
         const nextTurn = insertTurn + 1;
 
@@ -89,6 +91,7 @@ export class GenericQueue<T> implements Queue<T> {
             previousTurn,
             nextTurn
         });
+        this._lastValidTurn = insertTurn;
 
         if (!isBroadcaster) {
             this._lastQueuePositionByUserMap.set(requesterUser, insertTurn)
@@ -108,26 +111,40 @@ export class GenericQueue<T> implements Queue<T> {
             return [null, ResponseStatus.Error];
         }
         const { previousTurn, nextTurn, requesterUser } = selectedNode;
-
         // Delete node
         const deleteOk = this._queueMap.delete(turn);
         const status = deleteOk ? ResponseStatus.Ok : ResponseStatus.Error;
 
+        // Delete last position by user for the given user
         this._lastQueuePositionByUserMap.delete(requesterUser)
 
         // If turn is 0, no need to move index in previous node
-        if (turn === 0) {
-            return [null, status];
+        if (previousTurn !== -1) {
+            // Re-link previous node
+            const previousNode = this._queueMap.get(previousTurn);
+            // This should not happen
+            if (previousNode == null) {
+                return [null, ResponseStatus.Error];
+            }
+            // Apply deleted node nextTurn to previous node
+            this._queueMap.set(previousTurn, { ...previousNode, nextTurn });
         }
 
-        // Re-link previous node
-        const previousNode = this._queueMap.get(previousTurn);
-        // This should not happen
-        if (previousNode == null) {
-            return [null, ResponseStatus.Error];
+        // Re-link next node if exists
+        if (nextTurn !== (this._lastQueuedTurn + 1)) {
+            const nextNode = this._queueMap.get(nextTurn);
+            // This should not happen
+            if (nextNode == null) {
+                return [null, ResponseStatus.Error];
+            }
+            // Apply deleted node previousTurn to next node
+            this._queueMap.set(nextTurn, { ...nextNode, previousTurn });
+        } else {
+            // If it's last, move last valid turn to previous turn
+            this._lastValidTurn = previousTurn;
         }
-        // Apply deleted node nextTurn to previous node
-        this._queueMap.set(previousTurn, { ...previousNode, nextTurn });
+
+
 
         return [null, status];
     }
