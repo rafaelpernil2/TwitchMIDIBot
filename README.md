@@ -40,6 +40,7 @@ A full-featured configurable Twitch bot to connect with your MIDI equipment whil
       - [!midiunbanuser](#midiunbanuser)
       - [!miditimeout](#miditimeout)
   - [Troubleshooting](#troubleshooting)
+  - [Chords](#chords)
   - [Contributing](#contributing)
   - [Support](#support)
   - [Credits](#credits)
@@ -302,6 +303,14 @@ Answer:
 > [![Twitch Channel Point Rewards](https://assets.help.twitch.tv/article/img/000002245-07u.png)](https://help.twitch.tv/s/article/channel-points-guide?language=en_US#managing) 
 > ![](https://feranern.sirv.com/Images/manage_rewards.webp)
 
+
+## Chords
+
+This program uses [harmonics](https://github.com/scribbletune/harmonics) by [scribbletune](https://github.com/scribbletune) to convert chord notation to MIDI notes.
+
+But, in addition to those provided by [harmonics](https://github.com/scribbletune/harmonics), I included some extra ones for a more confortable syntax.
+
+See [CHORDS.md](CHORDS.md) for a full list
 
 ## Contributing
 There is no plan regarding contributions in this project.
