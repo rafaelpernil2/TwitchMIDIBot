@@ -1,4 +1,4 @@
-# <img src="https://feranern.sirv.com/Images/logo.svg" width="35" style="padding-right: 10px;"></img>TwitchMIDI
+# <img src="https://feranern.sirv.com/Images/logo.svg" width="35"></img> TwitchMIDI
 
 A full-featured configurable Twitch bot to connect with your MIDI equipment while streaming. Allow your viewers to be part of your musical creations!
 
