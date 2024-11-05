@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [TwitchMIDI]
 
-## [3.0.0] - 2024-11-02
+## [3.0.0] - 2024-11-05
 ### Added
 - Macro feature: Now you can trigger a set of commands with different timeouts just using a single command or "macro"
 - aliases.json has a new section called "macros". Not a breaking change because it is fixed automatically by this update
@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Reload configuration from files (./config)
   - Set tempo
   - Set MIDI volume
+  - Check if bot is active (!midion has been sent)
 - Automatic config file (re)generation and integrity checks. The config files are downloaded and merged from the master branch to fix any compatibility issues while keeping your settings. Updates are now as simple as getting the latest binary!
 - Single-instance enforcement through .lock file: Now you can only run one instance of TwitchMIDI at any time to avoid undefined behaviour
 - Embedded README.txt inside binary zip. It explains how to install and run TwitchMIDI in basic terms
@@ -46,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved readability of initial setup links using magenta background as highlight and other text color changes
 - Migrated from @vercel/pkg to @yao/pkg due to deprecation
 ### Fixed
+- !midion with virtual MIDI device inactive or non existent would not throw an error. Now it does and helps the streamer find out what is wrong
 - Rewards disable bug. Before, it only disabled the current rewards from rewards.json file. If any reward were changed while running TwitchMIDI, it would stay active forever. Now it disables all rewards created by TwitchMIDI (new behaviour) and enables only the ones from rewards.json file (as before)
 - Control Change error handling, now requests without value give a meaningful error
 - Bad request bug. If you request "H" it is registered as a valid chord however, JZZ treats it as invalid and the queue stops working. Now it works well!
