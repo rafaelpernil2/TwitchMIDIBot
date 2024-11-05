@@ -48,9 +48,9 @@ export function midihelp(...[message, { silenceMessages }, { chatClient, channel
  *         twitch: { chatClient, channel, user, userRoles } // Twitch chat and user data
  *         ]
  */
-export async function midion(...[, { targetMIDIName, isRewardsMode }, { chatClient, authProvider, channel, targetChannel }]: CommandParams): Promise<void> {
+export async function midion(...[, { targetMIDIName, targetMIDIChannel, isRewardsMode }, { chatClient, authProvider, channel, targetChannel }]: CommandParams): Promise<void> {
     try {
-        await connectMIDI(targetMIDIName);
+        await connectMIDI(targetMIDIName, targetMIDIChannel);
         if (isRewardsMode) {
             sayTwitchChatMessage(chatClient, channel, [, i18n.t('MIDION_REWARDS')]);
             await createRewards(authProvider, targetChannel);
@@ -61,7 +61,9 @@ export async function midion(...[, { targetMIDIName, isRewardsMode }, { chatClie
         areRequestsOpen.set(true);
         console.log(i18n.t('MIDION_LOG_ENABLED'));
     } catch {
-        throw new Error(ERROR_MSG.MIDI_CONNECTION_ERROR());
+        const error = new Error(ERROR_MSG.MIDI_CONNECTION_ERROR());
+        console.log(String(error));
+        throw error;
     }
     sayTwitchChatMessage(chatClient, channel, [, `${i18n.t('MIDION_ENABLED')} ${CONFIG.OP_SIGNATURE}`]);
 }
@@ -85,7 +87,9 @@ export async function midioff(...[, { targetMIDIChannel, isRewardsMode }, { chat
         areRequestsOpen.set(false);
         console.log(i18n.t('MIDIOFF_LOG_DISABLED'));
     } catch {
-        throw new Error(ERROR_MSG.MIDI_DISCONNECTION_ERROR());
+        const error = new Error(ERROR_MSG.MIDI_DISCONNECTION_ERROR());
+        console.log(String(error));
+        throw error;
     }
     sayTwitchChatMessage(chatClient, channel, [, `${i18n.t('MIDIOFF_DISABLED')} ${CONFIG.OP_SIGNATURE}`]);
 }

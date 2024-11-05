@@ -75,7 +75,7 @@
         "ERROR_CHORD_PROGRESSION_BAD_INSERTION": "Chord progression/loop could not be inserted. Try with a different alias",
         "ERROR_INVALID_CHORD": "There is at least one invalid chord or the alias was not found:",
         "ERROR_MIDI_DISCONNECTION_ERROR": "MIDI could not be disconnected",
-        "ERROR_MIDI_CONNECTION_ERROR": "MIDI could not be connected",
+        "ERROR_MIDI_CONNECTION_ERROR": "MIDI could not connect. Make sure your virtual MIDI device is active or review your settings (e.g. loopMIDI is open)",
         "ERROR_BAD_CC_MESSAGE": "Bad Control Change message, please review your values. Controller/value must be between 0 and 127 (inclusive)",
         "ERROR_BAD_SWEEP_DELAY": "Invalid control change sweep, make sure your delay times are in incremental order",
         "ERROR_BAD_PERMISSIONS": "You don't have enough permissions to use this command. Sorry!",

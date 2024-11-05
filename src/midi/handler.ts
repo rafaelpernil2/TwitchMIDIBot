@@ -28,11 +28,13 @@ export async function requestMIDIAccess(): Promise<WebMidi.MIDIAccess> {
 /**
  * Connects to the virtual MIDI device
  * @param targetMIDIName Virtual MIDI device name
+ * @param targetMIDIChannel Virtual MIDI device channel
  */
-export async function connectMIDI(targetMIDIName: string): Promise<void> {
+export async function connectMIDI(targetMIDIName: string, targetMIDIChannel: number): Promise<void> {
     _initVariables();
     const midi = await JZZ();
     output = midi.openMidiOut(targetMIDIName);
+    await output?.connect(targetMIDIChannel);
 }
 
 /**
