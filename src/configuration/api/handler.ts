@@ -52,7 +52,7 @@ function _onRequest(authProvider: RefreshingAuthProvider, targetChannel: string,
         const url = new URL(req.url ?? '', `http://${req.headers.host ?? ''}`);
 
         switch (url.pathname) {
-            // RefreshConfig API
+            // Config API
             case '/refreshConfig': {
                 // Obtain name of file to refresh
                 const queryFile = (url.searchParams.get('file') ?? GLOBAL.EMPTY_MESSAGE) as keyof typeof configFileMap;
@@ -76,6 +76,7 @@ function _onRequest(authProvider: RefreshingAuthProvider, targetChannel: string,
                         return _buildResponse(res, 405);
                 }
             }
+
             case '/queue': {
                 // Obtain name of command to check
                 const commandName = url.searchParams.get('command') as Command.sendloop | Command.sendchord | null;
@@ -265,6 +266,20 @@ function _onRequest(authProvider: RefreshingAuthProvider, targetChannel: string,
                         // Happy path, all OK! :)
                         res.setHeader('Content-Type', 'application/json');
                         return _buildResponse(res, 200, jsonData);
+                    }
+                    default:
+                        return _buildResponse(res, 405);
+                }
+            }
+
+            case '/sync': {
+                switch (req.method) {
+                    case 'POST': {
+                        // Sync MIDI
+                        triggerClock(targetMIDIChannel);
+
+                        // Happy path, all OK! :)
+                        return _buildResponse(res, 200, i18n.t('API_OK'));
                     }
                     default:
                         return _buildResponse(res, 405);

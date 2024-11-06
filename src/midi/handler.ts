@@ -200,10 +200,10 @@ export function setTimeSignature(targetMIDIChannel: number, [noteCount, noteValu
     }
     const newClockPulses = noteCount * 96 / noteValue;
     // If timeSignature is different, reset clock
-    if (!clockPulses.is(newClockPulses)){
+    if (!clockPulses.is(newClockPulses)) {
         triggerClock(targetMIDIChannel);
+        clockPulses.set(newClockPulses); // Set time signature. 96 is 24 pulses per quarter * 4 quarter notes
     }
-    clockPulses.set(newClockPulses); // Set time signature. 96 is 24 pulses per quarter * 4 quarter notes
 }
 
 /**
