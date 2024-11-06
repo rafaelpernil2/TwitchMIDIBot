@@ -8,6 +8,7 @@ import { onBarLoopChange } from '../command/queue.js';
 
 // Shared variables
 export const syncMode = new SharedVariable<Sync>(Sync.OFF);
+export const clockPulses = new SharedVariable<number>(96); // 24ppq * 4 quarter notes
 // Clock variables
 let timer = new NanoTimer();
 let tick = 0;
@@ -74,7 +75,8 @@ function _sendTick(output: ReturnType<JZZTypes['openMidiOut']>): () => void {
     return () => {
         // Constant time operations to ensure time stability
         const isInProgress = isChordInProgress.get();
-        tick = (tick + 1) % 96; // 24ppq * 4 quarter notes
+        const pulses = clockPulses.get(); // 24ppq * 4 quarter notes by default
+        tick = (tick + 1) % pulses;
         // This way, the next condition always take the exact amout of time
 
         output.clock();

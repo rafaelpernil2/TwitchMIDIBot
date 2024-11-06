@@ -210,9 +210,8 @@ export function sendchord(...[message, { targetMIDIChannel, silenceMessages }, {
     _checkMessageNotEmpty(message);
     checkMIDIConnection();
     // Lookup previously saved chord progressions
-    const chordProgression = _getChordProgression(message);
-
-    enqueue(message, chordProgression, user, userRoles, Command.sendchord);
+    const data = _getChordProgression(message);
+    enqueue(message, data, user, userRoles, Command.sendchord);
     autoStartClock(targetMIDIChannel);
     createAutomaticClockSyncedQueue(targetMIDIChannel);
     sayTwitchChatMessage(chatClient, channel, [, i18n.t('SENDCHORD')], { silenceMessages });
@@ -229,8 +228,8 @@ export function sendloop(...[message, { targetMIDIChannel, silenceMessages }, { 
     _checkMessageNotEmpty(message);
     checkMIDIConnection();
     // Queue chord progression petition
-    const chordProgression = _getChordProgression(message);
-    enqueue(message, chordProgression, user, userRoles, Command.sendloop);
+    const data = _getChordProgression(message);
+    enqueue(message, data, user, userRoles, Command.sendloop);
     autoStartClock(targetMIDIChannel);
     createAutomaticClockSyncedQueue(targetMIDIChannel);
     sayTwitchChatMessage(chatClient, channel, [, i18n.t('SENDLOOP')], { silenceMessages });
@@ -509,7 +508,10 @@ function _getNoteList(message: string): Array<[note: string, timeSubDivision: nu
  * @param message Command arguments (alias or chord progression)
  * @returns Chord progression
  */
-function _getChordProgression(message: string): Array<[noteList: string[], timeSubDivision: number]> {
+function _getChordProgression(message: string): [
+    timeSignature: [noteCount: number, noteValue: number],
+    chordProgression: Array<[noteList: string[], timeSubDivision: number]>
+] {
     const aliasToLookup = message.toLowerCase();
     const chordProgression = ALIASES_DB.select(CHORD_PROGRESSIONS_KEY, aliasToLookup) ?? message;
     // Check everything is okay
@@ -617,9 +619,38 @@ function _isValidAndBounded(chord: string, extraChars: number): boolean {
  * @param chordProgression Chord progression separated by spaces
  * @return List of notes to play with their respective release times
  */
-function _parseChordProgression(chordProgression: string): Array<[noteList: string[], timeSubDivision: number]> {
-    const chordProgressionList = splitCommandArguments(chordProgression);
-    return chordProgressionList.map((chord) => {
+function _parseChordProgression(chordProgression: string): [
+    timeSignature: [noteCount: number, noteValue: number],
+    chordProgression: Array<[noteList: string[], timeSubDivision: number]>
+] {
+    const [firstToken, ...restOfTokens] = splitCommandArguments(chordProgression);
+    const chordProgressionList = restOfTokens;
+
+    let finalTimeSignature: [noteCount: number, noteValue: number] = [CONFIG.DEFAULT_NOTE_COUNT, CONFIG.DEFAULT_NOTE_VALUE]; // Set default time signature
+    // Check if time signature is provided in request
+    if (firstToken.startsWith(GLOBAL.OPEN_SQUARE_BRACKETS) && firstToken.endsWith(GLOBAL.CLOSE_SQUARE_BRACKETS)) {
+        const timeSignatureRaw = firstToken.slice(1, -1); // Remove brackets
+
+        const [noteCount, noteValue, ...rest] = timeSignatureRaw.split(GLOBAL.SLASH_SEPARATOR).map((str) => parseInt(str.trim()));
+
+        if (
+            isNaN(noteCount) ||
+            isNaN(noteValue) ||
+            rest.length ||
+            CONFIG.VALID_MEASURE.every(validMeasure => noteValue !== validMeasure) ||
+            noteCount > noteValue * CONFIG.MAX_MEASURE_MULTIPLIER
+        ) {
+            throw new Error(ERROR_MSG.INVALID_TIMESIGNATURE());
+        }
+        finalTimeSignature = [noteCount, noteValue];
+    } else { 
+        // It does not have a time signature, so the first token is valid
+        chordProgressionList.unshift(firstToken);
+    }
+
+
+
+    return [finalTimeSignature, chordProgressionList.map((chord) => {
         try {
             const [chordPart, timeSubDivision] = _splitTokenTime(chord);
             // If it is a rest, do not parse chord
@@ -629,7 +660,7 @@ function _parseChordProgression(chordProgression: string): Array<[noteList: stri
         } catch {
             throw new Error(ERROR_MSG.INVALID_CHORD(chord));
         }
-    });
+    })];
 }
 
 /**

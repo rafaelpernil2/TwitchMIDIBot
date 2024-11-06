@@ -4,7 +4,7 @@ import { JZZTypes } from '../custom-typing/jzz.js';
 import { CONFIG, ERROR_MSG, GLOBAL } from '../configuration/constants.js';
 import { forwardQueue, clearAllQueues } from '../command/queue.js';
 import { SharedVariable } from '../shared-variable/implementation.js';
-import { initClockData, isClockActive, syncMode, startClock, stopClock } from './clock.js';
+import { initClockData, isClockActive, syncMode, startClock, stopClock, clockPulses } from './clock.js';
 import { CCCommand, Command } from '../command/types.js';
 import { Sync } from './types.js';
 
@@ -95,7 +95,10 @@ export async function triggerNoteList(rawNoteList: Array<[note: string, timeSubD
  * @param type 'sendloop' or 'sendchord'
  */
 export async function triggerChordList(
-    rawChordProgression: Array<[noteList: string[], timeSubDivision: number]>,
+    [timeSignature, rawChordProgression]: [
+        timeSignature: [noteCount: number, noteValue: number],
+        chordProgression: Array<[noteList: string[], timeSubDivision: number]>
+    ],
     targetMIDIChannel: number,
     type: Command.sendloop | Command.sendchord
 ): Promise<void> {
@@ -106,6 +109,7 @@ export async function triggerChordList(
 
     // We wait until the bar starts and is your turn
     try {
+        setTimeSignature(targetMIDIChannel, timeSignature);
         const chordProgression = _processChordProgression(rawChordProgression, globalTempo);
 
         // Blocking section
@@ -183,6 +187,23 @@ export function stopAllMidi(targetMIDIChannel: number): void {
     output.allNotesOff(targetMIDIChannel);
     stopClock();
     clearAllQueues();
+}
+
+/**
+ * Sets time signature
+ * @param targetMIDIChannel Virtual MIDI device channel
+ * @param timeSignature [noteCount, noteValue]: [noteCount: number, noteValue: number]
+ */
+export function setTimeSignature(targetMIDIChannel: number, [noteCount, noteValue]: [noteCount: number, noteValue: number]): void {
+    if (output == null) {
+        throw new Error(ERROR_MSG.BOT_DISCONNECTED());
+    }
+    const newClockPulses = noteCount * 96 / noteValue;
+    // If timeSignature is different, reset clock
+    if (!clockPulses.is(newClockPulses)){
+        triggerClock(targetMIDIChannel);
+    }
+    clockPulses.set(newClockPulses); // Set time signature. 96 is 24 pulses per quarter * 4 quarter notes
 }
 
 /**

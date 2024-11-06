@@ -18,8 +18,14 @@ export let onBarLoopChange: () => Promise<void>;
 let requestPlayingNow: { type: Command.sendloop | Command.sendchord; request: string } | null;
 
 export const queueMap = {
-    sendchord: new GenericQueue<Array<[noteList: string[], timeSubDivision: number]>>(),
-    sendloop: new GenericQueue<Array<[noteList: string[], timeSubDivision: number]>>()
+    sendchord: new GenericQueue<[
+        timeSignature: [noteCount: number, noteValue: number],
+        chordProgression: Array<[noteList: string[], timeSubDivision: number]>
+    ]>(),
+    sendloop: new GenericQueue<[
+        timeSignature: [noteCount: number, noteValue: number],
+        chordProgression: Array<[noteList: string[], timeSubDivision: number]>
+    ]>()
 } as const;
 
 export function createAutomaticClockSyncedQueue(targetMIDIChannel: number): void {
@@ -61,7 +67,16 @@ export function createAutomaticClockSyncedQueue(targetMIDIChannel: number): void
  * @param type
  * @returns
  */
-export function enqueue(tag: string, value: Array<[noteList: string[], timeSubDivision: number]>, requesterUser: string, { isBroadcaster }: UserRoles, type: Command.sendloop | Command.sendchord): number {
+export function enqueue(
+    tag: string,
+    value: [
+        timeSignature: [noteCount: number, noteValue: number],
+        chordProgression: Array<[noteList: string[], timeSubDivision: number]>
+    ],
+    requesterUser: string,
+    { isBroadcaster }: UserRoles,
+    type: Command.sendloop | Command.sendchord
+): number {
     const [turn] = queueMap[type].enqueue(tag, value, requesterUser, { isBroadcaster });
     return turn;
 }
