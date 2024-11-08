@@ -92,14 +92,18 @@ export async function triggerNoteList(rawNoteList: Array<[note: string, timeSubD
  * Triggers a chord progression
  * @param rawChordProgression Chord progression to trigger
  * @param targetMIDIChannel Virtual device MIDI channel
+ * @param options { allowCustomTimeSignature }: { allowCustomTimeSignature: boolean }
+ * @param timeSignatureCC: [numeratorCC: number, denominatorCC: number]
  * @param type 'sendloop' or 'sendchord'
  */
 export async function triggerChordList(
-    [timeSignature, rawChordProgression]: [
+    requestList: Array<[
         timeSignature: [noteCount: number, noteValue: number],
         chordProgression: Array<[noteList: string[], timeSubDivision: number]>
-    ],
+    ]>,
     targetMIDIChannel: number,
+    { allowCustomTimeSignature }: { allowCustomTimeSignature: boolean },
+    timeSignatureCC: [numeratorCC: number, denominatorCC: number],
     type: Command.sendloop | Command.sendchord
 ): Promise<void> {
     // If the MIDI clock has not started yet, start it to make the chord progression sound
@@ -109,15 +113,20 @@ export async function triggerChordList(
 
     // We wait until the bar starts and is your turn
     try {
-        setTimeSignature(targetMIDIChannel, timeSignature);
-        const chordProgression = _processChordProgression(rawChordProgression, globalTempo);
-
         // Blocking section
         isChordInProgress.set(true);
-        for (const [noteList, timeout] of chordProgression) {
-            // Skip iteration if sync is on or request is no longer in queue
+
+        for (const [timeSignature, rawChordProgression] of requestList) {
             if (!syncMode.is(Sync.OFF)) continue;
-            await _sendMIDINoteListPromise(noteList, timeout, targetMIDIChannel);
+
+            setTimeSignature(targetMIDIChannel, timeSignature, timeSignatureCC, { allowCustomTimeSignature });
+            const chordProgression = _processChordProgression(rawChordProgression, globalTempo);
+
+            for (const [noteList, timeout] of chordProgression) {
+                // Skip iteration if sync is on or request is no longer in queue
+                if (!syncMode.is(Sync.OFF)) continue;
+                await _sendMIDINoteListPromise(noteList, timeout, targetMIDIChannel);
+            }
         }
     } catch {
         // In case of error, we forward the queue and exit
@@ -164,15 +173,16 @@ export function getTempo(): number {
  * Starts/resets the clock with the given tempo
  * @param targetMIDIChannel Virtual MIDI device channel
  * @param newTempo Tempo in BPM
+ * @param options { sync = false }: { sync: boolean }
  */
-export function triggerClock(targetMIDIChannel: number, newTempo?: number): void {
+export function triggerClock(targetMIDIChannel: number, newTempo?: number, { sync } = { sync: true }): void {
     if (output == null) {
         throw new Error(ERROR_MSG.BOT_DISCONNECTED());
     }
     if (newTempo != null) {
         _setTempo(newTempo);
     }
-    startClock(targetMIDIChannel, output, globalTempo);
+    startClock(targetMIDIChannel, output, globalTempo, { sync });
 }
 
 /**
@@ -193,19 +203,30 @@ export function stopAllMidi(targetMIDIChannel: number): void {
  * Sets time signature
  * @param targetMIDIChannel Virtual MIDI device channel
  * @param timeSignature [noteCount, noteValue]: [noteCount: number, noteValue: number]
+ * @param timeSignatureCC: [numeratorCC: number, denominatorCC: number]
+ * @param options { allowCustomTimeSignature }: { allowCustomTimeSignature: boolean }
+ * 
  */
-export function setTimeSignature(targetMIDIChannel: number, [noteCount, noteValue]: [noteCount: number, noteValue: number]): void {
+export function setTimeSignature(
+    targetMIDIChannel: number,
+    [noteCount, noteValue]: [noteCount: number, noteValue: number],
+    [numeratorCC, denominatorCC]: [numeratorCC: number, denominatorCC: number],
+    { allowCustomTimeSignature }: { allowCustomTimeSignature: boolean }
+): void {
     if (output == null) {
         throw new Error(ERROR_MSG.BOT_DISCONNECTED());
     }
     const newClockPulses = noteCount * 96 / noteValue;
     // If timeSignature is the same, do nothing
-    if (clockPulses.is(newClockPulses)) {
+    if (!allowCustomTimeSignature || clockPulses.is(newClockPulses)) {
         return;
     }
 
+    output.control(targetMIDIChannel, numeratorCC, noteCount);
+    output.control(targetMIDIChannel, denominatorCC, noteValue);
+
     clockPulses.set(newClockPulses); // Set time signature. 96 is 24 pulses per quarter * 4 quarter notes
-    triggerClock(targetMIDIChannel);
+    triggerClock(targetMIDIChannel, undefined, { sync: false });
 }
 
 /**

@@ -124,13 +124,19 @@ export function midiresume(...[, { silenceMessages }, { chatClient, channel }]: 
  *         twitch: { chatClient, channel, user, userRoles } // Twitch chat and user data
  *         ]
  */
-export async function addchord(...[message, { silenceMessages }, { chatClient, channel }]: CommandParams): Promise<void> {
+export async function addchord(...[message, { silenceMessages, allowCustomTimeSignature }, { chatClient, channel }]: CommandParams): Promise<void> {
     _checkMessageNotEmpty(message);
     const [alias, ...chordProgressionTokens] = message.split(GLOBAL.SLASH_SEPARATOR).map((str) => str.trim());
+
+    // If the alias contains brackets, the requests is in wrong order
+    if (alias.indexOf(GLOBAL.OPEN_SQUARE_BRACKETS) !== -1){
+        throw new Error(ERROR_MSG.CHORD_PROGRESSION_BAD_INSERTION());
+    }
+
     const chordProgression = chordProgressionTokens.join(GLOBAL.SLASH_SEPARATOR);
 
     // Validate chord progression
-    _parseChordProgression(chordProgression);
+    _parseChordProgressionList(chordProgression, { allowCustomTimeSignature });
 
     const insertStatus = ALIASES_DB.insert(CHORD_PROGRESSIONS_KEY, alias.toLowerCase(), chordProgression);
     if (insertStatus === ResponseStatus.Error) {
@@ -206,14 +212,14 @@ export async function sendnote(...[message, { targetMIDIChannel, silenceMessages
  *         twitch: { chatClient, channel, user, userRoles } // Twitch chat and user data
  *         ]
  */
-export function sendchord(...[message, { targetMIDIChannel, silenceMessages }, { chatClient, channel, user, userRoles }]: CommandParams): void {
+export function sendchord(...[message, { targetMIDIChannel, silenceMessages, allowCustomTimeSignature, timeSignatureCC }, { chatClient, channel, user, userRoles }]: CommandParams): void {
     _checkMessageNotEmpty(message);
     checkMIDIConnection();
     // Lookup previously saved chord progressions
-    const data = _getChordProgression(message);
+    const data = _getChordProgression(message, { allowCustomTimeSignature });
     enqueue(message, data, user, userRoles, Command.sendchord);
     autoStartClock(targetMIDIChannel);
-    createAutomaticClockSyncedQueue(targetMIDIChannel);
+    createAutomaticClockSyncedQueue(targetMIDIChannel, timeSignatureCC, { allowCustomTimeSignature });
     sayTwitchChatMessage(chatClient, channel, [, i18n.t('SENDCHORD')], { silenceMessages });
 }
 
@@ -224,14 +230,14 @@ export function sendchord(...[message, { targetMIDIChannel, silenceMessages }, {
  *         twitch: { chatClient, channel, user, userRoles } // Twitch chat and user data
  *         ]
  */
-export function sendloop(...[message, { targetMIDIChannel, silenceMessages }, { chatClient, channel, user, userRoles }]: CommandParams): void {
+export function sendloop(...[message, { targetMIDIChannel, silenceMessages, allowCustomTimeSignature, timeSignatureCC }, { chatClient, channel, user, userRoles }]: CommandParams): void {
     _checkMessageNotEmpty(message);
     checkMIDIConnection();
     // Queue chord progression petition
-    const data = _getChordProgression(message);
+    const data = _getChordProgression(message, { allowCustomTimeSignature });
     enqueue(message, data, user, userRoles, Command.sendloop);
     autoStartClock(targetMIDIChannel);
-    createAutomaticClockSyncedQueue(targetMIDIChannel);
+    createAutomaticClockSyncedQueue(targetMIDIChannel, timeSignatureCC, { allowCustomTimeSignature });
     sayTwitchChatMessage(chatClient, channel, [, i18n.t('SENDLOOP')], { silenceMessages });
 }
 
@@ -506,16 +512,17 @@ function _getNoteList(message: string): Array<[note: string, timeSubDivision: nu
 /**
  * Looks up a chord progression/loop or returns the original message if not found
  * @param message Command arguments (alias or chord progression)
+ * @param options { allowCustomTimeSignature }: { allowCustomTimeSignature: boolean }
  * @returns Chord progression
  */
-function _getChordProgression(message: string): [
+function _getChordProgression(message: string, { allowCustomTimeSignature }: { allowCustomTimeSignature: boolean }): Array<[
     timeSignature: [noteCount: number, noteValue: number],
     chordProgression: Array<[noteList: string[], timeSubDivision: number]>
-] {
+]> {
     const aliasToLookup = message.toLowerCase();
     const chordProgression = ALIASES_DB.select(CHORD_PROGRESSIONS_KEY, aliasToLookup) ?? message;
     // Check everything is okay
-    return _parseChordProgression(chordProgression);
+    return _parseChordProgressionList(chordProgression, { allowCustomTimeSignature });
 }
 
 /**
@@ -615,11 +622,31 @@ function _isValidAndBounded(chord: string, extraChars: number): boolean {
 }
 
 /**
- * Validates a chord progression string to be played in a 4/4 beat
+ * Validates a chord progression string with time signature
  * @param chordProgression Chord progression separated by spaces
+ * @param options { allowCustomTimeSignature }: { allowCustomTimeSignature: boolean }
  * @return List of notes to play with their respective release times
  */
-function _parseChordProgression(chordProgression: string): [
+function _parseChordProgressionList(chordProgression: string, { allowCustomTimeSignature }: { allowCustomTimeSignature: boolean }): Array<[
+    timeSignature: [noteCount: number, noteValue: number],
+    chordProgression: Array<[noteList: string[], timeSubDivision: number]>
+]> {
+    const timeSignedRequestList = chordProgression
+        .trim()
+        .split(GLOBAL.OPEN_SQUARE_BRACKETS)
+        .filter((value) => value !== GLOBAL.EMPTY_MESSAGE)
+        .map(value => value.trim())
+
+    return timeSignedRequestList.map(chordProgression => _parseChordProgression(chordProgression, { allowCustomTimeSignature }))
+}
+
+/**
+ * Validates a chord progression string
+ * @param chordProgression Chord progression separated by spaces
+ * @param options { allowCustomTimeSignature }: { allowCustomTimeSignature: boolean }
+ * @return List of notes to play with their respective release times
+ */
+function _parseChordProgression(chordProgression: string, { allowCustomTimeSignature }: { allowCustomTimeSignature: boolean }): [
     timeSignature: [noteCount: number, noteValue: number],
     chordProgression: Array<[noteList: string[], timeSubDivision: number]>
 ] {
@@ -628,27 +655,26 @@ function _parseChordProgression(chordProgression: string): [
 
     let finalTimeSignature: [noteCount: number, noteValue: number] = [CONFIG.DEFAULT_NOTE_COUNT, CONFIG.DEFAULT_NOTE_VALUE]; // Set default time signature
     // Check if time signature is provided in request
-    if (firstToken.startsWith(GLOBAL.OPEN_SQUARE_BRACKETS) && firstToken.endsWith(GLOBAL.CLOSE_SQUARE_BRACKETS)) {
-        const timeSignatureRaw = firstToken.slice(1, -1); // Remove brackets
+    if (firstToken.endsWith(GLOBAL.CLOSE_SQUARE_BRACKETS)) {
+        const timeSignatureRaw = firstToken.slice(0, -1); // Remove brackets
 
         const [noteCount, noteValue, ...rest] = timeSignatureRaw.split(GLOBAL.SLASH_SEPARATOR).map((str) => parseInt(str.trim()));
 
         if (
-            isNaN(noteCount) ||
-            isNaN(noteValue) ||
-            rest.length ||
-            CONFIG.VALID_MEASURE.every(validMeasure => noteValue !== validMeasure) ||
-            noteCount > noteValue * CONFIG.MAX_MEASURE_MULTIPLIER
+            allowCustomTimeSignature && (
+                isNaN(noteCount) ||
+                isNaN(noteValue) ||
+                rest.length ||
+                CONFIG.VALID_MEASURE.every(validMeasure => noteValue !== validMeasure) ||
+                noteCount > noteValue * CONFIG.MAX_MEASURE_MULTIPLIER)
         ) {
             throw new Error(ERROR_MSG.INVALID_TIMESIGNATURE());
         }
-        finalTimeSignature = [noteCount, noteValue];
-    } else { 
+        finalTimeSignature = allowCustomTimeSignature ? [noteCount, noteValue] : finalTimeSignature;
+    } else {
         // It does not have a time signature, so the first token is valid
         chordProgressionList.unshift(firstToken);
     }
-
-
 
     return [finalTimeSignature, chordProgressionList.map((chord) => {
         try {

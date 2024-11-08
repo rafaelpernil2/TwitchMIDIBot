@@ -34,6 +34,8 @@ export const CONFIG = {
     DEFAULT_REQUEST_TIMEOUT: 10,
     VALID_MEASURE: [1, 2, 4, 8, 16, 32],
     MAX_MEASURE_MULTIPLIER: 4,
+    NOTE_COUNT_DEFAULT_CC: 14,
+    NOTE_VALUE_DEFAULT_CC: 15,
     DEFAULT_NOTE_COUNT: 4,
     DEFAULT_NOTE_VALUE: 4,
     MAX_QUEUE_LENGTH: 100,
@@ -76,9 +78,11 @@ export const ERROR_MSG = {
     BAD_ENV_VARIABLE: (keys: string) => `${i18n.t('ERROR_BAD_ENV_VARIABLE_1')} ${keys} ${i18n.t('ERROR_BAD_ENV_VARIABLE_2')}`,
     BOT_PAUSED_DISCONNECTED: () => i18n.t('ERROR_BOT_PAUSED_DISCONNECTED'),
     BOT_DISCONNECTED: () => i18n.t('ERROR_BOT_DISCONNECTED'),
-    BAD_MIDI_CHANNEL: () => i18n.t('ERROR_BAD_MIDI_CHANNEL'),
     BAD_MIDI_MESSAGE: () => i18n.t('ERROR_BAD_MIDI_MESSAGE'),
     BAD_MIDI_NOTE: () => i18n.t('ERROR_BAD_MIDI_NOTE'),
+    BAD_MIDI_CHANNEL: (variable: string, value: string) => `${i18n.t('ERROR_BAD_MIDI_CHANNEL')} // [${variable}=${value}]`,
+    BAD_MIDI_VALUE: (variable: string, value: string) => `${i18n.t('ERROR_BAD_MIDI_MESSAGE')} // [${variable}=${value}]`,
+    BAD_BOOLEAN:  (variable: string, value: string) =>  `${i18n.t('ERROR_BAD_BOOLEAN')} // [${variable}=${value}]`,
     INVALID_VOLUME: () => i18n.t('ERROR_INVALID_VOLUME'),
     INVALID_TEMPO: () =>
         `${i18n.t('ERROR_INVALID_TEMPO_1')} ${CONFIG.MIN_TEMPO} ${i18n.t('ERROR_INVALID_TEMPO_2')} ${CONFIG.MAX_TEMPO} ${i18n.t('ERROR_INVALID_TEMPO_3')} ${CONFIG.DEFAULT_TEMPO

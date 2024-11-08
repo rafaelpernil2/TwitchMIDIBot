@@ -26,9 +26,17 @@ export function showInitReadyMessages(env: ParsedEnvObject): void {
 
     // Flags
     console.log(chalk.gray(i18n.t('INIT_CURRENT_FLAGS')));
-    console.log(chalk.magenta(i18n.t('INIT_REWARDS_CHANNELPOINTS_MODE')), chalk.magentaBright(getTextByBoolean(env.REWARDS_MODE)));
-    console.log(chalk.magenta(i18n.t('INIT_VIP_REWARDS_CHANNELPOINTS_MODE')), chalk.magentaBright(getTextByBoolean(env.VIP_REWARDS_MODE)));
-    console.log(chalk.magenta(i18n.t('INIT_SEND_UNAUTHORIZED_MESSAGE_FLAG')), chalk.magentaBright(getTextByBoolean(env.SEND_UNAUTHORIZED_MESSAGE)));
+    console.log(chalk.magenta(i18n.t('INIT_REWARDS_CHANNELPOINTS_MODE')), chalk.magentaBright(getTextByBoolean(env.REWARDS_MODE)), "\n");
+    console.log(chalk.magenta(i18n.t('INIT_VIP_REWARDS_CHANNELPOINTS_MODE')), chalk.magentaBright(getTextByBoolean(env.VIP_REWARDS_MODE)), "\n");
+    console.log(chalk.magenta(i18n.t('INIT_SEND_UNAUTHORIZED_MESSAGE_FLAG')), chalk.magentaBright(getTextByBoolean(env.SEND_UNAUTHORIZED_MESSAGE)), "\n");
+    console.log(chalk.magenta(i18n.t('INIT_SILENCE_MACRO_MESSAGES')), chalk.magentaBright(getTextByBoolean(env.SILENCE_MACRO_MESSAGES)), "\n");
+    console.log(chalk.magenta(i18n.t('INIT_ALLOW_CUSTOM_TIME_SIGNATURE')), chalk.magentaBright(getTextByBoolean(env.ALLOW_CUSTOM_TIME_SIGNATURE)));
+
+    // Values
+    if (env.ALLOW_CUSTOM_TIME_SIGNATURE) {
+        console.log(chalk.magenta(i18n.t('INIT_TIME_SIGNATURE_NUMERATOR_CC')), chalk.magentaBright(env.TIME_SIGNATURE_NUMERATOR_CC));
+        console.log(chalk.magenta(i18n.t('INIT_TIME_SIGNATURE_DENOMINATOR_CC')), chalk.magentaBright(env.TIME_SIGNATURE_DENOMINATOR_CC));
+    }
 
     // Support message
     console.log(chalk.blueBright(i18n.t('INIT_SEPARATOR')));

@@ -18,17 +18,21 @@ export let onBarLoopChange: () => Promise<void>;
 let requestPlayingNow: { type: Command.sendloop | Command.sendchord; request: string } | null;
 
 export const queueMap = {
-    sendchord: new GenericQueue<[
+    sendchord: new GenericQueue<Array<[
         timeSignature: [noteCount: number, noteValue: number],
         chordProgression: Array<[noteList: string[], timeSubDivision: number]>
-    ]>(),
-    sendloop: new GenericQueue<[
+    ]>>(),
+    sendloop: new GenericQueue<Array<[
         timeSignature: [noteCount: number, noteValue: number],
         chordProgression: Array<[noteList: string[], timeSubDivision: number]>
-    ]>()
+    ]>>()
 } as const;
 
-export function createAutomaticClockSyncedQueue(targetMIDIChannel: number): void {
+export function createAutomaticClockSyncedQueue(
+    targetMIDIChannel: number,
+    timeSignatureCC: [numeratorCC: number, denominatorCC: number],
+    { allowCustomTimeSignature }: { allowCustomTimeSignature: boolean }
+): void {
     // Only set the function once
     if (onBarLoopChange != null) {
         return;
@@ -48,7 +52,7 @@ export function createAutomaticClockSyncedQueue(targetMIDIChannel: number): void
         const [currentTag] = queueMap[type].getTag(turn);
         _setRequestPlayingNow(type, currentTag ?? GLOBAL.EMPTY_MESSAGE);
 
-        await triggerChordList(chordProgression, targetMIDIChannel, type);
+        await triggerChordList(chordProgression, targetMIDIChannel, { allowCustomTimeSignature }, timeSignatureCC, type);
         return true;
     };
 
@@ -69,10 +73,10 @@ export function createAutomaticClockSyncedQueue(targetMIDIChannel: number): void
  */
 export function enqueue(
     tag: string,
-    value: [
+    value: Array<[
         timeSignature: [noteCount: number, noteValue: number],
         chordProgression: Array<[noteList: string[], timeSubDivision: number]>
-    ],
+    ]>,
     requesterUser: string,
     { isBroadcaster }: UserRoles,
     type: Command.sendloop | Command.sendchord

@@ -56,7 +56,9 @@ export const onMessageHandlerClosure = (authProvider: RefreshingAuthProvider, ch
                         targetMIDIChannel: env.TARGET_MIDI_CHANNEL,
                         targetMIDIName: env.TARGET_MIDI_NAME,
                         isRewardsMode: env.REWARDS_MODE,
-                        silenceMessages: isMacroMessage && env.SILENCE_MACRO_MESSAGES
+                        silenceMessages: isMacroMessage && env.SILENCE_MACRO_MESSAGES,
+                        allowCustomTimeSignature: env.ALLOW_CUSTOM_TIME_SIGNATURE,
+                        timeSignatureCC: [env.TIME_SIGNATURE_NUMERATOR_CC,env.TIME_SIGNATURE_DENOMINATOR_CC],
                     },
                     twitch
                 );

@@ -19,11 +19,12 @@ let tick = 0;
  * @param targetMIDIChannel Target MIDI channel
  * @param output VirtualMIDI device
  * @param tempo Tempo in BPM
+ * @param options { sync = false }: { sync: boolean }
  */
-export function startClock(targetMIDIChannel: number, output: ReturnType<JZZTypes['openMidiOut']>, tempo: number): void {
+export function startClock(targetMIDIChannel: number, output: ReturnType<JZZTypes['openMidiOut']>, tempo: number, { sync } = { sync: true }): void {
     const tickTime = `${_calculateClockTickTimeNs(tempo)}n`;
     const sendTick = _sendTick(output);
-    _resetClock(targetMIDIChannel, output);
+    _resetClock(targetMIDIChannel, output, { sync });
 
     timer.setInterval(sendTick, '', tickTime);
 }
@@ -57,9 +58,12 @@ export function initClockData(): void {
  * Resets the clock parameters and marks it as "syncing"
  * @param targetMIDIChannel Target MIDI channel for the virtual MIDI device
  * @param output VirtualMIDI device
+ * @param options { sync = false }: { sync: boolean }
  */
-function _resetClock(targetMIDIChannel: number, output: ReturnType<JZZTypes['openMidiOut']>): void {
-    syncMode.set(Sync.REPEAT);
+function _resetClock(targetMIDIChannel: number, output: ReturnType<JZZTypes['openMidiOut']>, { sync } = { sync: true }): void {
+    if (sync) {
+        syncMode.set(Sync.REPEAT);
+    }
     initClockData();
     output.stop();
     output.allNotesOff(targetMIDIChannel);

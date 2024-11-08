@@ -65,6 +65,8 @@ export interface CommandConfigParams {
     targetMIDIChannel: number;
     isRewardsMode: boolean;
     silenceMessages: boolean;
+    allowCustomTimeSignature: boolean;
+    timeSignatureCC: [numeratorCC: number, denominatorCC: number]
 }
 
 /**

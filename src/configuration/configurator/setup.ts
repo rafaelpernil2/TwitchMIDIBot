@@ -46,7 +46,10 @@ export async function setupConfiguration(currentVariables: EnvObject): Promise<E
         REWARDS_MODE,
         VIP_REWARDS_MODE,
         SEND_UNAUTHORIZED_MESSAGE,
-        SILENCE_MACRO_MESSAGES
+        SILENCE_MACRO_MESSAGES,
+        ALLOW_CUSTOM_TIME_SIGNATURE,
+        TIME_SIGNATURE_NUMERATOR_CC,
+        TIME_SIGNATURE_DENOMINATOR_CC
     } = targetEnv;
 
     // STEP 1
@@ -54,10 +57,10 @@ export async function setupConfiguration(currentVariables: EnvObject): Promise<E
         console.log(chalk.greenBright(i18n.t('SETUP_STEP_1')));
         console.log(
             chalk.magentaBright(i18n.t('SETUP_STEP_1_TEXT')) +
-                chalk.bgMagentaBright(CONFIG.TWITCH_CONSOLE_APPS_URL) +
-                chalk.magentaBright(i18n.t('SETUP_STEP_1_AFTER_LINK')) +
-                chalk.bgMagentaBright(CONFIG.REDIRECT_URI) +
-                chalk.magentaBright(i18n.t('SETUP_STEP_1_AFTER_REDIRECT_LINK'))
+            chalk.bgMagentaBright(CONFIG.TWITCH_CONSOLE_APPS_URL) +
+            chalk.magentaBright(i18n.t('SETUP_STEP_1_AFTER_LINK')) +
+            chalk.bgMagentaBright(CONFIG.REDIRECT_URI) +
+            chalk.magentaBright(i18n.t('SETUP_STEP_1_AFTER_REDIRECT_LINK'))
         );
 
         CLIENT_ID = await _makeQuestion(rl, i18n.t('SETUP_STEP_1_CLIENT_ID_QUESTION'), CLIENT_ID);
@@ -113,8 +116,22 @@ export async function setupConfiguration(currentVariables: EnvObject): Promise<E
         const vipRewardsModeFlag = (await _makeQuestion(rl, i18n.t('SETUP_STEP_3_VIP_REWARDS_MODE_QUESTION'), VIP_REWARDS_MODE)) || 'Y';
         VIP_REWARDS_MODE = String(getBooleanByString(vipRewardsModeFlag));
 
-        const silenceMacroMessages = (await _makeQuestion(rl, i18n.t('SETUP_STEP_3_SILENCE_MACRO_MESSAGES_QUESTION'), SILENCE_MACRO_MESSAGES)) || 'Y';
-        SILENCE_MACRO_MESSAGES = String(getBooleanByString(silenceMacroMessages));
+        const silenceMacroMessagesFlag = (await _makeQuestion(rl, i18n.t('SETUP_STEP_3_SILENCE_MACRO_MESSAGES_QUESTION'), SILENCE_MACRO_MESSAGES)) || 'Y';
+        SILENCE_MACRO_MESSAGES = String(getBooleanByString(silenceMacroMessagesFlag));
+
+        const allowCustomTimeSignature = (await _makeQuestion(rl, i18n.t('SETUP_STEP_3_ALLOW_CUSTOM_TIME_SIGNATURE_QUESTION'), ALLOW_CUSTOM_TIME_SIGNATURE)) || 'N';
+        ALLOW_CUSTOM_TIME_SIGNATURE = String(getBooleanByString(allowCustomTimeSignature));
+
+
+        // Only setup time signature CC when ALLOW_CUSTOM_TIME_SIGNATURE is true
+        if (getBooleanByString(ALLOW_CUSTOM_TIME_SIGNATURE)) {
+            TIME_SIGNATURE_NUMERATOR_CC = (await _makeQuestion(rl, i18n.t('SETUP_STEP_3_TIME_SIGNATURE_NUMERATOR_CC_QUESTION'), TIME_SIGNATURE_NUMERATOR_CC)) || `${CONFIG.NOTE_COUNT_DEFAULT_CC}`;
+            TIME_SIGNATURE_DENOMINATOR_CC = (await _makeQuestion(rl, i18n.t('SETUP_STEP_3_TIME_SIGNATURE_DENOMINATOR_CC_QUESTION'), TIME_SIGNATURE_DENOMINATOR_CC)) || `${CONFIG.NOTE_VALUE_DEFAULT_CC}`;
+        } else {
+            TIME_SIGNATURE_NUMERATOR_CC = `${CONFIG.NOTE_COUNT_DEFAULT_CC}`;
+            TIME_SIGNATURE_DENOMINATOR_CC = `${CONFIG.NOTE_VALUE_DEFAULT_CC}`;
+        }
+
     }
 
     // STEP 4
@@ -150,6 +167,9 @@ export async function setupConfiguration(currentVariables: EnvObject): Promise<E
     await fs.appendFile(CONFIG.DOT_ENV_PATH, 'VIP_REWARDS_MODE=' + VIP_REWARDS_MODE + '\n');
     await fs.appendFile(CONFIG.DOT_ENV_PATH, 'SEND_UNAUTHORIZED_MESSAGE=' + SEND_UNAUTHORIZED_MESSAGE + '\n');
     await fs.appendFile(CONFIG.DOT_ENV_PATH, 'SILENCE_MACRO_MESSAGES=' + SILENCE_MACRO_MESSAGES + '\n');
+    await fs.appendFile(CONFIG.DOT_ENV_PATH, 'ALLOW_CUSTOM_TIME_SIGNATURE=' + ALLOW_CUSTOM_TIME_SIGNATURE + '\n');
+    await fs.appendFile(CONFIG.DOT_ENV_PATH, 'TIME_SIGNATURE_NUMERATOR_CC=' + TIME_SIGNATURE_NUMERATOR_CC + '\n');
+    await fs.appendFile(CONFIG.DOT_ENV_PATH, 'TIME_SIGNATURE_DENOMINATOR_CC=' + TIME_SIGNATURE_DENOMINATOR_CC + '\n');
 
     rl.close();
     console.log(chalk.greenBright(i18n.t('SETUP_STEP_END')));
@@ -173,7 +193,10 @@ export async function setupConfiguration(currentVariables: EnvObject): Promise<E
         REWARDS_MODE,
         VIP_REWARDS_MODE,
         SEND_UNAUTHORIZED_MESSAGE,
-        SILENCE_MACRO_MESSAGES
+        SILENCE_MACRO_MESSAGES,
+        ALLOW_CUSTOM_TIME_SIGNATURE,
+        TIME_SIGNATURE_NUMERATOR_CC,
+        TIME_SIGNATURE_DENOMINATOR_CC
     };
 }
 
@@ -220,8 +243,24 @@ function isStep2Invalid({ BROADCASTER_ACCESS_TOKEN, BROADCASTER_REFRESH_TOKEN, B
  * @param env Environment variables object
  * @returns If it is invalid or not configurated
  */
-function isStep3Invalid({ REWARDS_MODE, VIP_REWARDS_MODE, TARGET_CHANNEL, SEND_UNAUTHORIZED_MESSAGE, SILENCE_MACRO_MESSAGES }: EnvObject): boolean {
-    return isNullish(REWARDS_MODE) || isNullish(VIP_REWARDS_MODE) || isNullish(TARGET_CHANNEL) || isNullish(SEND_UNAUTHORIZED_MESSAGE) || isNullish(SILENCE_MACRO_MESSAGES);
+function isStep3Invalid({
+    REWARDS_MODE,
+    VIP_REWARDS_MODE,
+    TARGET_CHANNEL,
+    SEND_UNAUTHORIZED_MESSAGE,
+    SILENCE_MACRO_MESSAGES,
+    ALLOW_CUSTOM_TIME_SIGNATURE,
+    TIME_SIGNATURE_NUMERATOR_CC,
+    TIME_SIGNATURE_DENOMINATOR_CC
+}: EnvObject): boolean {
+    return isNullish(REWARDS_MODE) ||
+        isNullish(VIP_REWARDS_MODE) ||
+        isNullish(TARGET_CHANNEL) ||
+        isNullish(SEND_UNAUTHORIZED_MESSAGE) ||
+        isNullish(SILENCE_MACRO_MESSAGES) ||
+        isNullish(ALLOW_CUSTOM_TIME_SIGNATURE) ||
+        isNullish(TIME_SIGNATURE_NUMERATOR_CC) ||
+        isNullish(TIME_SIGNATURE_DENOMINATOR_CC);
 }
 
 /**
