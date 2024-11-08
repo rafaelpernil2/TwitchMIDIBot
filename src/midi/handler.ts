@@ -199,21 +199,13 @@ export function setTimeSignature(targetMIDIChannel: number, [noteCount, noteValu
         throw new Error(ERROR_MSG.BOT_DISCONNECTED());
     }
     const newClockPulses = noteCount * 96 / noteValue;
-    // If timeSignature is different, reset clock
-    if (!clockPulses.is(newClockPulses)) {
-        triggerClock(targetMIDIChannel);
-        clockPulses.set(newClockPulses); // Set time signature. 96 is 24 pulses per quarter * 4 quarter notes
+    // If timeSignature is the same, do nothing
+    if (clockPulses.is(newClockPulses)) {
+        return;
     }
-}
 
-/**
- * Initializes the common variables
- */
-function _initVariables(): void {
-    initClockData();
-    isChordInProgress.set(false);
-    globalTempo = CONFIG.DEFAULT_TEMPO;
-    globalVolume = CONFIG.DEFAULT_VOLUME;
+    clockPulses.set(newClockPulses); // Set time signature. 96 is 24 pulses per quarter * 4 quarter notes
+    triggerClock(targetMIDIChannel);
 }
 
 /**
@@ -228,6 +220,17 @@ export function autoStartClock(targetMIDIChannel: number): void {
         startClock(targetMIDIChannel, output, globalTempo);
     }
 }
+
+/**
+ * Initializes the common variables
+ */
+function _initVariables(): void {
+    initClockData();
+    isChordInProgress.set(false);
+    globalTempo = CONFIG.DEFAULT_TEMPO;
+    globalVolume = CONFIG.DEFAULT_VOLUME;
+}
+
 
 /**
  * Validates and sets a new tempo value
