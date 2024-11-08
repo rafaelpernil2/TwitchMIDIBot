@@ -109,14 +109,14 @@ So far, this first version does all that, keep reading the features for more det
   * Trigger chord progressions with specific length per chord via [!sendchord](#sendchord) with an extensive list of chords to choose from. See [CHORDS.md](CHORDS.md)
   * Loop chord progressions via [!sendloop](#sendloop)
   * Support for music rests using "rest" as a replacement for a chord or note in [!sendnote](#sendnote), [!sendchord](#sendchord) and [!sendloop](#sendloop) requests
-  * Support for time signatures using "\[X/Y\]" at the beginning of a [!sendchord](#sendchord) or [!sendloop](#sendloop) requests (e.g "\[4/4\] Dmin7 G7 C")
+  * Support for multiple time signatures per request using "\[X/Y\]" [!sendchord](#sendchord) or [!sendloop](#sendloop) requests (e.g "\[4/4\] Dmin7 G7 C" or "\[5/4\] Dmin7(2) G7(3) \[4/4\] Dmaj7(2) Dbm7(2) Cmaj7(2) Bm7(2)")
   * See the current chord progression via [!midicurrentrequest](#midicurrentrequest)
   * Check the chord progression request queue via [!midirequestqueue](#midirequestqueue)
   * Change MIDI velocity via [!midivolume](#midivolume)
   * Send CC (Control Change) messages and sweeps between values via [!sendcc](#sendcc)
   * Clock-Loop synchronizer to correct sync issues via [!syncmidi](#syncmidi)
   * Automatic synchronization that forces loops to wait until the start of the beat
-  * On/Off bot toggle
+  * On/Off bot toggle with [!midion](#midion)/[!midioff](#midioff)
   * Pause requests with [!midipause](#midipause) and resume with [!midiresume](#midiresume)
   * Ban users with [!midibanuser](#midibanuser) and unban with [!midiunbanuser](#midiunbanuser)
   * Set timeout between requests per user with [!miditimeout](#miditimeout)
