@@ -59,7 +59,7 @@ export function checkMIDIConnection(): void {
 
 /**
  * Retrieves the MIDI volume between 0 and 127
- * @returns 
+ * @returns
  */
 export function getMIDIVolume(): number {
     return globalVolume;
@@ -97,10 +97,7 @@ export async function triggerNoteList(rawNoteList: Array<[note: string, timeSubD
  * @param type 'sendloop' or 'sendchord'
  */
 export async function triggerChordList(
-    requestList: Array<[
-        timeSignature: [noteCount: number, noteValue: number],
-        chordProgression: Array<[noteList: string[], timeSubDivision: number]>
-    ]>,
+    requestList: Array<[timeSignature: [noteCount: number, noteValue: number], chordProgression: Array<[noteList: string[], timeSubDivision: number]>]>,
     targetMIDIChannel: number,
     { allowCustomTimeSignature }: { allowCustomTimeSignature: boolean },
     timeSignatureCC: [numeratorCC: number, denominatorCC: number],
@@ -131,10 +128,8 @@ export async function triggerChordList(
     } catch {
         // In case of error, we forward the queue and exit
         // This should happen when the request queue is cleared
-
         // But this is done either way in "finally" block
-    }
-    finally {
+    } finally {
         // Move to next in queue
         forwardQueue(type);
         // Only the current request should be repeated after tempo change (repeat sync)
@@ -160,10 +155,9 @@ export function triggerCCCommandList(rawCCCommandList: CCCommand[], targetMIDICh
     }
 }
 
-
 /**
  * Retrieves the tempo
- * @returns 
+ * @returns
  */
 export function getTempo(): number {
     return globalTempo;
@@ -221,7 +215,6 @@ function _initVariables(): void {
     globalTempo = CONFIG.DEFAULT_TEMPO;
     globalVolume = CONFIG.DEFAULT_VOLUME;
 }
-
 
 /**
  * Validates and sets a new tempo value
@@ -374,7 +367,7 @@ function _sweep(
  * @param timeSignature [noteCount, noteValue]: [noteCount: number, noteValue: number]
  * @param timeSignatureCC: [numeratorCC: number, denominatorCC: number]
  * @param options { allowCustomTimeSignature }: { allowCustomTimeSignature: boolean }
- * 
+ *
  */
 function _setTimeSignature(
     targetMIDIChannel: number,
@@ -385,7 +378,7 @@ function _setTimeSignature(
     if (output == null) {
         throw new Error(ERROR_MSG.BOT_DISCONNECTED());
     }
-    const newClockPulses = noteCount * 96 / noteValue;
+    const newClockPulses = (noteCount * 96) / noteValue;
     // If timeSignature is the same, do nothing
     if (!allowCustomTimeSignature || clockPulses.is(newClockPulses)) {
         return;

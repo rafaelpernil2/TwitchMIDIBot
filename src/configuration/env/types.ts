@@ -19,7 +19,18 @@ export const envVariables = [
 
 export type EnvObject = Record<(typeof envVariables)[number], string>;
 
-export interface ParsedEnvObject extends Omit<EnvObject, 'REWARDS_MODE' | 'VIP_REWARDS_MODE' | 'TARGET_MIDI_CHANNEL' | 'SEND_UNAUTHORIZED_MESSAGE' | 'SILENCE_MACRO_MESSAGES' | 'ALLOW_CUSTOM_TIME_SIGNATURE' | 'TIME_SIGNATURE_NUMERATOR_CC' | 'TIME_SIGNATURE_DENOMINATOR_CC'> {
+export interface ParsedEnvObject
+    extends Omit<
+        EnvObject,
+        | 'REWARDS_MODE'
+        | 'VIP_REWARDS_MODE'
+        | 'TARGET_MIDI_CHANNEL'
+        | 'SEND_UNAUTHORIZED_MESSAGE'
+        | 'SILENCE_MACRO_MESSAGES'
+        | 'ALLOW_CUSTOM_TIME_SIGNATURE'
+        | 'TIME_SIGNATURE_NUMERATOR_CC'
+        | 'TIME_SIGNATURE_DENOMINATOR_CC'
+    > {
     REWARDS_MODE: boolean;
     VIP_REWARDS_MODE: boolean;
     TARGET_MIDI_CHANNEL: number;

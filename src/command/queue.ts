@@ -18,14 +18,8 @@ export let onBarLoopChange: () => Promise<void>;
 let requestPlayingNow: { type: Command.sendloop | Command.sendchord; request: string } | null;
 
 export const queueMap = {
-    sendchord: new GenericQueue<Array<[
-        timeSignature: [noteCount: number, noteValue: number],
-        chordProgression: Array<[noteList: string[], timeSubDivision: number]>
-    ]>>(),
-    sendloop: new GenericQueue<Array<[
-        timeSignature: [noteCount: number, noteValue: number],
-        chordProgression: Array<[noteList: string[], timeSubDivision: number]>
-    ]>>()
+    sendchord: new GenericQueue<Array<[timeSignature: [noteCount: number, noteValue: number], chordProgression: Array<[noteList: string[], timeSubDivision: number]>]>>(),
+    sendloop: new GenericQueue<Array<[timeSignature: [noteCount: number, noteValue: number], chordProgression: Array<[noteList: string[], timeSubDivision: number]>]>>()
 } as const;
 
 /**
@@ -33,7 +27,7 @@ export const queueMap = {
  * @param targetMIDIChannel Target MIDI Channel
  * @param timeSignatureCC Time Signature MIDI CC
  * @param options { allowCustomTimeSignature }
- * @returns 
+ * @returns
  */
 export function createAutomaticClockSyncedQueue(
     targetMIDIChannel: number,
@@ -83,10 +77,7 @@ export function createAutomaticClockSyncedQueue(
  */
 export function enqueue(
     tag: string,
-    value: Array<[
-        timeSignature: [noteCount: number, noteValue: number],
-        chordProgression: Array<[noteList: string[], timeSubDivision: number]>
-    ]>,
+    value: Array<[timeSignature: [noteCount: number, noteValue: number], chordProgression: Array<[noteList: string[], timeSubDivision: number]>]>,
     requesterUser: string,
     { isBroadcaster }: UserRoles,
     type: Command.sendloop | Command.sendchord
@@ -227,7 +218,6 @@ function _isCurrentLast(type: Command.sendloop | Command.sendchord): boolean {
     const [isEmpty] = queueMap[type].isCurrentLast();
     return isEmpty;
 }
-
 
 /**
  * Checks if the given request turn is the favorite one

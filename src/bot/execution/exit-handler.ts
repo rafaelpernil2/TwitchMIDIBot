@@ -67,7 +67,6 @@ function _releaseLock(): void {
     return rmSync(CONFIG.DOT_LOCK, { force: true });
 }
 
-
 /**
  * Disables all rewards (if enabled) and exits. It is used for sudden closes of this application
  * @param broadcasterAuthProvider Broadcaster auth provider

@@ -26,10 +26,10 @@ export function showInitReadyMessages(env: ParsedEnvObject): void {
 
     // Flags
     console.log(chalk.gray(i18n.t('INIT_CURRENT_FLAGS')));
-    console.log(chalk.magenta(i18n.t('INIT_REWARDS_CHANNELPOINTS_MODE')), chalk.magentaBright(getTextByBoolean(env.REWARDS_MODE)), "\n");
-    console.log(chalk.magenta(i18n.t('INIT_VIP_REWARDS_CHANNELPOINTS_MODE')), chalk.magentaBright(getTextByBoolean(env.VIP_REWARDS_MODE)), "\n");
-    console.log(chalk.magenta(i18n.t('INIT_SEND_UNAUTHORIZED_MESSAGE_FLAG')), chalk.magentaBright(getTextByBoolean(env.SEND_UNAUTHORIZED_MESSAGE)), "\n");
-    console.log(chalk.magenta(i18n.t('INIT_SILENCE_MACRO_MESSAGES')), chalk.magentaBright(getTextByBoolean(env.SILENCE_MACRO_MESSAGES)), "\n");
+    console.log(chalk.magenta(i18n.t('INIT_REWARDS_CHANNELPOINTS_MODE')), chalk.magentaBright(getTextByBoolean(env.REWARDS_MODE)), '\n');
+    console.log(chalk.magenta(i18n.t('INIT_VIP_REWARDS_CHANNELPOINTS_MODE')), chalk.magentaBright(getTextByBoolean(env.VIP_REWARDS_MODE)), '\n');
+    console.log(chalk.magenta(i18n.t('INIT_SEND_UNAUTHORIZED_MESSAGE_FLAG')), chalk.magentaBright(getTextByBoolean(env.SEND_UNAUTHORIZED_MESSAGE)), '\n');
+    console.log(chalk.magenta(i18n.t('INIT_SILENCE_MACRO_MESSAGES')), chalk.magentaBright(getTextByBoolean(env.SILENCE_MACRO_MESSAGES)), '\n');
     console.log(chalk.magenta(i18n.t('INIT_ALLOW_CUSTOM_TIME_SIGNATURE')), chalk.magentaBright(getTextByBoolean(env.ALLOW_CUSTOM_TIME_SIGNATURE)));
 
     // Values

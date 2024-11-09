@@ -74,11 +74,7 @@ export function buildChunkedMessage([leading = '', content = '', trailing = ''] 
         return [[leading, first, trailing].join(GLOBAL.EMPTY_MESSAGE)];
     }
 
-    const splittedContent = [
-        first + GLOBAL.ETC,
-        ...restOfChunks.slice(0, -1).map((chunk) => GLOBAL.ETC + chunk + GLOBAL.ETC),
-        GLOBAL.ETC + restOfChunks[restOfChunks.length - 1]
-    ];
+    const splittedContent = [first + GLOBAL.ETC, ...restOfChunks.slice(0, -1).map((chunk) => GLOBAL.ETC + chunk + GLOBAL.ETC), GLOBAL.ETC + restOfChunks[restOfChunks.length - 1]];
     return splittedContent.map((contentChunk) => [leading, contentChunk, trailing].join(GLOBAL.EMPTY_MESSAGE));
 }
 

@@ -82,13 +82,15 @@ export const ERROR_MSG = {
     BAD_MIDI_NOTE: () => i18n.t('ERROR_BAD_MIDI_NOTE'),
     BAD_MIDI_CHANNEL: (variable: string, value: string) => `${i18n.t('ERROR_BAD_MIDI_CHANNEL')} // [${variable}=${value}]`,
     BAD_MIDI_VALUE: (variable: string, value: string) => `${i18n.t('ERROR_BAD_MIDI_MESSAGE')} // [${variable}=${value}]`,
-    BAD_BOOLEAN:  (variable: string, value: string) =>  `${i18n.t('ERROR_BAD_BOOLEAN')} // [${variable}=${value}]`,
+    BAD_BOOLEAN: (variable: string, value: string) => `${i18n.t('ERROR_BAD_BOOLEAN')} // [${variable}=${value}]`,
     INVALID_VOLUME: () => i18n.t('ERROR_INVALID_VOLUME'),
     INVALID_TEMPO: () =>
-        `${i18n.t('ERROR_INVALID_TEMPO_1')} ${CONFIG.MIN_TEMPO} ${i18n.t('ERROR_INVALID_TEMPO_2')} ${CONFIG.MAX_TEMPO} ${i18n.t('ERROR_INVALID_TEMPO_3')} ${CONFIG.DEFAULT_TEMPO
+        `${i18n.t('ERROR_INVALID_TEMPO_1')} ${CONFIG.MIN_TEMPO} ${i18n.t('ERROR_INVALID_TEMPO_2')} ${CONFIG.MAX_TEMPO} ${i18n.t('ERROR_INVALID_TEMPO_3')} ${
+            CONFIG.DEFAULT_TEMPO
         }${i18n.t('ERROR_INVALID_TEMPO_4')}`,
     INVALID_TIMEOUT: () =>
-        `${i18n.t('ERROR_INVALID_TIMEOUT_1')} ${CONFIG.MIN_TIMEOUT} ${i18n.t('ERROR_INVALID_TIMEOUT_2')} ${CONFIG.MAX_TIMEOUT} ${i18n.t('ERROR_INVALID_TIMEOUT_3')} ${CONFIG.DEFAULT_REQUEST_TIMEOUT
+        `${i18n.t('ERROR_INVALID_TIMEOUT_1')} ${CONFIG.MIN_TIMEOUT} ${i18n.t('ERROR_INVALID_TIMEOUT_2')} ${CONFIG.MAX_TIMEOUT} ${i18n.t('ERROR_INVALID_TIMEOUT_3')} ${
+            CONFIG.DEFAULT_REQUEST_TIMEOUT
         }${i18n.t('ERROR_INVALID_TIMEOUT_4')}`,
     CHORD_PROGRESSION_NOT_FOUND: () => i18n.t('ERROR_CHORD_PROGRESSION_NOT_FOUND'),
     CHORD_PROGRESSION_BAD_INSERTION: () => i18n.t('ERROR_CHORD_PROGRESSION_BAD_INSERTION'),

@@ -40,7 +40,11 @@ export function initiateConfigAPI(authProvider: RefreshingAuthProvider, env: Par
  * @param targetChannel Target channel
  * @returns A request listener for a HTTP server
  */
-function _onRequest(authProvider: RefreshingAuthProvider, targetChannel: string, targetMIDIChannel: number): (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void> {
+function _onRequest(
+    authProvider: RefreshingAuthProvider,
+    targetChannel: string,
+    targetMIDIChannel: number
+): (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void> {
     // Map of file name with the correspondent DB
     const configFileMap = {
         aliases: ALIASES_DB,
@@ -86,13 +90,13 @@ function _onRequest(authProvider: RefreshingAuthProvider, targetChannel: string,
                     case 'GET': {
                         // Obtain queue details
                         const sendChordEntries = [...queueMap.sendchord.tagEntries()[0]];
-                        const sendchord: Record<number, { requesterUser: string, tag: string }> = {};
+                        const sendchord: Record<number, { requesterUser: string; tag: string }> = {};
                         for (const [turn, tag, requesterUser] of sendChordEntries) {
                             sendchord[turn] = { requesterUser, tag };
                         }
 
                         const sendLoopEntries = [...queueMap.sendloop.tagEntries()[0]];
-                        const sendloop: Record<number, { requesterUser: string, tag: string }> = {};
+                        const sendloop: Record<number, { requesterUser: string; tag: string }> = {};
                         for (const [turn, tag, requesterUser] of sendLoopEntries) {
                             sendloop[turn] = { requesterUser, tag };
                         }
@@ -170,7 +174,7 @@ function _onRequest(authProvider: RefreshingAuthProvider, targetChannel: string,
                 switch (req.method) {
                     case 'POST': {
                         // Validate request
-                        if (commandName == null || turn == null || alias == null || alias === "") return _buildResponse(res, 400, i18n.t('API_BAD_DATA'));
+                        if (commandName == null || turn == null || alias == null || alias === '') return _buildResponse(res, 400, i18n.t('API_BAD_DATA'));
 
                         try {
                             await saveRequest(commandName, Number(turn), alias);
@@ -207,11 +211,11 @@ function _onRequest(authProvider: RefreshingAuthProvider, targetChannel: string,
                         }
 
                         try {
-                            triggerClock(targetMIDIChannel, newTempo)
+                            triggerClock(targetMIDIChannel, newTempo);
                         } catch (error) {
-                            return _buildResponse(res, 400, i18n.t('API_BAD_DATA') + " " + error);
+                            return _buildResponse(res, 400, i18n.t('API_BAD_DATA') + ' ' + String(error));
                         }
-                        
+
                         // Happy path, all OK! :)
                         return _buildResponse(res, 200, i18n.t('API_OK'));
                     }
@@ -219,7 +223,6 @@ function _onRequest(authProvider: RefreshingAuthProvider, targetChannel: string,
                         return _buildResponse(res, 405);
                 }
             }
-
 
             case '/volume': {
                 // Obtain name of command to check
@@ -236,11 +239,11 @@ function _onRequest(authProvider: RefreshingAuthProvider, targetChannel: string,
                     }
                     case 'PUT': {
                         // Validate request
-                        const newVolume = parseInt(volume ?? "");
+                        const newVolume = parseInt(volume ?? '');
                         try {
                             setMIDIVolume(newVolume);
                         } catch (error) {
-                            return _buildResponse(res, 400, i18n.t('API_BAD_DATA') + " " + error);
+                            return _buildResponse(res, 400, i18n.t('API_BAD_DATA') + ' ' + String(error));
                         }
                         // Happy path, all OK! :)
                         return _buildResponse(res, 200, i18n.t('API_OK'));
@@ -255,7 +258,7 @@ function _onRequest(authProvider: RefreshingAuthProvider, targetChannel: string,
                     case 'GET': {
                         let isActive = false;
                         try {
-                            checkMIDIConnection()
+                            checkMIDIConnection();
                             isActive = true;
                         } catch {
                             isActive = false;

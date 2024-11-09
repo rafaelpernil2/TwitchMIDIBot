@@ -7,13 +7,7 @@ import { EnvObject, ParsedEnvObject } from './types.js';
  * @returns ParsedEnvVariables
  */
 export function parseEnvVariables(env: EnvObject): ParsedEnvObject {
-    const [
-        REWARDS_MODE,
-        VIP_REWARDS_MODE,
-        SEND_UNAUTHORIZED_MESSAGE,
-        SILENCE_MACRO_MESSAGES,
-        ALLOW_CUSTOM_TIME_SIGNATURE
-    ] = getBooleanByStringList(
+    const [REWARDS_MODE, VIP_REWARDS_MODE, SEND_UNAUTHORIZED_MESSAGE, SILENCE_MACRO_MESSAGES, ALLOW_CUSTOM_TIME_SIGNATURE] = getBooleanByStringList(
         env.REWARDS_MODE,
         env.VIP_REWARDS_MODE,
         env.SEND_UNAUTHORIZED_MESSAGE,

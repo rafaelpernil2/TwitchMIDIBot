@@ -6,7 +6,7 @@ import { ERROR_MSG } from '../constants.js';
  * @returns If it's valid
  */
 export function TARGET_MIDI_CHANNEL(value: string): boolean {
-    _validateMIDIChannel(value, "TARGET_MIDI_CHANNEL");
+    _validateMIDIChannel(value, 'TARGET_MIDI_CHANNEL');
     return true;
 }
 
@@ -16,10 +16,9 @@ export function TARGET_MIDI_CHANNEL(value: string): boolean {
  * @returns If it's valid
  */
 export function TIME_SIGNATURE_NUMERATOR_CC(value: string): boolean {
-    _validateMIDIValue(value, "TIME_SIGNATURE_NUMERATOR_CC");
+    _validateMIDIValue(value, 'TIME_SIGNATURE_NUMERATOR_CC');
     return true;
 }
-
 
 /**
  * Validates TIME_SIGNATURE_DENOMINATOR_CC to make sure the MIDI CC is valid
@@ -27,10 +26,9 @@ export function TIME_SIGNATURE_NUMERATOR_CC(value: string): boolean {
  * @returns If it's valid
  */
 export function TIME_SIGNATURE_DENOMINATOR_CC(value: string): boolean {
-    _validateMIDIValue(value, "TIME_SIGNATURE_DENOMINATOR_CC");
+    _validateMIDIValue(value, 'TIME_SIGNATURE_DENOMINATOR_CC');
     return true;
 }
-
 
 /**
  * Validates REWARDS_MODE to make sure the boolean is valid
@@ -38,7 +36,7 @@ export function TIME_SIGNATURE_DENOMINATOR_CC(value: string): boolean {
  * @returns If it's valid
  */
 export function REWARDS_MODE(value: string): boolean {
-    _validateBoolean(value, "REWARDS_MODE");
+    _validateBoolean(value, 'REWARDS_MODE');
     return true;
 }
 
@@ -48,7 +46,7 @@ export function REWARDS_MODE(value: string): boolean {
  * @returns If it's valid
  */
 export function VIP_REWARDS_MODE(value: string): boolean {
-    _validateBoolean(value, "VIP_REWARDS_MODE");
+    _validateBoolean(value, 'VIP_REWARDS_MODE');
     return true;
 }
 
@@ -58,7 +56,7 @@ export function VIP_REWARDS_MODE(value: string): boolean {
  * @returns If it's valid
  */
 export function SEND_UNAUTHORIZED_MESSAGE(value: string): boolean {
-    _validateBoolean(value, "SEND_UNAUTHORIZED_MESSAGE");
+    _validateBoolean(value, 'SEND_UNAUTHORIZED_MESSAGE');
     return true;
 }
 
@@ -68,7 +66,7 @@ export function SEND_UNAUTHORIZED_MESSAGE(value: string): boolean {
  * @returns If it's valid
  */
 export function SILENCE_MACRO_MESSAGES(value: string): boolean {
-    _validateBoolean(value, "SILENCE_MACRO_MESSAGES");
+    _validateBoolean(value, 'SILENCE_MACRO_MESSAGES');
     return true;
 }
 
@@ -78,7 +76,7 @@ export function SILENCE_MACRO_MESSAGES(value: string): boolean {
  * @returns If it's valid
  */
 export function ALLOW_CUSTOM_TIME_SIGNATURE(value: string): boolean {
-    _validateBoolean(value, "ALLOW_CUSTOM_TIME_SIGNATURE");
+    _validateBoolean(value, 'ALLOW_CUSTOM_TIME_SIGNATURE');
     return true;
 }
 
@@ -89,7 +87,7 @@ export function ALLOW_CUSTOM_TIME_SIGNATURE(value: string): boolean {
  * @returns
  */
 function _validateBoolean(message: string | number, variable: string): void {
-    if (message !== "true" && message !== "false") {
+    if (message !== 'true' && message !== 'false') {
         throw new Error(ERROR_MSG.BAD_BOOLEAN(variable, String(message)));
     }
 }
@@ -106,7 +104,6 @@ function _validateMIDIChannel(message: string | number, variable: string): void 
         throw new Error(ERROR_MSG.BAD_MIDI_CHANNEL(variable, String(message)));
     }
 }
-
 
 /**
  * Validates a MIDI value that must be between 0 and 127 (inclusive)

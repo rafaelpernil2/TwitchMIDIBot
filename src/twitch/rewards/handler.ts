@@ -148,7 +148,6 @@ export async function reloadRewards(authProvider: RefreshingAuthProvider, target
     await toggleRewardsStatus(authProvider, targetChannel, { isEnabled: wereRewardsOn });
 }
 
-
 /**
  * Updates the status of a reward redemption
  * @param authProvider Authentication provider

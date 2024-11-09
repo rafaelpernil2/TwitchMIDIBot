@@ -75,7 +75,7 @@ export class GenericQueue<T> implements Queue<T> {
 
         // Check if it is not broadcaster, last request has expired and can be requested (timeout logic)
         if (!isBroadcaster && !this._hasLastRequestByUserExpired(requesterUser)) {
-            throw new Error(ERROR_MSG.TIMEOUT_REQUEST(requestTimeout.get()))
+            throw new Error(ERROR_MSG.TIMEOUT_REQUEST(requestTimeout.get()));
         }
 
         // Get turns
@@ -94,7 +94,7 @@ export class GenericQueue<T> implements Queue<T> {
         this._lastValidTurn = insertTurn;
 
         if (!isBroadcaster) {
-            this._lastQueuePositionByUserMap.set(requesterUser, insertTurn)
+            this._lastQueuePositionByUserMap.set(requesterUser, insertTurn);
         }
 
         return [insertTurn, ResponseStatus.Ok];
@@ -116,7 +116,7 @@ export class GenericQueue<T> implements Queue<T> {
         const status = deleteOk ? ResponseStatus.Ok : ResponseStatus.Error;
 
         // Delete last position by user for the given user
-        this._lastQueuePositionByUserMap.delete(requesterUser)
+        this._lastQueuePositionByUserMap.delete(requesterUser);
 
         // If turn is 0, no need to move index in previous node
         if (previousTurn !== -1) {
@@ -131,7 +131,7 @@ export class GenericQueue<T> implements Queue<T> {
         }
 
         // Re-link next node if exists
-        if (nextTurn !== (this._lastQueuedTurn + 1)) {
+        if (nextTurn !== this._lastQueuedTurn + 1) {
             const nextNode = this._queueMap.get(nextTurn);
             // This should not happen
             if (nextNode == null) {
@@ -143,8 +143,6 @@ export class GenericQueue<T> implements Queue<T> {
             // If it's last, move last valid turn to previous turn
             this._lastValidTurn = previousTurn;
         }
-
-
 
         return [null, status];
     }
@@ -181,16 +179,16 @@ export class GenericQueue<T> implements Queue<T> {
     }
     /**
      * Get next turn
-     * @returns 
+     * @returns
      */
     _getNewTurn(): number {
         this._lastQueuedTurn++;
         return this._lastQueuedTurn;
     }
-    
+
     /**
      * Get last item in queue
-     * @returns 
+     * @returns
      */
     _getLastInQueue(): Result<QueueNode<T> | null> {
         const queueNode = this._queueMap.get(this._lastQueuedTurn);
@@ -204,8 +202,8 @@ export class GenericQueue<T> implements Queue<T> {
 
     /**
      * Get last request by user
-     * @param requesterUser 
-     * @returns 
+     * @param requesterUser
+     * @returns
      */
     _getLastRequestByUser(requesterUser: string): QueueNode<T> | null {
         // Check last request by user timestamp
@@ -225,8 +223,8 @@ export class GenericQueue<T> implements Queue<T> {
 
     /**
      * Has last request expired checking with timeout
-     * @param requesterUser 
-     * @returns 
+     * @param requesterUser
+     * @returns
      */
     _hasLastRequestByUserExpired(requesterUser: string): boolean {
         const lastRequestByUser = this._getLastRequestByUser(requesterUser);
