@@ -307,6 +307,15 @@ Answer:
 > ![](https://feranern.sirv.com/Images/manage_rewards.webp)
 
 
+---
+
+Question: The app says there is an instance of TwitchMIDI already running but it is not open
+
+Answer:
+
+>There is a `.lock` file generated when launching TwitchMIDI that is removed when it gets closed, even with runtime errors or exceptions. First make sure no instance of TwitchMIDI is running. If that is the case, just delete the `.lock` file.
+
+
 ## Chords
 
 This program uses [harmonics](https://github.com/scribbletune/harmonics) by [scribbletune](https://github.com/scribbletune) to convert chord notation to MIDI notes.
