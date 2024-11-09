@@ -31,7 +31,7 @@ export function checkCommandAccess(command: Command, { userRoles, user }: Twitch
     // If it is not a safe command, check requests open and source (reward/chat)
     if (!SAFE_COMMANDS[command]) {
         // Check if requests are open
-        _checkRequestsOpen();
+        _checkRequestsOpen(userRoles);
 
         // Restricted access: Active and chat requests
         _checkRequestSource(source, env, userRoles);
@@ -40,10 +40,11 @@ export function checkCommandAccess(command: Command, { userRoles, user }: Twitch
 
 /**
  * Checks if the requests are open
+ * @param userRoles Roles of user
  * @returns
  */
-function _checkRequestsOpen(): void {
-    if (!areRequestsOpen.get()) {
+function _checkRequestsOpen(userRoles: UserRoles): void {
+    if (!areRequestsOpen.get() && !userRoles.isMod) {
         throw new Error(ERROR_MSG.BOT_PAUSED_DISCONNECTED());
     }
 }

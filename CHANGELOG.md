@@ -54,6 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rewards disable bug. Before, it only disabled the current rewards from rewards.json file. If any reward were changed while running TwitchMIDI, it would stay active forever. Now it disables all rewards created by TwitchMIDI (new behaviour) and enables only the ones from rewards.json file (as before)
 - Control Change error handling, now requests without value give a meaningful error
 - Bad request bug. If you request "H" it is registered as a valid chord however, JZZ treats it as invalid and the queue stops working. Now it works well!
+- !midion or non secure commands on !midipause did not work for mods. Now it does. If requests are paused but you are a mod, you can access
 ### Removed
 - Documentation page from this repository. Now any documentation change does not require a new version release
 - Max loop queue length. Before it was limited by the EventEmitter to 10 items waiting in queue. Now there is no limit since there are no EventEmitters in use.
