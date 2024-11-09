@@ -119,7 +119,7 @@ export async function triggerChordList(
         for (const [timeSignature, rawChordProgression] of requestList) {
             if (!syncMode.is(Sync.OFF)) continue;
 
-            setTimeSignature(targetMIDIChannel, timeSignature, timeSignatureCC, { allowCustomTimeSignature });
+            _setTimeSignature(targetMIDIChannel, timeSignature, timeSignatureCC, { allowCustomTimeSignature });
             const chordProgression = _processChordProgression(rawChordProgression, globalTempo);
 
             for (const [noteList, timeout] of chordProgression) {
@@ -197,36 +197,6 @@ export function stopAllMidi(targetMIDIChannel: number): void {
     output.allNotesOff(targetMIDIChannel);
     stopClock();
     clearAllQueues();
-}
-
-/**
- * Sets time signature
- * @param targetMIDIChannel Virtual MIDI device channel
- * @param timeSignature [noteCount, noteValue]: [noteCount: number, noteValue: number]
- * @param timeSignatureCC: [numeratorCC: number, denominatorCC: number]
- * @param options { allowCustomTimeSignature }: { allowCustomTimeSignature: boolean }
- * 
- */
-export function setTimeSignature(
-    targetMIDIChannel: number,
-    [noteCount, noteValue]: [noteCount: number, noteValue: number],
-    [numeratorCC, denominatorCC]: [numeratorCC: number, denominatorCC: number],
-    { allowCustomTimeSignature }: { allowCustomTimeSignature: boolean }
-): void {
-    if (output == null) {
-        throw new Error(ERROR_MSG.BOT_DISCONNECTED());
-    }
-    const newClockPulses = noteCount * 96 / noteValue;
-    // If timeSignature is the same, do nothing
-    if (!allowCustomTimeSignature || clockPulses.is(newClockPulses)) {
-        return;
-    }
-
-    output.control(targetMIDIChannel, numeratorCC, noteCount);
-    output.control(targetMIDIChannel, denominatorCC, noteValue);
-
-    clockPulses.set(newClockPulses); // Set time signature. 96 is 24 pulses per quarter * 4 quarter notes
-    triggerClock(targetMIDIChannel, undefined, { sync: false });
 }
 
 /**
@@ -396,4 +366,34 @@ function _sweep(
         result.push([value, time]);
     }
     return result;
+}
+
+/**
+ * Sets time signature
+ * @param targetMIDIChannel Virtual MIDI device channel
+ * @param timeSignature [noteCount, noteValue]: [noteCount: number, noteValue: number]
+ * @param timeSignatureCC: [numeratorCC: number, denominatorCC: number]
+ * @param options { allowCustomTimeSignature }: { allowCustomTimeSignature: boolean }
+ * 
+ */
+function _setTimeSignature(
+    targetMIDIChannel: number,
+    [noteCount, noteValue]: [noteCount: number, noteValue: number],
+    [numeratorCC, denominatorCC]: [numeratorCC: number, denominatorCC: number],
+    { allowCustomTimeSignature }: { allowCustomTimeSignature: boolean }
+): void {
+    if (output == null) {
+        throw new Error(ERROR_MSG.BOT_DISCONNECTED());
+    }
+    const newClockPulses = noteCount * 96 / noteValue;
+    // If timeSignature is the same, do nothing
+    if (!allowCustomTimeSignature || clockPulses.is(newClockPulses)) {
+        return;
+    }
+
+    output.control(targetMIDIChannel, numeratorCC, noteCount);
+    output.control(targetMIDIChannel, denominatorCC, noteValue);
+
+    clockPulses.set(newClockPulses); // Set time signature. 96 is 24 pulses per quarter * 4 quarter notes
+    triggerClock(targetMIDIChannel, undefined, { sync: false });
 }
