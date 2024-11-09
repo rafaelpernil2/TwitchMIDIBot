@@ -170,7 +170,7 @@ function _onRequest(authProvider: RefreshingAuthProvider, targetChannel: string,
                 switch (req.method) {
                     case 'POST': {
                         // Validate request
-                        if (commandName == null || turn == null || alias == null) return _buildResponse(res, 400, i18n.t('API_BAD_DATA'));
+                        if (commandName == null || turn == null || alias == null || alias === "") return _buildResponse(res, 400, i18n.t('API_BAD_DATA'));
 
                         try {
                             await saveRequest(commandName, Number(turn), alias);
