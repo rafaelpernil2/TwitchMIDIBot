@@ -20,9 +20,19 @@ export class GenericQueue<T> implements Queue<T> {
         this._lastValidTurn = -1;
     }
 
+    /**
+     * Check if the given turn is the current turn
+     * @param turn Turn in queue
+     * @returns 
+     */
     isMyTurn(turn: number): Result<boolean> {
         return [turn === this._currentTurn, ResponseStatus.Ok];
     }
+
+    /**
+     * Returns all the elements in the queue
+     * @returns 
+     */
     tagEntries(): Result<[turn: number, tag: string, requesterUser: string][]> {
         const tagEntries: Array<[turn: number, tag: string, requesterUser: string]> = [];
         for (const [turn, { tag, requesterUser }] of this._queueMap.entries()) {
@@ -30,9 +40,20 @@ export class GenericQueue<T> implements Queue<T> {
         }
         return [tagEntries, ResponseStatus.Ok];
     }
+
+    /**
+     * Checks if the queue has a given turn
+     * @param turn Turn in queue
+     * @returns 
+     */
     has(turn: number): Result<boolean> {
         return [this._queueMap.has(turn), ResponseStatus.Ok];
     }
+
+    /**
+     * Retrieves current element in queue
+     * @returns 
+     */
     getCurrentTag(): Result<string | null> {
         const current = this._queueMap.get(this._currentTurn);
         if (current == null) {
@@ -40,6 +61,12 @@ export class GenericQueue<T> implements Queue<T> {
         }
         return [current.tag, ResponseStatus.Ok];
     }
+
+    /**
+     * Retrieves request name given a turn in queue
+     * @param turn Turn in queue
+     * @returns 
+     */
     getTag(turn: number): Result<string | null> {
         const current = this._queueMap.get(turn);
         if (current == null) {
@@ -47,6 +74,12 @@ export class GenericQueue<T> implements Queue<T> {
         }
         return [current.tag, ResponseStatus.Ok];
     }
+
+    /**
+     * Retrieves request value given a turn in queue
+     * @param turn Turn in queue
+     * @returns 
+     */
     get(turn: number): Result<T | null> {
         const current = this._queueMap.get(turn);
         if (current == null) {
@@ -55,6 +88,10 @@ export class GenericQueue<T> implements Queue<T> {
         return [current.value, ResponseStatus.Ok];
     }
 
+    /**
+     * Checks if current request is the last one
+     * @returns 
+     */
     isCurrentLast(): Result<boolean> {
         const currentNode = this._queueMap.get(this._currentTurn);
         // Initial case where currentTurn is empty
@@ -66,6 +103,14 @@ export class GenericQueue<T> implements Queue<T> {
         return [nextNode == null, ResponseStatus.Ok];
     }
 
+    /**
+     * Add element to queue
+     * @param tag Name of request
+     * @param value Value of request
+     * @param requesterUser Requester user
+     * @param userRoles { isBroadcaster }
+     * @returns 
+     */
     enqueue(tag: string, value: T, requesterUser: string, { isBroadcaster }: { isBroadcaster: boolean }): Result<number> {
         // Throw error on duplicate requests
         const [lastNode] = this._getLastInQueue();
@@ -99,6 +144,12 @@ export class GenericQueue<T> implements Queue<T> {
 
         return [insertTurn, ResponseStatus.Ok];
     }
+
+    /**
+     * Removes item from queue
+     * @param turn Turn to be removed
+     * @returns 
+     */
     dequeue(turn: number): Result<null> {
         // If out of bounds
         if (turn < 0 || turn > this._lastQueuedTurn) {
@@ -146,6 +197,11 @@ export class GenericQueue<T> implements Queue<T> {
 
         return [null, status];
     }
+
+    /**
+     * Retrieves current turn data
+     * @returns 
+     */
     getCurrent(): Result<T | null> {
         const current = this._queueMap.get(this._currentTurn);
         if (current == null) {
@@ -153,14 +209,29 @@ export class GenericQueue<T> implements Queue<T> {
         }
         return [current.value, ResponseStatus.Ok];
     }
+
+    /**
+     * Forwards the queue moving to the next turn
+     * @returns 
+     */
     forward(): Result<null> {
         this._currentTurn = this.getNextTurn()[0];
         return [null, ResponseStatus.Ok];
     }
+
+    /**
+     * Empties the queue
+     * @returns 
+     */
     clear(): Result<null> {
         this._queueMap = new Map();
         return [null, ResponseStatus.Ok];
     }
+
+    /**
+     * Obtains next turn from queue
+     * @returns 
+     */
     getNextTurn(): Result<number> {
         const currentItem = this._queueMap.get(this._currentTurn);
         if (currentItem == null) {
@@ -171,12 +242,25 @@ export class GenericQueue<T> implements Queue<T> {
         // Otherwise, get next turn
         return [currentItem.nextTurn, ResponseStatus.Ok];
     }
+
+    /**
+     * Retrieves current turn in queue
+     * @returns 
+     */
     getCurrentTurn(): Result<number> {
         return [this._currentTurn, ResponseStatus.Ok];
     }
+
+    /**
+     * Checks if queue is empty
+     * @returns 
+     */
     isEmpty(): Result<boolean> {
         return [this._queueMap.size === 0, ResponseStatus.Ok];
     }
+
+    // PRIVATE METHODS
+
     /**
      * Get next turn
      * @returns
