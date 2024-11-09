@@ -179,10 +179,19 @@ export class GenericQueue<T> implements Queue<T> {
     isEmpty(): Result<boolean> {
         return [this._queueMap.size === 0, ResponseStatus.Ok];
     }
+    /**
+     * Get next turn
+     * @returns 
+     */
     _getNewTurn(): number {
         this._lastQueuedTurn++;
         return this._lastQueuedTurn;
     }
+    
+    /**
+     * Get last item in queue
+     * @returns 
+     */
     _getLastInQueue(): Result<QueueNode<T> | null> {
         const queueNode = this._queueMap.get(this._lastQueuedTurn);
 
@@ -192,6 +201,12 @@ export class GenericQueue<T> implements Queue<T> {
 
         return [queueNode, ResponseStatus.Ok];
     }
+
+    /**
+     * Get last request by user
+     * @param requesterUser 
+     * @returns 
+     */
     _getLastRequestByUser(requesterUser: string): QueueNode<T> | null {
         // Check last request by user timestamp
         const lastPosition = this._lastQueuePositionByUserMap.get(requesterUser);
@@ -208,6 +223,11 @@ export class GenericQueue<T> implements Queue<T> {
         return lastRequest;
     }
 
+    /**
+     * Has last request expired checking with timeout
+     * @param requesterUser 
+     * @returns 
+     */
     _hasLastRequestByUserExpired(requesterUser: string): boolean {
         const lastRequestByUser = this._getLastRequestByUser(requesterUser);
 

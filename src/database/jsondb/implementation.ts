@@ -11,6 +11,7 @@ export class JSONDatabase<T extends CustomObject<T>> implements Database<T> {
     /**
      * Given the file DB path, the contents are loaded into this.db
      * @param filePath File DB path
+     * @param options { ignoreFileNotFound }
      */
     constructor(filePath: string, { ignoreFileNotFound = false } = {}) {
         this._filePath = filePath;
@@ -35,6 +36,7 @@ export class JSONDatabase<T extends CustomObject<T>> implements Database<T> {
     }
     /**
      * Sets a DB
+     * @param newDB
      */
     set value(newDB: T | undefined) {
         this._db = newDB;

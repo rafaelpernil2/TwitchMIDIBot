@@ -1,4 +1,3 @@
-import i18n from '../../i18n/loader.js';
 import { ERROR_MSG } from '../constants.js';
 
 /**

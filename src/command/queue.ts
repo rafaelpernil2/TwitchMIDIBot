@@ -28,6 +28,13 @@ export const queueMap = {
     ]>>()
 } as const;
 
+/**
+ * Create a clock synched queue
+ * @param targetMIDIChannel Target MIDI Channel
+ * @param timeSignatureCC Time Signature MIDI CC
+ * @param options { allowCustomTimeSignature }
+ * @returns 
+ */
 export function createAutomaticClockSyncedQueue(
     targetMIDIChannel: number,
     timeSignatureCC: [numeratorCC: number, denominatorCC: number],
@@ -67,8 +74,11 @@ export function createAutomaticClockSyncedQueue(
 
 /**
  * Adds request to queue
- * @param value
- * @param type
+ * @param tag Name to queue
+ * @param value Value to queue
+ * @param requesterUser Requester user
+ * @param userRoles { isBroadcaster }
+ * @param type Command.sendloop | Command.sendchord
  * @returns
  */
 export function enqueue(
@@ -87,7 +97,7 @@ export function enqueue(
 
 /**
  * Moves to the next in queue
- * @param type
+ * @param type Command.sendloop | Command.sendchord
  */
 export function forwardQueue(type: Command.sendloop | Command.sendchord): void {
     const [currentTurn] = queueMap[type].getCurrentTurn();
@@ -125,7 +135,7 @@ export function getRequestQueue(): [type: Command.sendloop | Command.sendchord, 
 
 /**
  * Removes petitions from a queue by type
- * @param type
+ * @param type Command.sendloop | Command.sendchord
  */
 export function clearQueue(type: Command.sendloop | Command.sendchord): void {
     queueMap[type].clear();
@@ -142,8 +152,8 @@ export function clearAllQueues(): void {
 
 /**
  * Removes item from queue
- * @param type
- * @param turn
+ * @param type Command.sendloop | Command.sendchord
+ * @param turn Turn in queue
  * @returns
  */
 export function removeFromQueue(type: Command.sendloop | Command.sendchord, turn: number): void {
@@ -156,8 +166,8 @@ export function removeFromQueue(type: Command.sendloop | Command.sendchord, turn
 
 /**
  * Marks item as favorite
- * @param type
- * @param turn
+ * @param type Command.sendloop | Command.sendchord
+ * @param turn Turn in queue
  */
 export function markAsFavorite(type: Command.sendloop | Command.sendchord, turn: number): void {
     favoriteIdMap[type] = turn;
@@ -165,7 +175,7 @@ export function markAsFavorite(type: Command.sendloop | Command.sendchord, turn:
 
 /**
  * Marks item as favorite
- * @param type
+ * @param type Command.sendloop | Command.sendchord
  */
 export function unmarkFavorite(type: Command.sendloop | Command.sendchord): void {
     favoriteIdMap[type] = -1;
@@ -173,9 +183,9 @@ export function unmarkFavorite(type: Command.sendloop | Command.sendchord): void
 
 /**
  * Save a request into the list of aliases
- * @param type
- * @param turn
- * @param alias
+ * @param type Command.sendloop | Command.sendchord
+ * @param turn Turn in queue
+ * @param alias Alias name
  */
 export async function saveRequest(type: Command.sendloop | Command.sendchord, turn: number, alias: string): Promise<void> {
     const [requestData] = queueMap[type].getTag(turn);
@@ -199,8 +209,8 @@ export async function saveRequest(type: Command.sendloop | Command.sendchord, tu
 }
 /**
  * Checks if a request is still in queue
- * @param type
- * @param turn
+ * @param type Command.sendloop | Command.sendchord
+ * @param turn Turn in queue
  * @returns If the queued request is not null
  */
 function _isInQueue(type: Command.sendloop | Command.sendchord, turn: number): boolean {
@@ -210,7 +220,7 @@ function _isInQueue(type: Command.sendloop | Command.sendchord, turn: number): b
 
 /**
  * Checks if queue is empty
- * @param type
+ * @param type Command.sendloop | Command.sendchord
  * @returns
  */
 function _isCurrentLast(type: Command.sendloop | Command.sendchord): boolean {
@@ -221,8 +231,8 @@ function _isCurrentLast(type: Command.sendloop | Command.sendchord): boolean {
 
 /**
  * Checks if the given request turn is the favorite one
- * @param type
- * @param turn
+ * @param type Command.sendloop | Command.sendchord
+ * @param turn Turn in queue
  * @returns
  */
 function _isFavoriteRequest(type: Command.sendloop | Command.sendchord, turn: number): boolean {
