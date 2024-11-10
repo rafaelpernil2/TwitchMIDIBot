@@ -680,6 +680,11 @@ function _parseChordProgression(
         chordProgressionList.unshift(firstToken);
     }
 
+    // If no chord progression
+    if (!restOfTokens.length) {
+        throw new Error(ERROR_MSG.INVALID_CHORD(`""`));
+    }
+
     return [
         finalTimeSignature,
         chordProgressionList.map((chord) => {
