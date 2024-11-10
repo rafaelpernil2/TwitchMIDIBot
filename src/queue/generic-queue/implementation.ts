@@ -23,7 +23,7 @@ export class GenericQueue<T> implements Queue<T> {
     /**
      * Check if the given turn is the current turn
      * @param turn Turn in queue
-     * @returns 
+     * @returns
      */
     isMyTurn(turn: number): Result<boolean> {
         return [turn === this._currentTurn, ResponseStatus.Ok];
@@ -31,7 +31,7 @@ export class GenericQueue<T> implements Queue<T> {
 
     /**
      * Returns all the elements in the queue
-     * @returns 
+     * @returns
      */
     tagEntries(): Result<[turn: number, tag: string, requesterUser: string][]> {
         const tagEntries: Array<[turn: number, tag: string, requesterUser: string]> = [];
@@ -44,7 +44,7 @@ export class GenericQueue<T> implements Queue<T> {
     /**
      * Checks if the queue has a given turn
      * @param turn Turn in queue
-     * @returns 
+     * @returns
      */
     has(turn: number): Result<boolean> {
         return [this._queueMap.has(turn), ResponseStatus.Ok];
@@ -52,7 +52,7 @@ export class GenericQueue<T> implements Queue<T> {
 
     /**
      * Retrieves current element in queue
-     * @returns 
+     * @returns
      */
     getCurrentTag(): Result<string | null> {
         const current = this._queueMap.get(this._currentTurn);
@@ -65,7 +65,7 @@ export class GenericQueue<T> implements Queue<T> {
     /**
      * Retrieves request name given a turn in queue
      * @param turn Turn in queue
-     * @returns 
+     * @returns
      */
     getTag(turn: number): Result<string | null> {
         const current = this._queueMap.get(turn);
@@ -78,7 +78,7 @@ export class GenericQueue<T> implements Queue<T> {
     /**
      * Retrieves request value given a turn in queue
      * @param turn Turn in queue
-     * @returns 
+     * @returns
      */
     get(turn: number): Result<T | null> {
         const current = this._queueMap.get(turn);
@@ -90,7 +90,7 @@ export class GenericQueue<T> implements Queue<T> {
 
     /**
      * Checks if current request is the last one
-     * @returns 
+     * @returns
      */
     isCurrentLast(): Result<boolean> {
         const currentNode = this._queueMap.get(this._currentTurn);
@@ -109,7 +109,7 @@ export class GenericQueue<T> implements Queue<T> {
      * @param value Value of request
      * @param requesterUser Requester user
      * @param userRoles { isBroadcaster }
-     * @returns 
+     * @returns
      */
     enqueue(tag: string, value: T, requesterUser: string, { isBroadcaster }: { isBroadcaster: boolean }): Result<number> {
         // Throw error on duplicate requests
@@ -148,7 +148,7 @@ export class GenericQueue<T> implements Queue<T> {
     /**
      * Removes item from queue
      * @param turn Turn to be removed
-     * @returns 
+     * @returns
      */
     dequeue(turn: number): Result<null> {
         // If out of bounds
@@ -200,7 +200,7 @@ export class GenericQueue<T> implements Queue<T> {
 
     /**
      * Retrieves current turn data
-     * @returns 
+     * @returns
      */
     getCurrent(): Result<T | null> {
         const current = this._queueMap.get(this._currentTurn);
@@ -212,7 +212,7 @@ export class GenericQueue<T> implements Queue<T> {
 
     /**
      * Forwards the queue moving to the next turn
-     * @returns 
+     * @returns
      */
     forward(): Result<null> {
         this._currentTurn = this.getNextTurn()[0];
@@ -221,7 +221,7 @@ export class GenericQueue<T> implements Queue<T> {
 
     /**
      * Empties the queue
-     * @returns 
+     * @returns
      */
     clear(): Result<null> {
         this._queueMap = new Map();
@@ -230,7 +230,7 @@ export class GenericQueue<T> implements Queue<T> {
 
     /**
      * Obtains next turn from queue
-     * @returns 
+     * @returns
      */
     getNextTurn(): Result<number> {
         const currentItem = this._queueMap.get(this._currentTurn);
@@ -245,7 +245,7 @@ export class GenericQueue<T> implements Queue<T> {
 
     /**
      * Retrieves current turn in queue
-     * @returns 
+     * @returns
      */
     getCurrentTurn(): Result<number> {
         return [this._currentTurn, ResponseStatus.Ok];
@@ -253,7 +253,7 @@ export class GenericQueue<T> implements Queue<T> {
 
     /**
      * Checks if queue is empty
-     * @returns 
+     * @returns
      */
     isEmpty(): Result<boolean> {
         return [this._queueMap.size === 0, ResponseStatus.Ok];
