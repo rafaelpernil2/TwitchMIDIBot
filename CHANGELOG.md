@@ -12,7 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Time signature changes trigger a MIDI CC message. You can map it to your metronome time signature within your DAW
 - Macro feature: Now you can trigger a set of commands with different timeouts just using a single command or "macro"
 - aliases.json has a new section called "macros". Not a breaking change because it is fixed automatically by this update
-- New .env flag - SILENCE_MACRO_MESSAGES for new Macro feature. It disables message output for macro commands
+- New .env flags:
+  - SILENCE_MACRO_MESSAGES for new Macro feature. It disables message output for macro commands
+  - ALLOW_CUSTOM_TIME_SIGNATURE for custom time signature feature. It enables or disables other time signatures than 4/4
+  - TIME_SIGNATURE_NUMERATOR_CC sets the MIDI CC to send messages containing the time signature numerator on each time signature change
+  - TIME_SIGNATURE_DENOMINATOR_CC sets the MIDI CC to send messages containing the time signature denominator on each time signature change
 - !midibanuser and !midiunbanuser to forbid usage to some users
 - !miditimeout to rate-limit requests per user
 - Revamped and extended Config API (for TwitchMIDI+). Now you can:
