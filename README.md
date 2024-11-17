@@ -313,7 +313,7 @@ Question: The app says there is an instance of TwitchMIDI already running but it
 
 Answer:
 
->There is a `.lock` file generated when launching TwitchMIDI that is removed when it gets closed, even with runtime errors or exceptions. First make sure no instance of TwitchMIDI is running. If that is the case, just delete the `.lock` file.
+>There is a `.lock` file generated when launching TwitchMIDI that is removed when it gets closed, even with runtime errors or exceptions. Unfortunately, the file will not be removed if you shutdown Windows with TwitchMIDI open. First make sure no instance of TwitchMIDI is running. If that is the case, just delete the `.lock` file.
 
 
 ## Chords
