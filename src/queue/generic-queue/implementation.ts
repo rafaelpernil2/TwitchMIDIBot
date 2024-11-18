@@ -2,11 +2,9 @@ import { isTimestampExpired } from '../../utils/generic.js';
 import { ERROR_MSG } from '../../configuration/constants.js';
 import { ResponseStatus, Result } from '../../types/generic.js';
 import { Queue, QueueNode } from '../interface.js';
-import { requestTimeout } from '../../command/queue.js';
 
 export class GenericQueue<T> implements Queue<T> {
     private _queueMap: Map<number, QueueNode<T>>;
-    private _lastQueuePositionByUserMap: Map<string, number>;
     private _currentTurn: number;
     private _lastQueuedTurn: number;
     private _lastValidTurn: number;
@@ -14,7 +12,6 @@ export class GenericQueue<T> implements Queue<T> {
     constructor() {
         // Initialize variables
         this._queueMap = new Map();
-        this._lastQueuePositionByUserMap = new Map();
         this._currentTurn = 0;
         this._lastQueuedTurn = -1;
         this._lastValidTurn = -1;
@@ -118,11 +115,6 @@ export class GenericQueue<T> implements Queue<T> {
             throw new Error(ERROR_MSG.DUPLICATE_REQUEST());
         }
 
-        // Check if it is not broadcaster, last request has expired and can be requested (timeout logic)
-        if (!isBroadcaster && !this._hasLastRequestByUserExpired(requesterUser)) {
-            throw new Error(ERROR_MSG.TIMEOUT_REQUEST(requestTimeout.get()));
-        }
-
         // Get turns
         const previousTurn = this._lastValidTurn;
         const insertTurn = this._getNewTurn();
@@ -137,10 +129,6 @@ export class GenericQueue<T> implements Queue<T> {
             nextTurn
         });
         this._lastValidTurn = insertTurn;
-
-        if (!isBroadcaster) {
-            this._lastQueuePositionByUserMap.set(requesterUser, insertTurn);
-        }
 
         return [insertTurn, ResponseStatus.Ok];
     }
@@ -165,9 +153,6 @@ export class GenericQueue<T> implements Queue<T> {
         // Delete node
         const deleteOk = this._queueMap.delete(turn);
         const status = deleteOk ? ResponseStatus.Ok : ResponseStatus.Error;
-
-        // Delete last position by user for the given user
-        this._lastQueuePositionByUserMap.delete(requesterUser);
 
         // If turn is 0, no need to move index in previous node
         if (previousTurn !== -1) {
@@ -282,42 +267,5 @@ export class GenericQueue<T> implements Queue<T> {
         }
 
         return [queueNode, ResponseStatus.Ok];
-    }
-
-    /**
-     * Get last request by user
-     * @param requesterUser
-     * @returns
-     */
-    _getLastRequestByUser(requesterUser: string): QueueNode<T> | null {
-        // Check last request by user timestamp
-        const lastPosition = this._lastQueuePositionByUserMap.get(requesterUser);
-        if (lastPosition == null) {
-            return null;
-        }
-
-        const lastRequest = this._queueMap.get(lastPosition);
-
-        if (lastRequest == null) {
-            return null;
-        }
-
-        return lastRequest;
-    }
-
-    /**
-     * Has last request expired checking with timeout
-     * @param requesterUser
-     * @returns
-     */
-    _hasLastRequestByUserExpired(requesterUser: string): boolean {
-        const lastRequestByUser = this._getLastRequestByUser(requesterUser);
-
-        // If there is no last request, it has expired and another can be requested
-        if (lastRequestByUser == null) {
-            return true;
-        }
-
-        return isTimestampExpired(lastRequestByUser.timestamp, new Date(), requestTimeout.get());
     }
 }

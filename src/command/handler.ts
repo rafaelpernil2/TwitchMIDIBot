@@ -1,5 +1,5 @@
 import { ALIASES_DB, COMMAND_DESCRIPTIONS, CONFIG, ERROR_MSG, EVENT, EVENT_EMITTER, GLOBAL, PERMISSIONS_DB, REWARDS_DB, TOGGLE_MIDI_VALUES } from '../configuration/constants.js';
-import { enqueue, getCurrentRequestPlaying, getRequestQueue, createAutomaticClockSyncedQueue, clearAllQueues, requestTimeout } from './queue.js';
+import { enqueue, getCurrentRequestPlaying, getRequestQueue, createAutomaticClockSyncedQueue, clearAllQueues } from './queue.js';
 import { isValidCommand, deAliasCommand, splitCommandArguments } from './utils.js';
 import { CommandParams } from '../twitch/command/types.js';
 import { removeDuplicates } from '../utils/generic.js';
@@ -19,7 +19,7 @@ import harmonics from 'harmonics';
 const { inlineChord } = harmonics;
 import { CC_COMMANDS_KEY, CC_CONTROLLERS_KEY, CHORD_PROGRESSIONS_KEY, PERMISSIONS_MAP, PermissionsTable } from '../database/jsondb/types.js';
 import { ChatClient } from '@twurple/chat';
-import { areRequestsOpen } from './guards.js';
+import { areRequestsOpen, requestTimeout } from './guards.js';
 import i18n from '../i18n/loader.js';
 import { createRewards, toggleRewardsStatus, reloadRewards } from '../twitch/rewards/handler.js';
 import { sayTwitchChatMessage } from '../twitch/chat/handler.js';

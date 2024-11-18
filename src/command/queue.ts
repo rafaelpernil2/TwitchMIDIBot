@@ -7,10 +7,7 @@ import { Command } from './types.js';
 import { ResponseStatus } from '../types/generic.js';
 import { GenericQueue } from '../queue/generic-queue/implementation.js';
 import { triggerChordList } from '../midi/handler.js';
-import { SharedVariable } from '../shared-variable/implementation.js';
 import { UserRoles } from '../twitch/command/types.js';
-
-export const requestTimeout = new SharedVariable<number>(CONFIG.DEFAULT_REQUEST_TIMEOUT);
 
 export const favoriteIdMap = Object.fromEntries(Object.values(Command).map((key) => [key, -1])) as Record<Command, number>;
 export let onBarLoopChange: () => Promise<void>;

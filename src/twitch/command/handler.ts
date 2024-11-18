@@ -3,7 +3,7 @@ import { CONFIG, ERROR_MSG } from '../../configuration/constants.js';
 import { CommandHandlerType, MessageHandler, RequestSource, TwitchParams } from './types.js';
 import { getCommandList } from '../../command/utils.js';
 import * as CommandHandlers from '../../command/handler.js';
-import { checkCommandAccess } from '../../command/guards.js';
+import { checkCommandAccess, checkTimeout, removeRequestTimeoutByUser, setTimeoutToRequest } from '../../command/guards.js';
 import { ParsedEnvObject } from '../../configuration/env/types.js';
 import { RefreshingAuthProvider } from '@twurple/auth';
 import { setTimeoutPromise } from '../../utils/promise.js';
@@ -21,6 +21,20 @@ export const onMessageHandlerClosure = (authProvider: RefreshingAuthProvider, ch
     return async (channel, user, message, msg): Promise<void> => {
         const [isMacroMessage, commandList] = getCommandList(message);
         try {
+
+            // If no user info was provided, this is is Channel Points/Rewards mode, so there's no block
+            const twitch: TwitchParams = {
+                channel,
+                chatClient,
+                authProvider,
+                user,
+                targetChannel: env.TARGET_CHANNEL,
+                userRoles: msg?.userInfo ?? CONFIG.DEFAULT_USER_ROLES(user, env.TARGET_CHANNEL)
+            };
+            // Check request timeout
+            checkTimeout(commandList, twitch, { isMacroMessage })
+            // Set last request by user to now
+            setTimeoutToRequest(user, new Date());
             // Start all tasks asynchronously
             const promiseList = commandList.map(async ([command, args, delayNs]) => {
                 // Ignore messages that are not commands
@@ -34,15 +48,6 @@ export const onMessageHandlerClosure = (authProvider: RefreshingAuthProvider, ch
                     return;
                 }
 
-                // If no user info was provided, this is is Channel Points/Rewards mode, so there's no block
-                const twitch: TwitchParams = {
-                    channel,
-                    chatClient,
-                    authProvider,
-                    user,
-                    targetChannel: env.TARGET_CHANNEL,
-                    userRoles: msg?.userInfo ?? CONFIG.DEFAULT_USER_ROLES(user, env.TARGET_CHANNEL)
-                };
                 // Checks if the user has enough permissions
                 checkCommandAccess(command, twitch, source, env);
 
@@ -66,6 +71,11 @@ export const onMessageHandlerClosure = (authProvider: RefreshingAuthProvider, ch
             // Collect all promises and their errors
             await Promise.all(promiseList);
         } catch (error) {
+            // If any non-timeout error happened, remove last request timeout
+            if (!(error instanceof Error) || error.message !== ERROR_MSG.TIMEOUT_REQUEST()) {
+                removeRequestTimeoutByUser(user);
+            }
+
             // Skip error notification if SEND_UNAUTHORIZED_MESSAGE is false
             if (!(error instanceof Error) || error.message !== ERROR_MSG.BAD_PERMISSIONS() || env.SEND_UNAUTHORIZED_MESSAGE) {
                 sayTwitchChatMessage(chatClient, channel, [, String(error)]);
