@@ -32,12 +32,12 @@ import { ResponseStatus } from '../types/generic.js';
  *         twitch: { chatClient, channel, user, userRoles } // Twitch chat and user data
  *         ]
  */
-export function midihelp(...[message, { silenceMessages }, { chatClient, channel }]: CommandParams): void {
+export function midihelp(...[message, { silenceMessages }, { chatClient, channel, user }]: CommandParams): void {
     const [commandToTest] = splitCommandArguments(message);
     if (isValidCommand(commandToTest)) {
-        sayTwitchChatMessage(chatClient, channel, [`${i18n.t('MIDIHELP_VALID')} !${commandToTest}: `, COMMAND_DESCRIPTIONS[deAliasCommand(commandToTest)]()], { silenceMessages });
+        sayTwitchChatMessage(chatClient, channel, [`@${user} ${i18n.t('MIDIHELP_VALID')} !${commandToTest}: `, COMMAND_DESCRIPTIONS[deAliasCommand(commandToTest)]()], { silenceMessages });
     } else {
-        sayTwitchChatMessage(chatClient, channel, [i18n.t('MIDIHELP_INVALID') + ' ', Object.values(Command).join(GLOBAL.COMMA_JOIN)], { silenceMessages });
+        sayTwitchChatMessage(chatClient, channel, [`@${user} ` + i18n.t('MIDIHELP_INVALID') + ' ', Object.values(Command).join(GLOBAL.COMMA_JOIN)], { silenceMessages });
     }
 }
 
@@ -124,7 +124,7 @@ export function midiresume(...[, { silenceMessages }, { chatClient, channel }]: 
  *         twitch: { chatClient, channel, user, userRoles } // Twitch chat and user data
  *         ]
  */
-export async function addchord(...[message, { silenceMessages, allowCustomTimeSignature }, { chatClient, channel }]: CommandParams): Promise<void> {
+export async function addchord(...[message, { silenceMessages, allowCustomTimeSignature }, { chatClient, channel, user }]: CommandParams): Promise<void> {
     _checkMessageNotEmpty(message);
     const [alias, ...chordProgressionTokens] = message.split(GLOBAL.SLASH_SEPARATOR).map((str) => str.trim());
 
@@ -143,7 +143,7 @@ export async function addchord(...[message, { silenceMessages, allowCustomTimeSi
         throw new Error(ERROR_MSG.CHORD_PROGRESSION_BAD_INSERTION());
     }
     await ALIASES_DB.commit();
-    sayTwitchChatMessage(chatClient, channel, [, i18n.t('ADDCHORD')], { silenceMessages });
+    sayTwitchChatMessage(chatClient, channel, [`@${user} `, i18n.t('ADDCHORD')], { silenceMessages });
 }
 
 /**
@@ -153,7 +153,7 @@ export async function addchord(...[message, { silenceMessages, allowCustomTimeSi
  *         twitch: { chatClient, channel, user, userRoles } // Twitch chat and user data
  *         ]
  */
-export async function removechord(...[message, { silenceMessages }, { chatClient, channel }]: CommandParams): Promise<void> {
+export async function removechord(...[message, { silenceMessages }, { chatClient, channel, user }]: CommandParams): Promise<void> {
     _checkMessageNotEmpty(message);
     const parsedAlias = message.toLowerCase();
     const status = ALIASES_DB.delete(CHORD_PROGRESSIONS_KEY, parsedAlias);
@@ -161,7 +161,7 @@ export async function removechord(...[message, { silenceMessages }, { chatClient
         throw new Error(ERROR_MSG.CHORD_PROGRESSION_NOT_FOUND());
     }
     await ALIASES_DB.commit();
-    sayTwitchChatMessage(chatClient, channel, [, i18n.t('REMOVECHORD')], { silenceMessages });
+    sayTwitchChatMessage(chatClient, channel, [`@${user} `, i18n.t('REMOVECHORD')], { silenceMessages });
 }
 
 /**
@@ -195,11 +195,11 @@ export function chordlist(...[message, { silenceMessages }, { chatClient, channe
  *         twitch: { chatClient, channel, user, userRoles } // Twitch chat and user data
  *         ]
  */
-export async function sendnote(...[message, { targetMIDIChannel, silenceMessages }, { chatClient, channel }]: CommandParams): Promise<void> {
+export async function sendnote(...[message, { targetMIDIChannel, silenceMessages }, { chatClient, channel, user }]: CommandParams): Promise<void> {
     _checkMessageNotEmpty(message);
     checkMIDIConnection();
     const requestList = message.split(GLOBAL.COMMA_SEPARATOR).map((request) => _getNoteList(request));
-    sayTwitchChatMessage(chatClient, channel, [, i18n.t('SENDNOTE')], { silenceMessages });
+    sayTwitchChatMessage(chatClient, channel, [`@${user} `, i18n.t('SENDNOTE')], { silenceMessages });
     for (const request of requestList) {
         await triggerNoteList(request, targetMIDIChannel);
     }
@@ -222,7 +222,7 @@ export function sendchord(
     enqueue(message, data, user, userRoles, Command.sendchord);
     autoStartClock(targetMIDIChannel);
     createAutomaticClockSyncedQueue(targetMIDIChannel, timeSignatureCC, { allowCustomTimeSignature });
-    sayTwitchChatMessage(chatClient, channel, [, i18n.t('SENDCHORD')], { silenceMessages });
+    sayTwitchChatMessage(chatClient, channel, [`@${user} `, i18n.t('SENDCHORD')], { silenceMessages });
 }
 
 /**
@@ -242,7 +242,7 @@ export function sendloop(
     enqueue(message, data, user, userRoles, Command.sendloop);
     autoStartClock(targetMIDIChannel);
     createAutomaticClockSyncedQueue(targetMIDIChannel, timeSignatureCC, { allowCustomTimeSignature });
-    sayTwitchChatMessage(chatClient, channel, [, i18n.t('SENDLOOP')], { silenceMessages });
+    sayTwitchChatMessage(chatClient, channel, [`@${user} `, i18n.t('SENDLOOP')], { silenceMessages });
 }
 
 /**
@@ -252,7 +252,7 @@ export function sendloop(
  *         twitch: { chatClient, channel, user, userRoles } // Twitch chat and user data
  *         ]
  */
-export function sendcc(...[message, { targetMIDIChannel, silenceMessages }, { chatClient, channel }]: CommandParams): void {
+export function sendcc(...[message, { targetMIDIChannel, silenceMessages }, { chatClient, channel, user }]: CommandParams): void {
     _checkMessageNotEmpty(message);
     checkMIDIConnection();
     const ccCommandList = _getCCCommandList(message);
@@ -260,7 +260,7 @@ export function sendcc(...[message, { targetMIDIChannel, silenceMessages }, { ch
     triggerCCCommandList(ccCommandList, targetMIDIChannel);
 
     const controllerList = removeDuplicates(ccCommandList.map(([controller]) => controller)).join(GLOBAL.COMMA_JOIN);
-    sayTwitchChatMessage(chatClient, channel, [, `${i18n.t('SENDCC_1')}${controllerList}${i18n.t('SENDCC_2')}`], { silenceMessages });
+    sayTwitchChatMessage(chatClient, channel, [`@${user} `, `${i18n.t('SENDCC_1')}${controllerList}${i18n.t('SENDCC_2')}`], { silenceMessages });
 }
 
 /**
@@ -315,13 +315,13 @@ export function cclist(...[, { silenceMessages }, { chatClient, channel }]: Comm
  *         twitch: { chatClient, channel, user, userRoles } // Twitch chat and user data
  *         ]
  */
-export function midivolume(...[message, { silenceMessages }, { chatClient, channel }]: CommandParams): void {
+export function midivolume(...[message, { silenceMessages }, { chatClient, channel, user }]: CommandParams): void {
     const value = parseInt(splitCommandArguments(message)[0]);
     // Convert to range 0-127
     setMIDIVolume(value);
-    sayTwitchChatMessage(chatClient, channel, [, i18n.t('MIDIVOLUME') + ' ' + String(value) + '%'], { silenceMessages });
+    sayTwitchChatMessage(chatClient, channel, [`@${user} `, i18n.t('MIDIVOLUME') + ' ' + String(value) + '%'], { silenceMessages });
     if (value === 69) {
-        sayTwitchChatMessage(chatClient, channel, [, i18n.t('EASTEREGG_69')], { silenceMessages });
+        sayTwitchChatMessage(chatClient, channel, [`@${user} `, i18n.t('EASTEREGG_69')], { silenceMessages });
     }
 }
 
@@ -356,14 +356,14 @@ export function fullstopmidi(...[, { targetMIDIChannel, silenceMessages }, { cha
  *         twitch: { chatClient, channel, user, userRoles } // Twitch chat and user data
  *         ]
  */
-export function settempo(...[message, { targetMIDIChannel, silenceMessages }, { chatClient, channel }]: CommandParams): void {
+export function settempo(...[message, { targetMIDIChannel, silenceMessages }, { chatClient, channel, user }]: CommandParams): void {
     const newTempo = Number(splitCommandArguments(message)[0]);
     // Generates a MIDI clock
     triggerClock(targetMIDIChannel, newTempo);
 
-    sayTwitchChatMessage(chatClient, channel, [, i18n.t('SETTEMPO') + ' ' + String(newTempo)], { silenceMessages });
+    sayTwitchChatMessage(chatClient, channel, [`@${user} `, i18n.t('SETTEMPO') + ' ' + String(newTempo)], { silenceMessages });
     if (Math.floor(newTempo) === 69) {
-        sayTwitchChatMessage(chatClient, channel, [, i18n.t('EASTEREGG_69')], { silenceMessages });
+        sayTwitchChatMessage(chatClient, channel, [`@${user} `, i18n.t('EASTEREGG_69')], { silenceMessages });
     }
 }
 

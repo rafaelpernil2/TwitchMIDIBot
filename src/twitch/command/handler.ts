@@ -8,6 +8,7 @@ import { ParsedEnvObject } from '../../configuration/env/types.js';
 import { RefreshingAuthProvider } from '@twurple/auth';
 import { setTimeoutPromise } from '../../utils/promise.js';
 import { sayTwitchChatMessage } from '../chat/handler.js';
+import i18n from '../../i18n/loader.js';
 
 /**
  * A closure that returns a ChatClient onMessageHandler to call the commands and provide access control
@@ -31,12 +32,16 @@ export const onMessageHandlerClosure = (authProvider: RefreshingAuthProvider, ch
                 targetChannel: env.TARGET_CHANNEL,
                 userRoles: msg?.userInfo ?? CONFIG.DEFAULT_USER_ROLES(user, env.TARGET_CHANNEL)
             };
+            // Ignore messages that are not commands
+            if (!commandList.length) {
+                return;
+            }
             // Check request timeout
             checkTimeout(commandList, twitch, { isMacroMessage })
             // Set last request by user to now
             setTimeoutToRequest(user, new Date());
             // Start all tasks asynchronously
-            const promiseList = commandList.map(async ([command, args, delayNs]) => {
+            const promiseList = commandList.map(async ([command, args, delayNs], index) => {
                 // Ignore messages that are not commands
                 if (command == null) {
                     return;
@@ -50,6 +55,12 @@ export const onMessageHandlerClosure = (authProvider: RefreshingAuthProvider, ch
 
                 // Checks if the user has enough permissions
                 checkCommandAccess(command, twitch, source, env);
+
+
+                // Notify macro request was requested successfully after the first command check
+                if (isMacroMessage && index === 0) {
+                    sayTwitchChatMessage(chatClient, channel, [`@${user} `, `${i18n.t('MACRO_REQUESTED_1')} ${message} ${i18n.t('MACRO_REQUESTED_2')}`]);
+                }
 
                 // Delay before instruction
                 await setTimeoutPromise(delayNs);
@@ -78,7 +89,7 @@ export const onMessageHandlerClosure = (authProvider: RefreshingAuthProvider, ch
 
             // Skip error notification if SEND_UNAUTHORIZED_MESSAGE is false
             if (!(error instanceof Error) || error.message !== ERROR_MSG.BAD_PERMISSIONS() || env.SEND_UNAUTHORIZED_MESSAGE) {
-                sayTwitchChatMessage(chatClient, channel, [, String(error)]);
+                sayTwitchChatMessage(chatClient, channel, [`@${user} `, String(error)]);
             }
             // Raise error if it's a reward to handle the redemption status
             if (source === RequestSource.REWARD) throw error;

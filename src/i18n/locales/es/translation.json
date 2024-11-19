@@ -162,6 +162,8 @@
         "MIDIUNBANUSER_OK": " ha sido desbaneado con éxito!",
         "MIDITIMEOUT_1": "Timeout de peticiones de",
         "MIDITIMEOUT_2": " segundos",
+        "MACRO_REQUESTED_1": "Macro ",
+        "MACRO_REQUESTED_2": " solicitada con éxito!",
         "API_ERROR_FILE": "Archivo a refrescar no encontrado",
         "API_ERROR_NOT_A_METHOD": "No expuesto en la API",
         "API_OK": "OK",

@@ -162,6 +162,8 @@
         "MIDIUNBANUSER_OK": " was unbanned successfully!",
         "MIDITIMEOUT_1": "Request timeout set to",
         "MIDITIMEOUT_2": " seconds",
+        "MACRO_REQUESTED_1": "Macro ",
+        "MACRO_REQUESTED_2": " requested successfully!",
         "API_ERROR_FILE": "File to refresh not found",
         "API_ERROR_NOT_A_METHOD": "Not an API method",
         "API_OK": "OK",
