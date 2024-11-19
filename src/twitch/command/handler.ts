@@ -59,7 +59,7 @@ export const onMessageHandlerClosure = (authProvider: RefreshingAuthProvider, ch
 
                 // Notify macro request was requested successfully after the first command check
                 if (isMacroMessage && index === 0) {
-                    sayTwitchChatMessage(chatClient, channel, [`@${user} `, `${i18n.t('MACRO_REQUESTED_1')} ${message} ${i18n.t('MACRO_REQUESTED_2')}`]);
+                    sayTwitchChatMessage(chatClient, channel, [`@${user} `, `${i18n.t('MACRO_REQUESTED_1')} ${message.trim()} ${i18n.t('MACRO_REQUESTED_2')}`]);
                 }
 
                 // Delay before instruction

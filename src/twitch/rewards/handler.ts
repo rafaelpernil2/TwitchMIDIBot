@@ -62,7 +62,7 @@ export async function initializeRewardsMode(broadcasterAuthProvider: RefreshingA
 async function _callCommandByRedeemption(
     callCommand: MessageHandler,
     authProvider: RefreshingAuthProvider,
-    { env, args, command }: { env: ParsedEnvObject; args: string; command: string },
+    { env, args = "", command }: { env: ParsedEnvObject; args: string; command: string },
     { redemptionId, rewardId, userName }: { redemptionId: string; rewardId: string; userName: string }
 ): Promise<void> {
     try {
