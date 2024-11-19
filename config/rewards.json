@@ -4,6 +4,14 @@
             "!addchord",
             1000
         ],
+        "MIDI - Bossa nova": [
+            "!bossanova",
+            100
+        ],
+        "MIDI - Macro fadeout": [
+            "!fadeout",
+            20
+        ],
         "MIDI - Change volume": [
             "!midivolume",
             10
@@ -23,14 +31,7 @@
         "MIDI - Change tempo": [
             "!settempo",
             100
-        ],
-        "MIDI - Macro fadeout": [
-            "!fadeout",
-            20
-        ],
-        "MIDI - Bossa nova": [
-            "!bossanova",
-            100
         ]
-    }
+    },
+    "rewardTitleCommandMap_backup": {}
 }

@@ -154,12 +154,6 @@
                 0
             ]
         ],
-        "giant": [
-            [
-                "!loop giant steps",
-                0
-            ]
-        ],
         "cutoff": [
             [
                 "!cc cutoff sweep",
@@ -203,10 +197,17 @@
                 "!loopqueue",
                 5000
             ]
+        ],
+        "giant": [
+            [
+                "!loop giant steps",
+                0
+            ]
         ]
     },
     "commands_backup": {},
     "chordProgressions_backup": {},
     "ccCommands_backup": {},
-    "ccControllers_backup": {}
+    "ccControllers_backup": {},
+    "macros_backup": {}
 }
