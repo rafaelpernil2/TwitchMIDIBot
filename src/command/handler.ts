@@ -35,7 +35,9 @@ import { ResponseStatus } from '../types/generic.js';
 export function midihelp(...[message, { silenceMessages }, { chatClient, channel, user }]: CommandParams): void {
     const [commandToTest] = splitCommandArguments(message);
     if (isValidCommand(commandToTest)) {
-        sayTwitchChatMessage(chatClient, channel, [`@${user} ${i18n.t('MIDIHELP_VALID')} !${commandToTest}: `, COMMAND_DESCRIPTIONS[deAliasCommand(commandToTest)]()], { silenceMessages });
+        sayTwitchChatMessage(chatClient, channel, [`@${user} ${i18n.t('MIDIHELP_VALID')} !${commandToTest}: `, COMMAND_DESCRIPTIONS[deAliasCommand(commandToTest)]()], {
+            silenceMessages
+        });
     } else {
         sayTwitchChatMessage(chatClient, channel, [`@${user} ` + i18n.t('MIDIHELP_INVALID') + ' ', Object.values(Command).join(GLOBAL.COMMA_JOIN)], { silenceMessages });
     }
@@ -212,14 +214,12 @@ export async function sendnote(...[message, { targetMIDIChannel, silenceMessages
  *         twitch: { chatClient, channel, user, userRoles } // Twitch chat and user data
  *         ]
  */
-export function sendchord(
-    ...[message, { targetMIDIChannel, silenceMessages, allowCustomTimeSignature, timeSignatureCC }, { chatClient, channel, user, userRoles }]: CommandParams
-): void {
+export function sendchord(...[message, { targetMIDIChannel, silenceMessages, allowCustomTimeSignature, timeSignatureCC }, { chatClient, channel, user }]: CommandParams): void {
     _checkMessageNotEmpty(message);
     checkMIDIConnection();
     // Lookup previously saved chord progressions
     const data = _getChordProgression(message, { allowCustomTimeSignature });
-    enqueue(message, data, user, userRoles, Command.sendchord);
+    enqueue(message, data, user, Command.sendchord);
     autoStartClock(targetMIDIChannel);
     createAutomaticClockSyncedQueue(targetMIDIChannel, timeSignatureCC, { allowCustomTimeSignature });
     sayTwitchChatMessage(chatClient, channel, [`@${user} `, i18n.t('SENDCHORD')], { silenceMessages });
@@ -232,14 +232,12 @@ export function sendchord(
  *         twitch: { chatClient, channel, user, userRoles } // Twitch chat and user data
  *         ]
  */
-export function sendloop(
-    ...[message, { targetMIDIChannel, silenceMessages, allowCustomTimeSignature, timeSignatureCC }, { chatClient, channel, user, userRoles }]: CommandParams
-): void {
+export function sendloop(...[message, { targetMIDIChannel, silenceMessages, allowCustomTimeSignature, timeSignatureCC }, { chatClient, channel, user }]: CommandParams): void {
     _checkMessageNotEmpty(message);
     checkMIDIConnection();
     // Queue chord progression petition
     const data = _getChordProgression(message, { allowCustomTimeSignature });
-    enqueue(message, data, user, userRoles, Command.sendloop);
+    enqueue(message, data, user, Command.sendloop);
     autoStartClock(targetMIDIChannel);
     createAutomaticClockSyncedQueue(targetMIDIChannel, timeSignatureCC, { allowCustomTimeSignature });
     sayTwitchChatMessage(chatClient, channel, [`@${user} `, i18n.t('SENDLOOP')], { silenceMessages });

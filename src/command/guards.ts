@@ -9,7 +9,6 @@ import { Command } from './types.js';
 export const areRequestsOpen = new SharedVariable(false);
 export const requestTimeout = new SharedVariable<number>(CONFIG.DEFAULT_REQUEST_TIMEOUT);
 
-
 const lastRequestTimestampByUserMap = new Map<string, Date>();
 
 /**
@@ -43,7 +42,6 @@ export function checkCommandAccess(command: Command, { userRoles, user }: Twitch
     }
 }
 
-
 /**
  * Checks that the user request timeout has expired
  * Throws an error if it does not
@@ -52,12 +50,16 @@ export function checkCommandAccess(command: Command, { userRoles, user }: Twitch
  * @param { isMacroMessage } options Checks if it's macro request
  * @returns
  */
-export function checkTimeout(commandList: Array<[command: Command | null, args: string, delay: number]>, { user, userRoles }: TwitchParams, { isMacroMessage }: { isMacroMessage: boolean }): void {
+export function checkTimeout(
+    commandList: Array<[command: Command | null, args: string, delay: number]>,
+    { user, userRoles }: TwitchParams,
+    { isMacroMessage }: { isMacroMessage: boolean }
+): void {
     // If it's macro message, provide no command to check
     const [[command]] = isMacroMessage ? [[null]] : commandList;
 
     // If it is broadcaster, is mod, command is safe or timeout has expired, continue
-    if (userRoles.isBroadcaster || userRoles.isMod || command != null && SAFE_COMMANDS[command] || _hasLastRequestByUserExpired(user)) {
+    if (userRoles.isBroadcaster || userRoles.isMod || (command != null && SAFE_COMMANDS[command]) || _hasLastRequestByUserExpired(user)) {
         return;
     }
 
@@ -175,7 +177,6 @@ function _getPermissionsTable(command: Command): PermissionsTable {
     }
     return permissionTable;
 }
-
 
 /**
  * Has last request expired checking with timeout

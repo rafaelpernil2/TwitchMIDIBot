@@ -1,4 +1,3 @@
-import { isTimestampExpired } from '../../utils/generic.js';
 import { ERROR_MSG } from '../../configuration/constants.js';
 import { ResponseStatus, Result } from '../../types/generic.js';
 import { Queue, QueueNode } from '../interface.js';
@@ -108,7 +107,7 @@ export class GenericQueue<T> implements Queue<T> {
      * @param userRoles { isBroadcaster }
      * @returns
      */
-    enqueue(tag: string, value: T, requesterUser: string, { isBroadcaster }: { isBroadcaster: boolean }): Result<number> {
+    enqueue(tag: string, value: T, requesterUser: string): Result<number> {
         // Throw error on duplicate requests
         const [lastNode] = this._getLastInQueue();
         if (tag === lastNode?.tag) {
@@ -149,7 +148,7 @@ export class GenericQueue<T> implements Queue<T> {
         if (selectedNode == null) {
             return [null, ResponseStatus.Error];
         }
-        const { previousTurn, nextTurn, requesterUser } = selectedNode;
+        const { previousTurn, nextTurn } = selectedNode;
         // Delete node
         const deleteOk = this._queueMap.delete(turn);
         const status = deleteOk ? ResponseStatus.Ok : ResponseStatus.Error;

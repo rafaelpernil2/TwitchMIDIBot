@@ -1,5 +1,5 @@
 import { CHORD_PROGRESSIONS_KEY } from '../database/jsondb/types.js';
-import { ALIASES_DB, CONFIG, ERROR_MSG, EVENT, EVENT_EMITTER, GLOBAL } from '../configuration/constants.js';
+import { ALIASES_DB, ERROR_MSG, EVENT, EVENT_EMITTER, GLOBAL } from '../configuration/constants.js';
 import { syncMode } from '../midi/clock.js';
 import { Sync } from '../midi/types.js';
 import { areRequestsOpen } from './guards.js';
@@ -7,7 +7,6 @@ import { Command } from './types.js';
 import { ResponseStatus } from '../types/generic.js';
 import { GenericQueue } from '../queue/generic-queue/implementation.js';
 import { triggerChordList } from '../midi/handler.js';
-import { UserRoles } from '../twitch/command/types.js';
 
 export const favoriteIdMap = Object.fromEntries(Object.values(Command).map((key) => [key, -1])) as Record<Command, number>;
 export let onBarLoopChange: () => Promise<void>;
@@ -76,10 +75,9 @@ export function enqueue(
     tag: string,
     value: Array<[timeSignature: [noteCount: number, noteValue: number], chordProgression: Array<[noteList: string[], timeSubDivision: number]>]>,
     requesterUser: string,
-    { isBroadcaster }: UserRoles,
     type: Command.sendloop | Command.sendchord
 ): number {
-    const [turn] = queueMap[type].enqueue(tag, value, requesterUser, { isBroadcaster });
+    const [turn] = queueMap[type].enqueue(tag, value, requesterUser);
     return turn;
 }
 

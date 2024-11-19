@@ -22,7 +22,6 @@ export const onMessageHandlerClosure = (authProvider: RefreshingAuthProvider, ch
     return async (channel, user, message, msg): Promise<void> => {
         const [isMacroMessage, commandList] = getCommandList(message);
         try {
-
             // If no user info was provided, this is is Channel Points/Rewards mode, so there's no block
             const twitch: TwitchParams = {
                 channel,
@@ -37,7 +36,7 @@ export const onMessageHandlerClosure = (authProvider: RefreshingAuthProvider, ch
                 return;
             }
             // Check request timeout
-            checkTimeout(commandList, twitch, { isMacroMessage })
+            checkTimeout(commandList, twitch, { isMacroMessage });
             // Set last request by user to now
             setTimeoutToRequest(user, new Date());
             // Start all tasks asynchronously
@@ -55,7 +54,6 @@ export const onMessageHandlerClosure = (authProvider: RefreshingAuthProvider, ch
 
                 // Checks if the user has enough permissions
                 checkCommandAccess(command, twitch, source, env);
-
 
                 // Notify macro request was requested successfully after the first command check
                 if (isMacroMessage && index === 0) {
