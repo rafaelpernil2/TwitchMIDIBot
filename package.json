@@ -38,8 +38,8 @@
     "chalk": "4.1.2",
     "dotenv": "16.4.5",
     "harmonics": "1.1.0",
-    "i18next": "23.16.4",
-    "jzz": "1.8.6",
+    "i18next": "24.0.2",
+    "jzz": "1.8.7",
     "nanotimer": "0.3.15"
   },
   "pkg": {
@@ -53,24 +53,24 @@
     ]
   },
   "devDependencies": {
-    "@eslint/eslintrc": "3.1.0",
-    "@eslint/js": "9.13.0",
+    "@eslint/eslintrc": "3.2.0",
+    "@eslint/js": "9.16.0",
     "@types/nanotimer": "0.3.2",
-    "@types/node": "22.8.5",
-    "@typescript-eslint/eslint-plugin": "8.12.2",
-    "@typescript-eslint/parser": "8.12.2",
-    "@yao-pkg/pkg": "6.0.0",
+    "@types/node": "22.10.1",
+    "@typescript-eslint/eslint-plugin": "8.16.0",
+    "@typescript-eslint/parser": "8.16.0",
+    "@yao-pkg/pkg": "6.1.1",
     "bestzip": "2.2.1",
     "cpy-cli": "5.0.0",
     "del-cli": "6.0.0",
     "esbuild": "0.24.0",
-    "eslint": "9.13.0",
+    "eslint": "9.16.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-prettier": "5.2.1",
     "find-unused-exports": "7.1.1",
-    "globals": "15.11.0",
-    "prettier": "3.3.3",
-    "typescript": "5.6.3"
+    "globals": "15.12.0",
+    "prettier": "3.4.1",
+    "typescript": "5.7.2"
   },
   "prettier": {
     "printWidth": 180,
