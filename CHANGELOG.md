@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [TwitchMIDI]
 
-## [3.0.0] - 2024-11-19
+## [3.0.0] - 2024-12-01
 ### Added
 - Custom Time signatures in requests, now you can request loops with several time signatures per request like 3/4, 5/4, 7/8... or whatever is on your mind. Prog rock!
 - Time signature changes trigger a MIDI CC message. You can map it to your metronome time signature within your DAW
