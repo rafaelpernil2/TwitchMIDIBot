@@ -40,9 +40,16 @@ export function showInitReadyMessages(env: ParsedEnvObject): void {
 
     // Support message
     console.log(chalk.blueBright(i18n.t('INIT_SEPARATOR')));
-    console.log(chalk.cyan(i18n.t('INIT_SPONSOR_1')));
-    console.log(chalk.cyan(i18n.t('INIT_SPONSOR_2')));
-    console.log(chalk.cyanBright(CONFIG.SPONSOR_PAYPAL_LINK));
+    console.log(chalk.grey(i18n.t('INIT_SPONSOR_1')));
+    console.log(chalk.grey(i18n.t('INIT_SPONSOR_2')));
+    console.log(chalk.grey.bold(CONFIG.SPONSOR_PAYPAL_LINK));
+    console.log(chalk.grey(i18n.t('INIT_SPONSOR_3')));
+    
+    // TwitchMIDI+ message
+    console.log(chalk.blueBright(i18n.t('INIT_SEPARATOR')));
+    console.log(chalk.cyanBright.bold(i18n.t('INIT_TWITCHMIDIPLUS_1')));
+    console.log(chalk.cyan(i18n.t('INIT_TWITCHMIDIPLUS_2')));
+    console.log(chalk.cyan.bold(CONFIG.TWITCHMIDIPLUS_LINK));
     console.log(chalk.cyan(i18n.t('INIT_SPONSOR_THANKS')));
     console.log(chalk.blueBright(i18n.t('INIT_SEPARATOR')));
 }

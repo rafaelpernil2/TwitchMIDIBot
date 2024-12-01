@@ -53,6 +53,7 @@ export const CONFIG = {
     REMOTE_CONFIG_JSON_FOLDER_PATH: '/rafaelpernil2/TwitchMIDI/master/config',
     SPONSOR_PAYPAL_LINK: 'https://www.paypal.com/donate/?hosted_button_id=9RRAEE5J7NNNN',
     REPOSITORY_LINK: 'https://github.com/rafaelpernil2/TwitchMIDI',
+    TWITCHMIDIPLUS_LINK: 'https://store.rafaelpernil.com/l/twitchmidiplus',
     OP_SIGNATURE: 'Rafael Pernil (@rafaelpernil2)',
     TWITCH_MIDI_ASCII: `
     _______       _ _       _     __  __ _____ _____ _____
