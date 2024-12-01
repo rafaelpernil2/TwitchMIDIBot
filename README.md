@@ -4,6 +4,8 @@ A full-featured configurable Twitch bot to connect with your MIDI equipment whil
 
 [![Twitch MIDI Demo](https://feranern.sirv.com/Images/twitchmidicropshort.gif)](https://www.youtube.com/watch?v=3JK5JukHRn0)
 
+> 🌟 If you want more... TwitchMIDI+ provides extensive documentation, extra features and a useful control panel, check out [https://store.rafaelpernil.com/l/twitchmidiplus](https://store.rafaelpernil.com/l/twitchmidiplus)
+
 ## Table of Contents
 - [ TwitchMIDI](#-twitchmidi)
   - [Table of Contents](#table-of-contents)
