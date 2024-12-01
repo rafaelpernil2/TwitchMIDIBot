@@ -33,8 +33,13 @@ export async function requestMIDIAccess(): Promise<WebMidi.MIDIAccess> {
 export async function connectMIDI(targetMIDIName: string, targetMIDIChannel: number): Promise<void> {
     _initVariables();
     const midi = await JZZ();
-    output = midi.openMidiOut(targetMIDIName);
-    await output?.connect(targetMIDIChannel);
+    try {
+        output = midi.openMidiOut(targetMIDIName);
+        await output?.connect(targetMIDIChannel);
+    } catch (error) {
+        output = undefined; // Reset output variable on connection error
+        throw error;
+    }
 }
 
 /**
