@@ -183,6 +183,24 @@ export class GenericQueue<T> implements Queue<T> {
     }
 
     /**
+     * Removes last item by requester
+     * @param username Requester username
+     * @returns
+     */
+    dequeueLastUserRequest(username: string): Result<null> {
+        const queueEntries = this._queueMap.entries();
+        const lastUserEntry = [...queueEntries].findLast(([, { requesterUser }]) => username === requesterUser);
+
+        if (lastUserEntry == null) {
+            return [null, ResponseStatus.Error]
+        }
+
+        const [turn] = lastUserEntry;
+
+        return this.dequeue(turn);
+    }
+
+    /**
      * Retrieves current turn data
      * @returns
      */

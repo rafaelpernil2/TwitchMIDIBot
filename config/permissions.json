@@ -148,6 +148,11 @@
             ],
             "whitelist": [],
             "blacklist": []
+        },
+        "wrongloop": {
+            "requirements": [],
+            "whitelist": [],
+            "blacklist": []
         }
     }
 }

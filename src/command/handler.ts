@@ -1,5 +1,5 @@
 import { ALIASES_DB, COMMAND_DESCRIPTIONS, CONFIG, ERROR_MSG, EVENT, EVENT_EMITTER, GLOBAL, PERMISSIONS_DB, REWARDS_DB, TOGGLE_MIDI_VALUES } from '../configuration/constants.js';
-import { enqueue, getCurrentRequestPlaying, getRequestQueue, createAutomaticClockSyncedQueue, clearAllQueues } from './queue.js';
+import { enqueue, getCurrentRequestPlaying, getRequestQueue, createAutomaticClockSyncedQueue, clearAllQueues, dequeueLastUserRequest } from './queue.js';
 import { isValidCommand, deAliasCommand, splitCommandArguments } from './utils.js';
 import { CommandParams } from '../twitch/command/types.js';
 import { removeDuplicates } from '../utils/generic.js';
@@ -223,6 +223,19 @@ export function sendloop(...[message, { targetMIDIChannel, silenceMessages, allo
     autoStartClock(targetMIDIChannel);
     createAutomaticClockSyncedQueue(targetMIDIChannel, timeSignatureCC, { allowCustomTimeSignature });
     sayTwitchChatMessage(chatClient, channel, [`@${user} `, i18n.t('SENDLOOP')], { silenceMessages });
+}
+
+/**
+ * Removes the last request by the requester
+ * @param commandParams [message, // Command arguments
+ *         common: { targetMIDIName, targetMIDIChannel }, // Configuration parameters
+ *         twitch: { chatClient, channel, user, userRoles } // Twitch chat and user data
+ *         ]
+ */
+export function wrongloop(...[, { silenceMessages }, { chatClient, channel, user }]: CommandParams): void {
+    checkMIDIConnection();
+    dequeueLastUserRequest(Command.sendloop, user);
+    sayTwitchChatMessage(chatClient, channel, [`@${user} `, i18n.t('WRONGLOOP')], { silenceMessages });
 }
 
 /**

@@ -115,7 +115,8 @@ export const ERROR_MSG = {
     INVALID_BAN_USER: () => i18n.t('ERROR_INVALID_BAN_USER'),
     INVALID_UNBAN_USER: () => i18n.t('ERROR_INVALID_UNBAN_USER'),
     RUNTIME_PERMISSIONS: () => i18n.t('ERROR_RUNTIME_PERMISSIONS'),
-    INVALID_TIMESIGNATURE: () => i18n.t('ERROR_INVALID_TIMESIGNATURE')
+    INVALID_TIMESIGNATURE: () => i18n.t('ERROR_INVALID_TIMESIGNATURE'),
+    INVALID_WRONGREQUEST: () => i18n.t('ERROR_INVALID_WRONGREQUEST')
 };
 
 export const TOGGLE_MIDI_VALUES: Record<string, string> = { on: '127', off: '0' };
@@ -146,6 +147,7 @@ export const COMMAND_DESCRIPTIONS: Record<(typeof Command)[keyof typeof Command]
     chordlist: () => i18n.t('HELP_CHORDLIST'),
     sendnote: () => i18n.t('HELP_SENDNOTE'),
     sendloop: () => i18n.t('HELP_SENDLOOP'),
+    wrongloop: () => i18n.t('HELP_WRONGLOOP'),
     sendcc: () => i18n.t('HELP_SENDCC'),
     cclist: () => i18n.t('HELP_CCLIST'),
     midivolume: () => i18n.t('HELP_MIDIVOLUME'),
@@ -172,6 +174,7 @@ export const SAFE_COMMANDS: Record<(typeof Command)[keyof typeof Command], boole
     chordlist: true,
     sendnote: false,
     sendloop: false,
+    wrongloop: true,
     sendcc: false,
     cclist: true,
     midivolume: false,

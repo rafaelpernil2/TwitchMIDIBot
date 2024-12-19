@@ -145,6 +145,19 @@ export function removeFromQueue(type: Command.sendloop, turn: number): void {
 }
 
 /**
+ * Removes last request by username
+ * @param type Command.sendloop
+ * @param username Requester username
+ * @returns
+ */
+export function dequeueLastUserRequest(type: Command.sendloop, username: string): void {
+    const [, status] = queueMap[type].dequeueLastUserRequest(username);
+    if (status === ResponseStatus.Error){
+        throw new Error(ERROR_MSG.INVALID_WRONGREQUEST());
+    }
+}
+
+/**
  * Marks item as favorite
  * @param type Command.sendloop
  * @param turn Turn in queue

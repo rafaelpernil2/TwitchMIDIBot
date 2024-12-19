@@ -7,6 +7,7 @@ export enum Command {
     chordlist = 'chordlist',
     sendnote = 'sendnote',
     sendloop = 'sendloop',
+    wrongloop = 'wrongloop',
     sendcc = 'sendcc',
     cclist = 'cclist',
     midivolume = 'midivolume',

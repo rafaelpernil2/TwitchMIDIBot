@@ -13,6 +13,12 @@ export interface Queue<T extends CustomObject<T>> {
      */
     dequeue(turn: number): Result<null>;
     /**
+     * Removes last item by requester
+     * @param username Requester username
+     * @returns
+     */
+    dequeueLastUserRequest(username: string): Result<null>;
+    /**
      * Returns the current item in queue
      */
     getCurrent(): Result<T | null>;
