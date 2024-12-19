@@ -208,24 +208,6 @@ export async function sendnote(...[message, { targetMIDIChannel, silenceMessages
 }
 
 /**
- * Parses and sends a chord progression with chords separated by space or with an alias
- * @param commandParams [message, // Command arguments
- *         common: { targetMIDIName, targetMIDIChannel }, // Configuration parameters
- *         twitch: { chatClient, channel, user, userRoles } // Twitch chat and user data
- *         ]
- */
-export function sendchord(...[message, { targetMIDIChannel, silenceMessages, allowCustomTimeSignature, timeSignatureCC }, { chatClient, channel, user }]: CommandParams): void {
-    _checkMessageNotEmpty(message);
-    checkMIDIConnection();
-    // Lookup previously saved chord progressions
-    const data = _getChordProgression(message, { allowCustomTimeSignature });
-    enqueue(message, data, user, Command.sendchord);
-    autoStartClock(targetMIDIChannel);
-    createAutomaticClockSyncedQueue(targetMIDIChannel, timeSignatureCC, { allowCustomTimeSignature });
-    sayTwitchChatMessage(chatClient, channel, [`@${user} `, i18n.t('SENDCHORD')], { silenceMessages });
-}
-
-/**
  * Parses and sends a chord progression as a loop with chords separated by space or with an alias
  * @param commandParams [message, // Command arguments
  *         common: { targetMIDIName, targetMIDIChannel }, // Configuration parameters

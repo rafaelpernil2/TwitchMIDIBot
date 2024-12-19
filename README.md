@@ -26,7 +26,6 @@ A full-featured configurable Twitch bot to connect with your MIDI equipment whil
       - [!removechord](#removechord)
       - [!chordlist](#chordlist)
       - [!sendnote](#sendnote)
-      - [!sendchord](#sendchord)
       - [!sendloop](#sendloop)
       - [!sendcc](#sendcc)
       - [!midicurrentrequest](#midicurrentrequest)
@@ -108,10 +107,9 @@ So far, this first version does all that, keep reading the features for more det
   * High precision MIDI Clock using "nanotimer" with adjustable tempo via [!settempo](#settempo)
   * Sequencer on 4/4 time signature with infinite subdivisions (1 = Quarter note, 0.5 = 8th note, 0.25 = 16th note...)
   * Trigger individual notes, build a chord or send a melody separated by commas via [!sendnote](#sendnote)
-  * Trigger chord progressions with specific length per chord via [!sendchord](#sendchord) with an extensive list of chords to choose from. See [CHORDS.md](CHORDS.md)
-  * Loop chord progressions via [!sendloop](#sendloop)
-  * Support for music rests using "rest" as a replacement for a chord or note in [!sendnote](#sendnote), [!sendchord](#sendchord) and [!sendloop](#sendloop) requests
-  * Support for multiple time signatures per request using "\[X/Y\]" [!sendchord](#sendchord) or [!sendloop](#sendloop) requests (e.g "\[4/4\] Dmin7 G7 C" or "\[5/4\] Dmin7(2) G7(3) \[4/4\] Dmaj7(2) Dbm7(2) Cmaj7(2) Bm7(2)")
+  * Trigger looped chord progressions with specific length per chord via [!sendloop](#sendloop) with an extensive list of chords to choose from. See [CHORDS.md](CHORDS.md)
+  * Support for music rests using "rest" as a replacement for a chord or note in [!sendnote](#sendnote) and [!sendloop](#sendloop) requests
+  * Support for multiple time signatures per request using "\[X/Y\]" [!sendloop](#sendloop) requests (e.g "\[4/4\] Dmin7 G7 C" or "\[5/4\] Dmin7(2) G7(3) \[4/4\] Dmaj7(2) Dbm7(2) Cmaj7(2) Bm7(2)")
   * See the current chord progression via [!midicurrentrequest](#midicurrentrequest)
   * Check the chord progression request queue via [!midirequestqueue](#midirequestqueue)
   * Change MIDI velocity via [!midivolume](#midivolume)
@@ -197,14 +195,6 @@ So far, this first version does all that, keep reading the features for more det
 &nbsp;&nbsp;&nbsp;&nbsp;Syntax:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;````note1 note2 ... // (e.g. "C4 E4 G4")````
-
-
-#### !sendchord
-&nbsp;&nbsp;&nbsp;&nbsp;Sends a chord progression with an alias or with chords.
-
-&nbsp;&nbsp;&nbsp;&nbsp;Syntax:
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;````chord1 chord2(chord length in quarter notes)... // (e.g. "C(4) G Amin(2) F","pop")````
 
 
 #### !sendloop

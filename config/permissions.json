@@ -116,13 +116,6 @@
             "whitelist": [],
             "blacklist": []
         },
-        "sendchord": {
-            "requirements": [
-                "isBroadcaster"
-            ],
-            "whitelist": [],
-            "blacklist": []
-        },
         "sendloop": {
             "requirements": [],
             "whitelist": [],

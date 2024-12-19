@@ -99,14 +99,14 @@ export async function triggerNoteList(rawNoteList: Array<[note: string, timeSubD
  * @param targetMIDIChannel Virtual device MIDI channel
  * @param options { allowCustomTimeSignature }: { allowCustomTimeSignature: boolean }
  * @param timeSignatureCC: [numeratorCC: number, denominatorCC: number]
- * @param type 'sendloop' or 'sendchord'
+ * @param type 'sendloop'
  */
 export async function triggerChordList(
     requestList: Array<[timeSignature: [noteCount: number, noteValue: number], chordProgression: Array<[noteList: string[], timeSubDivision: number]>]>,
     targetMIDIChannel: number,
     { allowCustomTimeSignature }: { allowCustomTimeSignature: boolean },
     timeSignatureCC: [numeratorCC: number, denominatorCC: number],
-    type: Command.sendloop | Command.sendchord
+    type: Command.sendloop
 ): Promise<void> {
     // If the MIDI clock has not started yet, start it to make the chord progression sound
     autoStartClock(targetMIDIChannel);

@@ -11,10 +11,9 @@ import { triggerChordList } from '../midi/handler.js';
 export const favoriteIdMap = Object.fromEntries(Object.values(Command).map((key) => [key, -1])) as Record<Command, number>;
 export let onBarLoopChange: () => Promise<void>;
 
-let requestPlayingNow: { type: Command.sendloop | Command.sendchord; request: string } | null;
+let requestPlayingNow: { type: Command.sendloop; request: string } | null;
 
 export const queueMap = {
-    sendchord: new GenericQueue<Array<[timeSignature: [noteCount: number, noteValue: number], chordProgression: Array<[noteList: string[], timeSubDivision: number]>]>>(),
     sendloop: new GenericQueue<Array<[timeSignature: [noteCount: number, noteValue: number], chordProgression: Array<[noteList: string[], timeSubDivision: number]>]>>()
 } as const;
 
@@ -35,13 +34,13 @@ export function createAutomaticClockSyncedQueue(
         return;
     }
 
-    const onCommandTurn = (type: Command.sendloop | Command.sendchord) => async () => {
+    const onCommandTurn = (type: Command.sendloop) => async () => {
         const [turn] = queueMap[type].getCurrentTurn();
 
         const [chordProgression] = queueMap[type].getCurrent();
 
-        // If request was removed from queue or is not collision free
-        if (chordProgression == null || !_isCollisionFree(type)) {
+        // If request was removed from queue
+        if (chordProgression == null) {
             return false;
         }
 
@@ -54,10 +53,6 @@ export function createAutomaticClockSyncedQueue(
     };
 
     onBarLoopChange = async () => {
-        const sendchordHasPlayed = await onCommandTurn(Command.sendchord)();
-        // If sendchord has played, we have to wait until next tick for synchronization
-        if (sendchordHasPlayed) return;
-        // Otherwise, sendloop can be played
         await onCommandTurn(Command.sendloop)();
     };
 }
@@ -68,14 +63,14 @@ export function createAutomaticClockSyncedQueue(
  * @param value Value to queue
  * @param requesterUser Requester user
  * @param userRoles { isBroadcaster }
- * @param type Command.sendloop | Command.sendchord
+ * @param type Command.sendloop
  * @returns
  */
 export function enqueue(
     tag: string,
     value: Array<[timeSignature: [noteCount: number, noteValue: number], chordProgression: Array<[noteList: string[], timeSubDivision: number]>]>,
     requesterUser: string,
-    type: Command.sendloop | Command.sendchord
+    type: Command.sendloop
 ): number {
     const [turn] = queueMap[type].enqueue(tag, value, requesterUser);
     return turn;
@@ -83,9 +78,9 @@ export function enqueue(
 
 /**
  * Moves to the next in queue
- * @param type Command.sendloop | Command.sendchord
+ * @param type Command.sendloop
  */
-export function forwardQueue(type: Command.sendloop | Command.sendchord): void {
+export function forwardQueue(type: Command.sendloop): void {
     const [currentTurn] = queueMap[type].getCurrentTurn();
     const [nextTurn] = queueMap[type].getNextTurn();
 
@@ -98,7 +93,7 @@ export function forwardQueue(type: Command.sendloop | Command.sendchord): void {
     removeFromQueue(type, currentTurn);
 
     // If there's no chord progression or loop next, let's clear requestPlayingNow
-    if (_isCurrentLast(Command.sendchord) && _isCurrentLast(Command.sendloop)) {
+    if (_isCurrentLast(Command.sendloop)) {
         requestPlayingNow = null;
     }
 }
@@ -107,7 +102,7 @@ export function forwardQueue(type: Command.sendloop | Command.sendchord): void {
  * Returns the current request being played
  * @returns Request information
  */
-export function getCurrentRequestPlaying(): { type: Command.sendloop | Command.sendchord; request: string } | null {
+export function getCurrentRequestPlaying(): { type: Command.sendloop; request: string } | null {
     return requestPlayingNow;
 }
 
@@ -115,15 +110,15 @@ export function getCurrentRequestPlaying(): { type: Command.sendloop | Command.s
  * Returns the current queue for chord progressions and loops
  * @returns Current queue
  */
-export function getRequestQueue(): [type: Command.sendloop | Command.sendchord, request: string][] {
-    return [..._processQueue(Command.sendchord), ..._processQueue(Command.sendloop)];
+export function getRequestQueue(): [type: Command.sendloop, request: string][] {
+    return _processQueue(Command.sendloop);
 }
 
 /**
  * Removes petitions from a queue by type
- * @param type Command.sendloop | Command.sendchord
+ * @param type Command.sendloop
  */
-export function clearQueue(type: Command.sendloop | Command.sendchord): void {
+export function clearQueue(type: Command.sendloop): void {
     queueMap[type].clear();
 }
 
@@ -131,18 +126,17 @@ export function clearQueue(type: Command.sendloop | Command.sendchord): void {
  * Clears all queues
  */
 export function clearAllQueues(): void {
-    clearQueue(Command.sendchord);
     clearQueue(Command.sendloop);
     requestPlayingNow = null;
 }
 
 /**
  * Removes item from queue
- * @param type Command.sendloop | Command.sendchord
+ * @param type Command.sendloop
  * @param turn Turn in queue
  * @returns
  */
-export function removeFromQueue(type: Command.sendloop | Command.sendchord, turn: number): void {
+export function removeFromQueue(type: Command.sendloop, turn: number): void {
     // Remove from favorites if it matches
     if (favoriteIdMap[type] === turn) {
         unmarkFavorite(type);
@@ -152,28 +146,28 @@ export function removeFromQueue(type: Command.sendloop | Command.sendchord, turn
 
 /**
  * Marks item as favorite
- * @param type Command.sendloop | Command.sendchord
+ * @param type Command.sendloop
  * @param turn Turn in queue
  */
-export function markAsFavorite(type: Command.sendloop | Command.sendchord, turn: number): void {
+export function markAsFavorite(type: Command.sendloop, turn: number): void {
     favoriteIdMap[type] = turn;
 }
 
 /**
  * Marks item as favorite
- * @param type Command.sendloop | Command.sendchord
+ * @param type Command.sendloop
  */
-export function unmarkFavorite(type: Command.sendloop | Command.sendchord): void {
+export function unmarkFavorite(type: Command.sendloop): void {
     favoriteIdMap[type] = -1;
 }
 
 /**
  * Save a request into the list of aliases
- * @param type Command.sendloop | Command.sendchord
+ * @param type Command.sendloop
  * @param turn Turn in queue
  * @param alias Alias name
  */
-export async function saveRequest(type: Command.sendloop | Command.sendchord, turn: number, alias: string): Promise<void> {
+export async function saveRequest(type: Command.sendloop, turn: number, alias: string): Promise<void> {
     const [requestData] = queueMap[type].getTag(turn);
 
     // If request does not exist
@@ -195,43 +189,33 @@ export async function saveRequest(type: Command.sendloop | Command.sendchord, tu
 }
 /**
  * Checks if a request is still in queue
- * @param type Command.sendloop | Command.sendchord
+ * @param type Command.sendloop
  * @param turn Turn in queue
  * @returns If the queued request is not null
  */
-function _isInQueue(type: Command.sendloop | Command.sendchord, turn: number): boolean {
+function _isInQueue(type: Command.sendloop, turn: number): boolean {
     const [isInQueue] = queueMap[type].has(turn);
     return isInQueue;
 }
 
 /**
  * Checks if queue is empty
- * @param type Command.sendloop | Command.sendchord
+ * @param type Command.sendloop
  * @returns
  */
-function _isCurrentLast(type: Command.sendloop | Command.sendchord): boolean {
+function _isCurrentLast(type: Command.sendloop): boolean {
     const [isEmpty] = queueMap[type].isCurrentLast();
     return isEmpty;
 }
 
 /**
  * Checks if the given request turn is the favorite one
- * @param type Command.sendloop | Command.sendchord
+ * @param type Command.sendloop
  * @param turn Turn in queue
  * @returns
  */
-function _isFavoriteRequest(type: Command.sendloop | Command.sendchord, turn: number): boolean {
+function _isFavoriteRequest(type: Command.sendloop, turn: number): boolean {
     return favoriteIdMap[type] === turn;
-}
-
-/**
- * Collision prevention algorithm that separates sendchord and sendloop queues
- * @param type Queue type
- * @returns If next petition can be started without collision
- */
-function _isCollisionFree(type: Command.sendloop | Command.sendchord): boolean {
-    // If it has "sendloop" type, it has to wait until "sendchord" queue is empty
-    return type !== Command.sendloop || _isCurrentLast(Command.sendchord);
 }
 
 /**
@@ -241,7 +225,7 @@ function _isCollisionFree(type: Command.sendloop | Command.sendchord): boolean {
  * @param nextTurn Current turn
  * @returns If queue can progress
  */
-function _mustRepeatRequest(type: Command.sendloop | Command.sendchord, currentTurn: number, nextTurn: number): boolean {
+function _mustRepeatRequest(type: Command.sendloop, currentTurn: number, nextTurn: number): boolean {
     return (
         type === Command.sendloop && // Is a !sendloop request
         _isInQueue(type, currentTurn) && // Current !sendloop request still exists
@@ -254,7 +238,6 @@ function _mustRepeatRequest(type: Command.sendloop | Command.sendchord, currentT
                 (
                     !_isInQueue(type, nextTurn) ||
                     !areRequestsOpen.get() ||
-                    !_isCurrentLast(Command.sendchord) ||
                     _isFavoriteRequest(type, currentTurn)
                 )
             )
@@ -267,7 +250,7 @@ function _mustRepeatRequest(type: Command.sendloop | Command.sendchord, currentT
  * @param type Command type
  * @param request Request content
  */
-async function _setRequestPlayingNow(type: Command.sendloop | Command.sendchord, request: string): Promise<void> {
+async function _setRequestPlayingNow(type: Command.sendloop, request: string): Promise<void> {
     // If it keeps playing the same, do nothing
     if (request === GLOBAL.EMPTY_MESSAGE || (requestPlayingNow?.request === request && requestPlayingNow?.type === type)) {
         return;
@@ -282,7 +265,7 @@ async function _setRequestPlayingNow(type: Command.sendloop | Command.sendchord,
  * @param type Command type
  * @returns List of requests
  */
-function _processQueue(type: Command.sendloop | Command.sendchord): [type: Command.sendloop | Command.sendchord, request: string][] {
+function _processQueue(type: Command.sendloop): [type: Command.sendloop, request: string][] {
     const queue: Array<string | null> = [];
     const [tagEntries] = queueMap[type].tagEntries();
     const [currentTurn] = queueMap[type].getCurrentTurn();

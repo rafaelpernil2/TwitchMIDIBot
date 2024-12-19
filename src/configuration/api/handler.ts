@@ -83,25 +83,19 @@ function _onRequest(
 
             case '/queue': {
                 // Obtain name of command to check
-                const commandName = url.searchParams.get('command') as Command.sendloop | Command.sendchord | null;
+                const commandName = url.searchParams.get('command') as Command.sendloop | null;
                 const turn = url.searchParams.get('turn');
 
                 switch (req.method) {
                     case 'GET': {
                         // Obtain queue details
-                        const sendChordEntries = [...queueMap.sendchord.tagEntries()[0]];
-                        const sendchord: Record<number, { requesterUser: string; tag: string }> = {};
-                        for (const [turn, tag, requesterUser] of sendChordEntries) {
-                            sendchord[turn] = { requesterUser, tag };
-                        }
-
                         const sendLoopEntries = [...queueMap.sendloop.tagEntries()[0]];
                         const sendloop: Record<number, { requesterUser: string; tag: string }> = {};
                         for (const [turn, tag, requesterUser] of sendLoopEntries) {
                             sendloop[turn] = { requesterUser, tag };
                         }
 
-                        const total = { sendloop, sendchord };
+                        const total = { sendloop };
                         const queueData = commandName != null ? { [commandName]: total[commandName] } : total;
                         const jsonData = JSON.stringify(queueData);
 
@@ -129,7 +123,7 @@ function _onRequest(
 
             case '/favorite': {
                 // Obtain name of command to check
-                const commandName = url.searchParams.get('command') as Command.sendloop | Command.sendchord | null;
+                const commandName = url.searchParams.get('command') as Command.sendloop | null;
                 const turn = url.searchParams.get('turn');
 
                 switch (req.method) {
@@ -167,7 +161,7 @@ function _onRequest(
 
             case '/saveRequest': {
                 // Obtain name of command to check
-                const commandName = url.searchParams.get('command') as Command.sendloop | Command.sendchord | null;
+                const commandName = url.searchParams.get('command') as Command.sendloop | null;
                 const turn = url.searchParams.get('turn');
                 const alias = url.searchParams.get('alias');
 
