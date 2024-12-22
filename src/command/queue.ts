@@ -152,7 +152,7 @@ export function removeFromQueue(type: Command.sendloop, turn: number): void {
  */
 export function dequeueLastUserRequest(type: Command.sendloop, username: string): void {
     const [, status] = queueMap[type].dequeueLastUserRequest(username);
-    if (status === ResponseStatus.Error){
+    if (status === ResponseStatus.Error) {
         throw new Error(ERROR_MSG.INVALID_WRONGREQUEST());
     }
 }

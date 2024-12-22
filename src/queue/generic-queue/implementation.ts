@@ -192,7 +192,7 @@ export class GenericQueue<T> implements Queue<T> {
         const lastUserEntry = [...queueEntries].findLast(([, { requesterUser }]) => username === requesterUser);
 
         if (lastUserEntry == null) {
-            return [null, ResponseStatus.Error]
+            return [null, ResponseStatus.Error];
         }
 
         const [turn] = lastUserEntry;
