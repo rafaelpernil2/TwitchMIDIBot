@@ -18,6 +18,7 @@ export function parseEnvVariables(env: EnvObject): ParsedEnvObject {
 
     const TIME_SIGNATURE_NUMERATOR_CC = Number(env.TIME_SIGNATURE_NUMERATOR_CC);
     const TIME_SIGNATURE_DENOMINATOR_CC = Number(env.TIME_SIGNATURE_DENOMINATOR_CC);
+    const REPETITIONS_PER_LOOP = Number(env.REPETITIONS_PER_LOOP);
 
     return {
         ...env,
@@ -28,6 +29,7 @@ export function parseEnvVariables(env: EnvObject): ParsedEnvObject {
         SILENCE_MACRO_MESSAGES,
         ALLOW_CUSTOM_TIME_SIGNATURE,
         TIME_SIGNATURE_NUMERATOR_CC,
-        TIME_SIGNATURE_DENOMINATOR_CC
+        TIME_SIGNATURE_DENOMINATOR_CC,
+        REPETITIONS_PER_LOOP
     };
 }

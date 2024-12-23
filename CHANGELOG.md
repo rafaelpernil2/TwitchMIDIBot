@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0] - 2024-12-01
 ### Added
-- Custom Time signatures in requests, now you can request loops with several time signatures per request like 3/4, 5/4, 7/8... or whatever is on your mind. Prog rock!
+- Repetitions per loop, now each loop repeats itself 4 times by default before moving to the next loop in queue. It can be customiced via REPETITIONS_PER_LOOP at .env file
+- Custom Time signatures in requests, now you can request loops with different time signatures (only one per request) like 3/4, 5/4, 7/8... or whatever is on your mind. Prog rock!
 - Time signature changes trigger a MIDI CC message. You can map it to your metronome time signature within your DAW
 - Macro feature: Now you can trigger a set of commands with different timeouts just using a single command or "macro"
 - aliases.json has a new section called "macros". Not a breaking change because it is fixed automatically by this update

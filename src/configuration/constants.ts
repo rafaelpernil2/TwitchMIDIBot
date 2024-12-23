@@ -32,6 +32,7 @@ export const CONFIG = {
     MIN_TIMEOUT: 0,
     MAX_TIMEOUT: 86400,
     DEFAULT_REQUEST_TIMEOUT: 10,
+    DEFAULT_REPETITIONS_PER_LOOP: 4,
     VALID_MEASURE: [1, 2, 4, 8, 16, 32],
     MAX_MEASURE_MULTIPLIER: 4,
     NOTE_COUNT_DEFAULT_CC: 14,
@@ -84,6 +85,7 @@ export const ERROR_MSG = {
     BAD_MIDI_CHANNEL: (variable: string, value: string) => `${i18n.t('ERROR_BAD_MIDI_CHANNEL')} // [${variable}=${value}]`,
     BAD_MIDI_VALUE: (variable: string, value: string) => `${i18n.t('ERROR_BAD_MIDI_MESSAGE')} // [${variable}=${value}]`,
     BAD_BOOLEAN: (variable: string, value: string) => `${i18n.t('ERROR_BAD_BOOLEAN')} // [${variable}=${value}]`,
+    BAD_LOOP_REPETITIONS: (variable: string, value: string) => `${i18n.t('ERROR_BAD_LOOP_REPETITIONS')} // [${variable}=${value}]`,
     INVALID_VOLUME: () => i18n.t('ERROR_INVALID_VOLUME'),
     INVALID_TEMPO: () =>
         `${i18n.t('ERROR_INVALID_TEMPO_1')} ${CONFIG.MIN_TEMPO} ${i18n.t('ERROR_INVALID_TEMPO_2')} ${CONFIG.MAX_TEMPO} ${i18n.t('ERROR_INVALID_TEMPO_3')} ${
@@ -116,6 +118,7 @@ export const ERROR_MSG = {
     INVALID_UNBAN_USER: () => i18n.t('ERROR_INVALID_UNBAN_USER'),
     RUNTIME_PERMISSIONS: () => i18n.t('ERROR_RUNTIME_PERMISSIONS'),
     INVALID_TIMESIGNATURE: () => i18n.t('ERROR_INVALID_TIMESIGNATURE'),
+    MULTIPLE_TIMESIGNATURE: () => i18n.t('ERROR_MULTIPLE_TIMESIGNATURE'),
     INVALID_WRONGREQUEST: () => i18n.t('ERROR_INVALID_WRONGREQUEST')
 };
 

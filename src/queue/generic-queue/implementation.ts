@@ -29,10 +29,10 @@ export class GenericQueue<T> implements Queue<T> {
      * Returns all the elements in the queue
      * @returns
      */
-    tagEntries(): Result<[turn: number, tag: string, requesterUser: string][]> {
-        const tagEntries: Array<[turn: number, tag: string, requesterUser: string]> = [];
-        for (const [turn, { tag, requesterUser }] of this._queueMap.entries()) {
-            tagEntries.push([turn, tag, requesterUser]);
+    tagEntries(): Result<[turn: number, tag: string, requesterUser: string, iteration: number][]> {
+        const tagEntries: Array<[turn: number, tag: string, requesterUser: string, iteration: number]> = [];
+        for (const [turn, { tag, requesterUser, iteration }] of this._queueMap.entries()) {
+            tagEntries.push([turn, tag, requesterUser, iteration]);
         }
         return [tagEntries, ResponseStatus.Ok];
     }
@@ -123,6 +123,7 @@ export class GenericQueue<T> implements Queue<T> {
             tag,
             value,
             requesterUser,
+            iteration: 0,
             timestamp: new Date(),
             previousTurn,
             nextTurn
@@ -260,6 +261,38 @@ export class GenericQueue<T> implements Queue<T> {
     isEmpty(): Result<boolean> {
         return [this._queueMap.size === 0, ResponseStatus.Ok];
     }
+
+    /**
+     * Gets the iteration in queue
+     * @param turn Position in queue
+     */
+    getIteration(turn: number): Result<number> {
+        const item = this._queueMap.get(turn);
+        if (item == null) {
+            return [-1, ResponseStatus.Error];
+        }
+
+        return [item.iteration, ResponseStatus.Ok];
+    }
+    /**
+     * Increments the iteration in queue
+     * @param turn Position in queue
+     */
+    nextIteration(turn: number): Result<null> {
+        const item = this._queueMap.get(turn);
+        if (item == null) {
+            return [null, ResponseStatus.Error];
+        }
+
+        const newItem: QueueNode<T> = {
+            ...item,
+            iteration: item.iteration + 1
+        }
+
+        this._queueMap.set(turn, newItem)
+
+        return [null, ResponseStatus.Ok];
+    };
 
     // PRIVATE METHODS
 

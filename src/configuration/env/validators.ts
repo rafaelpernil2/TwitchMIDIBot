@@ -81,6 +81,16 @@ export function ALLOW_CUSTOM_TIME_SIGNATURE(value: string): boolean {
 }
 
 /**
+ * Validates REPETITIONS_PER_LOOP to make sure the value is valid
+ * @param value
+ * @returns If it's valid
+ */
+export function REPETITIONS_PER_LOOP(value: string): boolean {
+    _validateLoopRepetitions(value, 'REPETITIONS_PER_LOOP');
+    return true;
+}
+
+/**
  * Validates a boolean value that must be true or false
  * Throws an error if the value is invalid
  * @param message Possible MIDI channel
@@ -115,5 +125,19 @@ function _validateMIDIValue(message: string | number, variable: string): void {
     const parsedMessage = Number(message);
     if (isNaN(parsedMessage) || parsedMessage < 0 || parsedMessage > 127) {
         throw new Error(ERROR_MSG.BAD_MIDI_VALUE(variable, String(message)));
+    }
+}
+
+
+/**
+ * Validates a number that must be at least 1 and less than 32
+ * Throws an error if the value is invalid
+ * @param message Possible loop iterations
+ * @returns
+ */
+function _validateLoopRepetitions(message: string | number, variable: string): void {
+    const parsedMessage = Number(message);
+    if (isNaN(parsedMessage) || parsedMessage < 1 || parsedMessage > 32) {
+        throw new Error(ERROR_MSG.BAD_LOOP_REPETITIONS(variable, String(message)));
     }
 }

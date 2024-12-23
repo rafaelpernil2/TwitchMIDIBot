@@ -35,8 +35,10 @@ export function showInitReadyMessages(env: ParsedEnvObject): void {
     // Values
     if (env.ALLOW_CUSTOM_TIME_SIGNATURE) {
         console.log(chalk.magenta(i18n.t('INIT_TIME_SIGNATURE_NUMERATOR_CC')), chalk.magentaBright(env.TIME_SIGNATURE_NUMERATOR_CC));
-        console.log(chalk.magenta(i18n.t('INIT_TIME_SIGNATURE_DENOMINATOR_CC')), chalk.magentaBright(env.TIME_SIGNATURE_DENOMINATOR_CC));
+        console.log(chalk.magenta(i18n.t('INIT_TIME_SIGNATURE_DENOMINATOR_CC')), chalk.magentaBright(env.TIME_SIGNATURE_DENOMINATOR_CC), '\n');
     }
+
+    console.log(chalk.magenta(i18n.t('INIT_REPETITIONS_PER_LOOP')), chalk.magentaBright(env.REPETITIONS_PER_LOOP), '\n');
 
     // Support message
     console.log(chalk.blueBright(i18n.t('INIT_SEPARATOR')));

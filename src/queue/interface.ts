@@ -47,6 +47,16 @@ export interface Queue<T extends CustomObject<T>> {
      */
     isCurrentLast(): Result<boolean>;
     /**
+     * Gets the iteration in queue
+     * @param turn Position in queue
+     */
+    getIteration(turn: number): Result<number>;
+    /**
+     * Increments the iteration in queue
+     * @param turn Position in queue
+     */
+    nextIteration(turn: number): Result<null>;
+    /**
      * Is queue empty
      */
     isEmpty(): Result<boolean>;
@@ -73,13 +83,14 @@ export interface Queue<T extends CustomObject<T>> {
     /**
      * Returns the tag from all items in queue in entries format
      */
-    tagEntries(): Result<Array<[turn: number, tag: string, requesterUser: string]>>;
+    tagEntries(): Result<Array<[turn: number, tag: string, requesterUser: string, iteration: number]>>;
 }
 
 export type QueueNode<T> = {
     tag: string;
     value: T;
     requesterUser: string;
+    iteration: number;
     timestamp: Date;
     previousTurn: number;
     nextTurn: number;

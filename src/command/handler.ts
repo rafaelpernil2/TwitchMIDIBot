@@ -218,14 +218,14 @@ export async function sendnote(...[message, { targetMIDIChannel, silenceMessages
  *         twitch: { chatClient, channel, user, userRoles } // Twitch chat and user data
  *         ]
  */
-export function sendloop(...[message, { targetMIDIChannel, silenceMessages, allowCustomTimeSignature, timeSignatureCC }, { chatClient, channel, user }]: CommandParams): void {
+export function sendloop(...[message, { targetMIDIChannel, silenceMessages, allowCustomTimeSignature, timeSignatureCC, repetitionsPerLoop }, { chatClient, channel, user }]: CommandParams): void {
     _checkMessageNotEmpty(message);
     checkMIDIConnection();
     // Queue chord progression petition
     const data = _getChordProgression(message, { allowCustomTimeSignature });
     enqueue(message, data, user, Command.sendloop);
     autoStartClock(targetMIDIChannel);
-    createAutomaticClockSyncedQueue(targetMIDIChannel, timeSignatureCC, { allowCustomTimeSignature });
+    createAutomaticClockSyncedQueue(targetMIDIChannel, timeSignatureCC, { allowCustomTimeSignature, repetitionsPerLoop });
     sayTwitchChatMessage(chatClient, channel, [`@${user} `, i18n.t('SENDLOOP')], { silenceMessages });
 }
 
@@ -637,6 +637,10 @@ function _parseChordProgressionList(
         .split(GLOBAL.OPEN_SQUARE_BRACKETS)
         .filter((value) => value !== GLOBAL.EMPTY_MESSAGE)
         .map((value) => value.trim());
+
+    if (timeSignedRequestList.length > 1){
+        throw new Error(ERROR_MSG.MULTIPLE_TIMESIGNATURE());
+    }
 
     return timeSignedRequestList.map((chordProgression) => _parseChordProgression(chordProgression, { allowCustomTimeSignature }));
 }

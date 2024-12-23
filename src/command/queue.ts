@@ -1,5 +1,5 @@
 import { CHORD_PROGRESSIONS_KEY } from '../database/jsondb/types.js';
-import { ALIASES_DB, ERROR_MSG, EVENT, EVENT_EMITTER, GLOBAL } from '../configuration/constants.js';
+import { ALIASES_DB, CONFIG, ERROR_MSG, EVENT, EVENT_EMITTER, GLOBAL } from '../configuration/constants.js';
 import { syncMode } from '../midi/clock.js';
 import { Sync } from '../midi/types.js';
 import { areRequestsOpen } from './guards.js';
@@ -21,13 +21,13 @@ export const queueMap = {
  * Create a clock synched queue
  * @param targetMIDIChannel Target MIDI Channel
  * @param timeSignatureCC Time Signature MIDI CC
- * @param options { allowCustomTimeSignature }
+ * @param options { allowCustomTimeSignature, repetitionsPerLoop }
  * @returns
  */
 export function createAutomaticClockSyncedQueue(
     targetMIDIChannel: number,
     timeSignatureCC: [numeratorCC: number, denominatorCC: number],
-    { allowCustomTimeSignature }: { allowCustomTimeSignature: boolean }
+    { allowCustomTimeSignature, repetitionsPerLoop }: { allowCustomTimeSignature: boolean, repetitionsPerLoop: number }
 ): void {
     // Only set the function once
     if (onBarLoopChange != null) {
@@ -48,7 +48,11 @@ export function createAutomaticClockSyncedQueue(
         const [currentTag] = queueMap[type].getTag(turn);
         _setRequestPlayingNow(type, currentTag ?? GLOBAL.EMPTY_MESSAGE);
 
-        await triggerChordList(chordProgression, targetMIDIChannel, { allowCustomTimeSignature }, timeSignatureCC, type);
+        // Set next iteration
+        nextIteration(type, turn);
+
+        // Play loop
+        await triggerChordList(chordProgression, targetMIDIChannel, { allowCustomTimeSignature }, timeSignatureCC, type, repetitionsPerLoop);
         return true;
     };
 
@@ -79,13 +83,14 @@ export function enqueue(
 /**
  * Moves to the next in queue
  * @param type Command.sendloop
+ * @param repetitionsPerLoop Maximum allowed iterations
  */
-export function forwardQueue(type: Command.sendloop): void {
+export function forwardQueue(type: Command.sendloop, repetitionsPerLoop: number): void {
     const [currentTurn] = queueMap[type].getCurrentTurn();
     const [nextTurn] = queueMap[type].getNextTurn();
 
     // Do not forward queue if it's looping alone, requests are closed, queue is empty, or synchronization with repetition is active
-    if (_mustRepeatRequest(type, currentTurn, nextTurn)) {
+    if (_mustRepeatRequest(type, currentTurn, nextTurn, repetitionsPerLoop)) {
         return;
     }
 
@@ -175,6 +180,15 @@ export function unmarkFavorite(type: Command.sendloop): void {
 }
 
 /**
+ * Sets next iteration in request
+ * @param type Command.sendloop
+ * @param turn Turn in queue
+ */
+export function nextIteration(type: Command.sendloop, turn: number): void {
+    queueMap[type].nextIteration(turn);
+}
+
+/**
  * Save a request into the list of aliases
  * @param type Command.sendloop
  * @param turn Turn in queue
@@ -232,13 +246,26 @@ function _isFavoriteRequest(type: Command.sendloop, turn: number): boolean {
 }
 
 /**
+ * Checks if the loop is within expected repetitions (4 times by default)
+ * @param type Command.sendloop
+ * @param turn Turn in queue
+ * @param repetitionsPerLoop Maximum allowed iterations
+ * @returns
+ */
+function _isWithinIterations(type: Command.sendloop, turn: number, repetitionsPerLoop: number): boolean {
+    const [iteration] = queueMap[type].getIteration(turn);
+    return iteration < repetitionsPerLoop;
+}
+
+/**
  * Checks if the queue needs to repeat the current request
  * @param type Queue type
  * @param currentTurn Current turn
  * @param nextTurn Current turn
+ * @param repetitionsPerLoop Maximum allowed iterations
  * @returns If queue can progress
  */
-function _mustRepeatRequest(type: Command.sendloop, currentTurn: number, nextTurn: number): boolean {
+function _mustRepeatRequest(type: Command.sendloop, currentTurn: number, nextTurn: number, repetitionsPerLoop: number): boolean {
     return (
         type === Command.sendloop && // Is a !sendloop request
         _isInQueue(type, currentTurn) && // Current !sendloop request still exists
@@ -251,7 +278,8 @@ function _mustRepeatRequest(type: Command.sendloop, currentTurn: number, nextTur
                 (
                     !_isInQueue(type, nextTurn) ||
                     !areRequestsOpen.get() ||
-                    _isFavoriteRequest(type, currentTurn)
+                    _isFavoriteRequest(type, currentTurn) ||
+                    _isWithinIterations(type, currentTurn, repetitionsPerLoop)
                 )
             )
         )

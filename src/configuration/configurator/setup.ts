@@ -49,7 +49,8 @@ export async function setupConfiguration(currentVariables: EnvObject): Promise<E
         SILENCE_MACRO_MESSAGES,
         ALLOW_CUSTOM_TIME_SIGNATURE,
         TIME_SIGNATURE_NUMERATOR_CC,
-        TIME_SIGNATURE_DENOMINATOR_CC
+        TIME_SIGNATURE_DENOMINATOR_CC,
+        REPETITIONS_PER_LOOP
     } = targetEnv;
 
     // STEP 1
@@ -132,6 +133,9 @@ export async function setupConfiguration(currentVariables: EnvObject): Promise<E
             TIME_SIGNATURE_NUMERATOR_CC = `${CONFIG.NOTE_COUNT_DEFAULT_CC}`;
             TIME_SIGNATURE_DENOMINATOR_CC = `${CONFIG.NOTE_VALUE_DEFAULT_CC}`;
         }
+
+        REPETITIONS_PER_LOOP =
+                (await _makeQuestion(rl, i18n.t('SETUP_STEP_3_REPETITIONS_PER_LOOP_QUESTION'), REPETITIONS_PER_LOOP)) || `${CONFIG.DEFAULT_REPETITIONS_PER_LOOP}`;
     }
 
     // STEP 4
@@ -170,6 +174,7 @@ export async function setupConfiguration(currentVariables: EnvObject): Promise<E
     await fs.appendFile(CONFIG.DOT_ENV_PATH, 'ALLOW_CUSTOM_TIME_SIGNATURE=' + ALLOW_CUSTOM_TIME_SIGNATURE + '\n');
     await fs.appendFile(CONFIG.DOT_ENV_PATH, 'TIME_SIGNATURE_NUMERATOR_CC=' + TIME_SIGNATURE_NUMERATOR_CC + '\n');
     await fs.appendFile(CONFIG.DOT_ENV_PATH, 'TIME_SIGNATURE_DENOMINATOR_CC=' + TIME_SIGNATURE_DENOMINATOR_CC + '\n');
+    await fs.appendFile(CONFIG.DOT_ENV_PATH, 'REPETITIONS_PER_LOOP=' + REPETITIONS_PER_LOOP + '\n');
 
     rl.close();
     console.log(chalk.greenBright(i18n.t('SETUP_STEP_END')));
@@ -196,7 +201,8 @@ export async function setupConfiguration(currentVariables: EnvObject): Promise<E
         SILENCE_MACRO_MESSAGES,
         ALLOW_CUSTOM_TIME_SIGNATURE,
         TIME_SIGNATURE_NUMERATOR_CC,
-        TIME_SIGNATURE_DENOMINATOR_CC
+        TIME_SIGNATURE_DENOMINATOR_CC,
+        REPETITIONS_PER_LOOP
     };
 }
 
@@ -251,7 +257,8 @@ function isStep3Invalid({
     SILENCE_MACRO_MESSAGES,
     ALLOW_CUSTOM_TIME_SIGNATURE,
     TIME_SIGNATURE_NUMERATOR_CC,
-    TIME_SIGNATURE_DENOMINATOR_CC
+    TIME_SIGNATURE_DENOMINATOR_CC,
+    REPETITIONS_PER_LOOP
 }: EnvObject): boolean {
     return (
         isNullish(REWARDS_MODE) ||
@@ -261,7 +268,8 @@ function isStep3Invalid({
         isNullish(SILENCE_MACRO_MESSAGES) ||
         isNullish(ALLOW_CUSTOM_TIME_SIGNATURE) ||
         isNullish(TIME_SIGNATURE_NUMERATOR_CC) ||
-        isNullish(TIME_SIGNATURE_DENOMINATOR_CC)
+        isNullish(TIME_SIGNATURE_DENOMINATOR_CC) ||
+        isNullish(REPETITIONS_PER_LOOP)
     );
 }
 

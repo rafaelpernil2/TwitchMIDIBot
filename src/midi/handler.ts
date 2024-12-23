@@ -100,13 +100,15 @@ export async function triggerNoteList(rawNoteList: Array<[note: string, timeSubD
  * @param options { allowCustomTimeSignature }: { allowCustomTimeSignature: boolean }
  * @param timeSignatureCC: [numeratorCC: number, denominatorCC: number]
  * @param type 'sendloop'
+ * @param repetitionsPerLoop Maximum allowed iterations
  */
 export async function triggerChordList(
     requestList: Array<[timeSignature: [noteCount: number, noteValue: number], chordProgression: Array<[noteList: string[], timeSubDivision: number]>]>,
     targetMIDIChannel: number,
     { allowCustomTimeSignature }: { allowCustomTimeSignature: boolean },
     timeSignatureCC: [numeratorCC: number, denominatorCC: number],
-    type: Command.sendloop
+    type: Command.sendloop,
+    repetitionsPerLoop: number
 ): Promise<void> {
     // If the MIDI clock has not started yet, start it to make the chord progression sound
     autoStartClock(targetMIDIChannel);
@@ -136,7 +138,7 @@ export async function triggerChordList(
         // But this is done either way in "finally" block
     } finally {
         // Move to next in queue
-        forwardQueue(type);
+        forwardQueue(type, repetitionsPerLoop);
         // Only the current request should be repeated after tempo change (repeat sync)
         if (syncMode.is(Sync.REPEAT)) {
             syncMode.set(Sync.OFF);
