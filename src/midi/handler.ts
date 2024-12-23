@@ -212,6 +212,19 @@ export function autoStartClock(targetMIDIChannel: number): void {
 }
 
 /**
+ * Sends MIDI CC message with default time signature
+ * @param targetMIDIChannel Virtual MIDI device channel
+ * @param timeSignatureCC: [numeratorCC: number, denominatorCC: number]
+ */
+export function resetTimeSignature(targetMIDIChannel: number, [numeratorCC, denominatorCC]: [numeratorCC: number, denominatorCC: number]): void {
+    if (output == null) {
+        throw new Error(ERROR_MSG.BOT_DISCONNECTED());
+    }
+    output.control(targetMIDIChannel, numeratorCC, CONFIG.DEFAULT_NOTE_COUNT);
+    output.control(targetMIDIChannel, denominatorCC, CONFIG.DEFAULT_NOTE_VALUE);
+}
+
+/**
  * Initializes the common variables
  */
 function _initVariables(): void {

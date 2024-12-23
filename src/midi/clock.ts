@@ -12,6 +12,7 @@ export const clockPulses = new SharedVariable<number>(96); // 24ppq * 4 quarter 
 // Clock variables
 let timer = new NanoTimer();
 let tick = 0;
+let isClockRunning = false;
 
 /**
  * MIDI Clock: Sends ticks synced with tempo at 24ppq following MIDI spec
@@ -63,6 +64,7 @@ export function initClockData(): void {
 function _resetClock(targetMIDIChannel: number, output: ReturnType<JZZTypes['openMidiOut']>, { sync } = { sync: true }): void {
     if (sync) {
         syncMode.set(Sync.REPEAT);
+        isClockRunning = false;
     }
     initClockData();
     output.stop();
@@ -77,6 +79,9 @@ function _resetClock(targetMIDIChannel: number, output: ReturnType<JZZTypes['ope
 function _sendTick(output: ReturnType<JZZTypes['openMidiOut']>): () => void {
     let isFirst = true;
     return () => {
+        if (!isFirst && !isClockRunning) {
+            return;
+        }
         // Constant time operations to ensure time stability
         const isInProgress = isChordInProgress.get();
         const pulses = clockPulses.get(); // 24ppq * 4 quarter notes by default
@@ -93,6 +98,7 @@ function _sendTick(output: ReturnType<JZZTypes['openMidiOut']>): () => void {
         if (isFirst) {
             output.start();
             isFirst = false;
+            isClockRunning = true;
         }
     };
 }

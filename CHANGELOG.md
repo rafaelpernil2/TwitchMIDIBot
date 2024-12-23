@@ -57,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Migrated from @vercel/pkg to @yao/pkg due to deprecation
 ### Fixed
 - !midion with virtual MIDI device inactive or non existent would not throw an error. Now it does and helps the streamer find out what is wrong
+- !syncmidi logic. nanotimer does not work as expected when calling .clearInterval, so I needed to invalidate the clock at synchronization
 - Rewards disable bug. Before, it only disabled the current rewards from rewards.json file. If any reward were changed while running TwitchMIDI, it would stay active forever. Now it disables all rewards created by TwitchMIDI (new behaviour) and enables only the ones from rewards.json file (as before)
 - Control Change error handling, now requests without value give a meaningful error
 - Bad request bug. If you request "H" it is registered as a valid chord however, JZZ treats it as invalid and the queue stops working. Now it works well!

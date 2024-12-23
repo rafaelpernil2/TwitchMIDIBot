@@ -12,7 +12,8 @@ import {
     triggerClock,
     triggerNoteList,
     setMIDIVolume,
-    autoStartClock
+    autoStartClock,
+    resetTimeSignature
 } from '../midi/handler.js';
 import { CCCommand, Command } from './types.js';
 import harmonics from 'harmonics';
@@ -50,9 +51,12 @@ export function midihelp(...[message, { silenceMessages }, { chatClient, channel
  *         twitch: { chatClient, channel, user, userRoles } // Twitch chat and user data
  *         ]
  */
-export async function midion(...[, { targetMIDIName, targetMIDIChannel, isRewardsMode }, { chatClient, authProvider, channel, targetChannel }]: CommandParams): Promise<void> {
+export async function midion(...[, { targetMIDIName, targetMIDIChannel, isRewardsMode, allowCustomTimeSignature, timeSignatureCC }, { chatClient, authProvider, channel, targetChannel }]: CommandParams): Promise<void> {
     try {
         await connectMIDI(targetMIDIName, targetMIDIChannel);
+        if (allowCustomTimeSignature) {
+            resetTimeSignature(targetMIDIChannel, timeSignatureCC);
+        }
         if (isRewardsMode) {
             sayTwitchChatMessage(chatClient, channel, [, i18n.t('MIDION_REWARDS')]);
             await createRewards(authProvider, targetChannel);
