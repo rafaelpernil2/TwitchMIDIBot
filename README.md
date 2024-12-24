@@ -111,7 +111,7 @@ So far, this first version does all that, keep reading the features for more det
   * Trigger looped chord progressions with specific length per chord via [!sendloop](#sendloop) with an extensive list of chords to choose from. See [CHORDS.md](CHORDS.md)
   * Remove your last request if you change your mind via [!wrongloop](#wrongloop)
   * Support for music rests using "rest" as a replacement for a chord or note in [!sendnote](#sendnote) and [!sendloop](#sendloop) requests
-  * Support for multiple time signatures per request using "\[X/Y\]" [!sendloop](#sendloop) requests (e.g "\[4/4\] Dmin7 G7 C" or "\[5/4\] Dmin7(2) G7(3) \[4/4\] Dmaj7(2) Dbm7(2) Cmaj7(2) Bm7(2)")
+  * Support for custom time signatures (one per request) using "\[X/Y\]" on [!sendloop](#sendloop) requests (e.g "\[4/4\] Dmin7 G7 C" or "\[5/4\] Dmin7(2) G7(3)")
   * See the current chord progression via [!midicurrentrequest](#midicurrentrequest)
   * Check the chord progression request queue via [!midirequestqueue](#midirequestqueue)
   * Change MIDI velocity via [!midivolume](#midivolume)
