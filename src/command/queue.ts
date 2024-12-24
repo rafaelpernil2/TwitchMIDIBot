@@ -41,6 +41,8 @@ export function createAutomaticClockSyncedQueue(
 
         // If request was removed from queue
         if (chordProgression == null) {
+            // Forward loop to avoid getting stuck
+            forwardQueue(type, repetitionsPerLoop)
             return false;
         }
 
