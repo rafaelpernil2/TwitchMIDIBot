@@ -287,12 +287,12 @@ export class GenericQueue<T> implements Queue<T> {
         const newItem: QueueNode<T> = {
             ...item,
             iteration: item.iteration + 1
-        }
+        };
 
-        this._queueMap.set(turn, newItem)
+        this._queueMap.set(turn, newItem);
 
         return [null, ResponseStatus.Ok];
-    };
+    }
 
     // PRIVATE METHODS
 

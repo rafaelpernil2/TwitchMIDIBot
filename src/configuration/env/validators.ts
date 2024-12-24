@@ -128,7 +128,6 @@ function _validateMIDIValue(message: string | number, variable: string): void {
     }
 }
 
-
 /**
  * Validates a number that must be at least 1 and less than 32
  * Throws an error if the value is invalid

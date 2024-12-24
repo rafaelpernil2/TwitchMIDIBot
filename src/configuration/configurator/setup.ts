@@ -134,8 +134,7 @@ export async function setupConfiguration(currentVariables: EnvObject): Promise<E
             TIME_SIGNATURE_DENOMINATOR_CC = `${CONFIG.NOTE_VALUE_DEFAULT_CC}`;
         }
 
-        REPETITIONS_PER_LOOP =
-                (await _makeQuestion(rl, i18n.t('SETUP_STEP_3_REPETITIONS_PER_LOOP_QUESTION'), REPETITIONS_PER_LOOP)) || `${CONFIG.DEFAULT_REPETITIONS_PER_LOOP}`;
+        REPETITIONS_PER_LOOP = (await _makeQuestion(rl, i18n.t('SETUP_STEP_3_REPETITIONS_PER_LOOP_QUESTION'), REPETITIONS_PER_LOOP)) || `${CONFIG.DEFAULT_REPETITIONS_PER_LOOP}`;
     }
 
     // STEP 4

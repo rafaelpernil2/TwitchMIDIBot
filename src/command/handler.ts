@@ -51,7 +51,9 @@ export function midihelp(...[message, { silenceMessages }, { chatClient, channel
  *         twitch: { chatClient, channel, user, userRoles } // Twitch chat and user data
  *         ]
  */
-export async function midion(...[, { targetMIDIName, targetMIDIChannel, isRewardsMode, allowCustomTimeSignature, timeSignatureCC }, { chatClient, authProvider, channel, targetChannel }]: CommandParams): Promise<void> {
+export async function midion(
+    ...[, { targetMIDIName, targetMIDIChannel, isRewardsMode, allowCustomTimeSignature, timeSignatureCC }, { chatClient, authProvider, channel, targetChannel }]: CommandParams
+): Promise<void> {
     try {
         await connectMIDI(targetMIDIName, targetMIDIChannel);
         if (allowCustomTimeSignature) {
@@ -218,7 +220,9 @@ export async function sendnote(...[message, { targetMIDIChannel, silenceMessages
  *         twitch: { chatClient, channel, user, userRoles } // Twitch chat and user data
  *         ]
  */
-export function sendloop(...[message, { targetMIDIChannel, silenceMessages, allowCustomTimeSignature, timeSignatureCC, repetitionsPerLoop }, { chatClient, channel, user }]: CommandParams): void {
+export function sendloop(
+    ...[message, { targetMIDIChannel, silenceMessages, allowCustomTimeSignature, timeSignatureCC, repetitionsPerLoop }, { chatClient, channel, user }]: CommandParams
+): void {
     _checkMessageNotEmpty(message);
     checkMIDIConnection();
     // Queue chord progression petition
@@ -638,7 +642,7 @@ function _parseChordProgressionList(
         .filter((value) => value !== GLOBAL.EMPTY_MESSAGE)
         .map((value) => value.trim());
 
-    if (timeSignedRequestList.length > 1){
+    if (timeSignedRequestList.length > 1) {
         throw new Error(ERROR_MSG.MULTIPLE_TIMESIGNATURE());
     }
 

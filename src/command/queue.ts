@@ -1,5 +1,5 @@
 import { CHORD_PROGRESSIONS_KEY } from '../database/jsondb/types.js';
-import { ALIASES_DB, CONFIG, ERROR_MSG, EVENT, EVENT_EMITTER, GLOBAL } from '../configuration/constants.js';
+import { ALIASES_DB, ERROR_MSG, EVENT, EVENT_EMITTER, GLOBAL } from '../configuration/constants.js';
 import { syncMode } from '../midi/clock.js';
 import { Sync } from '../midi/types.js';
 import { areRequestsOpen } from './guards.js';
@@ -27,7 +27,7 @@ export const queueMap = {
 export function createAutomaticClockSyncedQueue(
     targetMIDIChannel: number,
     timeSignatureCC: [numeratorCC: number, denominatorCC: number],
-    { allowCustomTimeSignature, repetitionsPerLoop }: { allowCustomTimeSignature: boolean, repetitionsPerLoop: number }
+    { allowCustomTimeSignature, repetitionsPerLoop }: { allowCustomTimeSignature: boolean; repetitionsPerLoop: number }
 ): void {
     // Only set the function once
     if (onBarLoopChange != null) {
@@ -35,23 +35,22 @@ export function createAutomaticClockSyncedQueue(
     }
 
     const onCommandTurn = (type: Command.sendloop) => async () => {
-        const [turn] = queueMap[type].getCurrentTurn();
-
         const [chordProgression] = queueMap[type].getCurrent();
 
         // If request was removed from queue
         if (chordProgression == null) {
             // Forward loop to avoid getting stuck
-            forwardQueue(type, repetitionsPerLoop)
+            forwardQueue(type, repetitionsPerLoop);
             return false;
         }
 
         // If it is in queue and is your turn - Happy path
+        const [turn] = queueMap[type].getCurrentTurn();
         const [currentTag] = queueMap[type].getTag(turn);
         _setRequestPlayingNow(type, currentTag ?? GLOBAL.EMPTY_MESSAGE);
 
         // Set next iteration
-        nextIteration(type, turn);
+        _nextIteration(type, turn);
 
         // Play loop
         await triggerChordList(chordProgression, targetMIDIChannel, { allowCustomTimeSignature }, timeSignatureCC, type, repetitionsPerLoop);
@@ -182,15 +181,6 @@ export function unmarkFavorite(type: Command.sendloop): void {
 }
 
 /**
- * Sets next iteration in request
- * @param type Command.sendloop
- * @param turn Turn in queue
- */
-export function nextIteration(type: Command.sendloop, turn: number): void {
-    queueMap[type].nextIteration(turn);
-}
-
-/**
  * Save a request into the list of aliases
  * @param type Command.sendloop
  * @param turn Turn in queue
@@ -216,6 +206,16 @@ export async function saveRequest(type: Command.sendloop, turn: number, alias: s
     }
     await ALIASES_DB.commit();
 }
+
+/**
+ * Sets next iteration in request
+ * @param type Command.sendloop
+ * @param turn Turn in queue
+ */
+function _nextIteration(type: Command.sendloop, turn: number): void {
+    queueMap[type].nextIteration(turn);
+}
+
 /**
  * Checks if a request is still in queue
  * @param type Command.sendloop
@@ -277,14 +277,7 @@ function _mustRepeatRequest(type: Command.sendloop, currentTurn: number, nextTur
             // eslint-disable-next-line prettier/prettier
             (
                 syncMode.is(Sync.OFF) &&
-                (
-                    !_isInQueue(type, nextTurn) ||
-                    !areRequestsOpen.get() ||
-                    _isFavoriteRequest(type, currentTurn) ||
-                    _isWithinIterations(type, currentTurn, repetitionsPerLoop)
-                )
-            )
-        )
+                (!_isInQueue(type, nextTurn) || !areRequestsOpen.get() || _isFavoriteRequest(type, currentTurn) || _isWithinIterations(type, currentTurn, repetitionsPerLoop))))
     );
 }
 
