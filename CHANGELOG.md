@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0] - 2024-12-24
 ### Added
-- Repetitions per loop, now each loop repeats itself 4 times by default before moving to the next loop in queue. It can be customiced via REPETITIONS_PER_LOOP at .env file
+- Repetitions per loop, now each loop repeats itself 4 times by default before moving to the next loop in queue. It can be customized via REPETITIONS_PER_LOOP at .env file
 - Custom Time signatures in requests, now you can request loops with different time signatures (only one per request) like 3/4, 5/4, 7/8... or whatever is on your mind. Prog rock!
 - Time signature changes trigger a MIDI CC message. You can map it to your metronome time signature within your DAW
 - Macro feature: Now you can trigger a set of commands with different timeouts just using a single command or "macro"
@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - ALLOW_CUSTOM_TIME_SIGNATURE for custom time signature feature. It enables or disables other time signatures than 4/4
   - TIME_SIGNATURE_NUMERATOR_CC sets the MIDI CC to send messages containing the time signature numerator on each time signature change
   - TIME_SIGNATURE_DENOMINATOR_CC sets the MIDI CC to send messages containing the time signature denominator on each time signature change
+  - REPETITIONS_PER_LOOP sets the amount of times each loop is played before moving to the next in queue
 - !midibanuser and !midiunbanuser to forbid usage to some users
 - !miditimeout to rate-limit requests per user
 - Now each request tags the user to let them know about the status of their request
@@ -51,7 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Minor naming refactors
 - Improved setTimeoutPromise with a default case for 0ns
 - Updated all dependencies (Twurple.js, i18next, JZZ, PKG, ESLint...)
-- Migrated all code to Node 20, Typescript 5.6 and ESModule
+- Migrated all code to Node 22, Typescript 5.7 and ESModule
 - Replaced NCC with ESBuild for a reduced build time
 - Now !fetchdb also disables and regenerates rewards on Twitch in case there is a change
 - Improved readability of initial setup links using magenta background as highlight and other text color changes
