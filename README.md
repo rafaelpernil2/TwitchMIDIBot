@@ -121,7 +121,7 @@ So far, this first version does all that, keep reading the features for more det
   * On/Off bot toggle with [!midion](#midion)/[!midioff](#midioff)
   * Pause requests with [!midipause](#midipause) and resume with [!midiresume](#midiresume)
   * Ban users with [!midibanuser](#midibanuser) and unban with [!midiunbanuser](#midiunbanuser)
-  * Set timeout between requests per user with [!miditimeout](#miditimeout)
+  * Set timeout between requests per user with [!miditimeout](#miditimeout) (10 seconds by default)
 * Configurable aliases on [config/aliases.json](https://github.com/rafaelpernil2/TwitchMIDI/blob/master/config/aliases.json)
   * Commands - Add as many command aliases as you want
   * Macros - Launch a set of actions from a single command

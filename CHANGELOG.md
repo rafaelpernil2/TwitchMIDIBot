@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - TIME_SIGNATURE_DENOMINATOR_CC sets the MIDI CC to send messages containing the time signature denominator on each time signature change
   - REPETITIONS_PER_LOOP sets the amount of times each loop is played before moving to the next in queue
 - !midibanuser and !midiunbanuser to forbid usage to some users
-- !miditimeout to rate-limit requests per user
+- !miditimeout to rate-limit requests per user (10 seconds by default)
 - Now each request tags the user to let them know about the status of their request
 - Revamped and extended Config API (for TwitchMIDI+). Now you can:
   - Query what's in the queue
