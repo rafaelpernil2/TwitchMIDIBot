@@ -98,3 +98,12 @@ GET http://localhost:52578/isActive
 
 HTTP/1.1
 content-type: application/json
+
+
+# SYNC
+###
+POST http://localhost:52578/sync
+
+HTTP/1.1
+content-type: application/json
+
