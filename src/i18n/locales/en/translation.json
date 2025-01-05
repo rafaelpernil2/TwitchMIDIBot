@@ -98,6 +98,7 @@
         "ERROR_INVALID_REWARD": "Invalid MIDI command from reward, please review the configuration of this bot",
         "ERROR_BAD_SETUP_PROCESS": "Bad setup, try again",
         "ERROR_DUPLICATE_REQUEST": "This request is already queued, wait until the previous request is fulfilled",
+        "ERROR_WAIT_FOR_REQUEST": "You have another request in queue, wait until your request is fulfilled",
         "ERROR_TIMEOUT_REQUEST_1": "You have already requested within the last",
         "ERROR_TIMEOUT_REQUEST_2": "seconds. Wait some time to request again",
         "ERROR_BROADCASTER_USER_NOT_FOUND": "Broadcaster not found",

@@ -221,13 +221,13 @@ export async function sendnote(...[message, { targetMIDIChannel, silenceMessages
  *         ]
  */
 export function sendloop(
-    ...[message, { targetMIDIChannel, silenceMessages, allowCustomTimeSignature, timeSignatureCC, repetitionsPerLoop }, { chatClient, channel, user }]: CommandParams
+    ...[message, { targetMIDIChannel, silenceMessages, allowCustomTimeSignature, timeSignatureCC, repetitionsPerLoop }, { chatClient, channel, user, userRoles }]: CommandParams
 ): void {
     _checkMessageNotEmpty(message);
     checkMIDIConnection();
     // Queue chord progression petition
     const data = _getChordProgression(message, { allowCustomTimeSignature });
-    enqueue(message, data, user, Command.sendloop);
+    enqueue(message, data, user, userRoles, Command.sendloop);
     autoStartClock(targetMIDIChannel);
     createAutomaticClockSyncedQueue(targetMIDIChannel, timeSignatureCC, { allowCustomTimeSignature, repetitionsPerLoop });
     sayTwitchChatMessage(chatClient, channel, [`@${user} `, i18n.t('SENDLOOP')], { silenceMessages });

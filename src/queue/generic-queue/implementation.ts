@@ -1,3 +1,4 @@
+import { UserRoles } from '../../twitch/command/types.js';
 import { ERROR_MSG } from '../../configuration/constants.js';
 import { ResponseStatus, Result } from '../../types/generic.js';
 import { Queue, QueueNode } from '../interface.js';
@@ -104,14 +105,24 @@ export class GenericQueue<T> implements Queue<T> {
      * @param tag Name of request
      * @param value Value of request
      * @param requesterUser Requester user
-     * @param userRoles { isBroadcaster }
+     * @param userRoles { isBroadcaster, isMod }
      * @returns
      */
-    enqueue(tag: string, value: T, requesterUser: string): Result<number> {
+    enqueue(tag: string, value: T, requesterUser: string, { isBroadcaster, isMod }: UserRoles): Result<number> {
         // Throw error on duplicate requests
         const [lastNode] = this._getLastInQueue();
         if (tag === lastNode?.tag) {
             throw new Error(ERROR_MSG.DUPLICATE_REQUEST());
+        }
+
+        // If it's not broadcaster or mod check if there is a request in queue
+        if (!isBroadcaster && !isMod) {
+            const queueEntries = this._queueMap.entries();
+            const lastUserEntry = [...queueEntries].findLast(([, { requesterUser: username }]) => username === requesterUser);
+
+            if (!this.isCurrentLast()[0] && lastUserEntry != null) {
+                throw new Error(ERROR_MSG.WAIT_FOR_REQUEST());
+            }
         }
 
         // Get turns

@@ -1,3 +1,4 @@
+import { UserRoles } from '../twitch/command/types.js';
 import { CustomObject, Result } from '../types/generic.js';
 
 export interface Queue<T extends CustomObject<T>> {
@@ -5,8 +6,10 @@ export interface Queue<T extends CustomObject<T>> {
      * Adds item to queue
      * @param tag Tag or alias for the item
      * @param value Value of the item
+     * @param requesterUser Requester user
+     * @param userRoles { isBroadcaster, isMod }
      */
-    enqueue(tag: string, value: T, requesterUser: string, { isBroadcaster }: { isBroadcaster: boolean }): Result<number>;
+    enqueue(tag: string, value: T, requesterUser: string, userRoles: UserRoles): Result<number>;
     /**
      * Removes item from queue
      * @param turn Position in queue

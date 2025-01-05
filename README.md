@@ -110,6 +110,7 @@ So far, this first version does all that, keep reading the features for more det
   * Trigger individual notes, build a chord or send a melody separated by commas via [!sendnote](#sendnote)
   * Trigger looped chord progressions with specific length per chord via [!sendloop](#sendloop) with an extensive list of chords to choose from. See [CHORDS.md](CHORDS.md)
   * Remove your last request if you change your mind via [!wrongloop](#wrongloop)
+  * Limit to one request in queue per user (unless user is broadcaster or mod). The user has to wait until their request has played to request again
   * Support for music rests using "rest" as a replacement for a chord or note in [!sendnote](#sendnote) and [!sendloop](#sendloop) requests
   * Support for custom time signatures (one per request) using "\[X/Y\]" on [!sendloop](#sendloop) requests (e.g "\[4/4\] Dmin7 G7 C" or "\[5/4\] Dmin7(2) G7(3)")
   * See the current chord progression via [!midicurrentrequest](#midicurrentrequest)

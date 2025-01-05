@@ -98,6 +98,7 @@
         "ERROR_INVALID_REWARD": "Comando inválido asociado a la recompensa, revisa la configuración del bot",
         "ERROR_BAD_SETUP_PROCESS": "El configurador no funcionó correctamente. Prueba de nuevo",
         "ERROR_DUPLICATE_REQUEST": "Esta petición ya está en la cola, espera a que dicha petición termine",
+        "ERROR_WAIT_FOR_REQUEST": "Ya tienes una petición en la cola, espera a que tu petición termine",
         "ERROR_TIMEOUT_REQUEST_1": "Ya has realizado una petición en los últimos",
         "ERROR_TIMEOUT_REQUEST_2": "segundos. Espera un tiempo para volver a realizar la petición",
         "ERROR_BROADCASTER_USER_NOT_FOUND": "Cuenta de streamer no encontrada",

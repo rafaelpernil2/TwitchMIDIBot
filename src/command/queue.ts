@@ -7,6 +7,7 @@ import { Command } from './types.js';
 import { ResponseStatus } from '../types/generic.js';
 import { GenericQueue } from '../queue/generic-queue/implementation.js';
 import { triggerChordList } from '../midi/handler.js';
+import { UserRoles } from '../twitch/command/types.js';
 
 export const favoriteIdMap = Object.fromEntries(Object.values(Command).map((key) => [key, -1])) as Record<Command, number>;
 export let onBarLoopChange: () => Promise<void>;
@@ -67,7 +68,7 @@ export function createAutomaticClockSyncedQueue(
  * @param tag Name to queue
  * @param value Value to queue
  * @param requesterUser Requester user
- * @param userRoles { isBroadcaster }
+ * @param userRoles { isBroadcaster, isMod }
  * @param type Command.sendloop
  * @returns
  */
@@ -75,9 +76,10 @@ export function enqueue(
     tag: string,
     value: Array<[timeSignature: [noteCount: number, noteValue: number], chordProgression: Array<[noteList: string[], timeSubDivision: number]>]>,
     requesterUser: string,
+    userRoles: UserRoles,
     type: Command.sendloop
 ): number {
-    const [turn] = queueMap[type].enqueue(tag, value, requesterUser);
+    const [turn] = queueMap[type].enqueue(tag, value, requesterUser, userRoles);
     return turn;
 }
 
