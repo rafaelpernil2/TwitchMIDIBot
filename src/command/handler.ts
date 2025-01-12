@@ -1,4 +1,4 @@
-import { ALIASES_DB, COMMAND_DESCRIPTIONS, CONFIG, ERROR_MSG, EVENT, EVENT_EMITTER, GLOBAL, PERMISSIONS_DB, REWARDS_DB, TOGGLE_MIDI_VALUES } from '../configuration/constants.js';
+import { ALIASES_DB, COMMAND_DESCRIPTIONS, CONFIG, ERROR_MSG, EVENT, EVENT_EMITTER, GLOBAL, PERMISSIONS_DB, TOGGLE_MIDI_VALUES } from '../configuration/constants.js';
 import { enqueue, getCurrentRequestPlaying, getRequestQueue, createAutomaticClockSyncedQueue, clearAllQueues, dequeueLastUserRequest } from './queue.js';
 import { isValidCommand, deAliasCommand, splitCommandArguments } from './utils.js';
 import { CommandParams } from '../twitch/command/types.js';
@@ -389,7 +389,6 @@ export function syncmidi(...[, { targetMIDIChannel, silenceMessages }, { chatCli
  */
 export async function fetchdb(...[, { silenceMessages, isRewardsMode }, { chatClient, channel, authProvider, targetChannel }]: CommandParams): Promise<void> {
     await ALIASES_DB.fetchDB();
-    await REWARDS_DB.fetchDB();
     await PERMISSIONS_DB.fetchDB();
     if (isRewardsMode) {
         await reloadRewards(authProvider, targetChannel);
