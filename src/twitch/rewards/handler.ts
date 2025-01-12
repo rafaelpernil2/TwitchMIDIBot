@@ -53,32 +53,6 @@ export async function initializeRewardsMode(broadcasterAuthProvider: RefreshingA
 }
 
 /**
- * Calls a command and manages the status of the redemption depending on the output
- * @param callCommand MessageHandler
- * @param authProvider Broadcaster authentication provider
- * @param { env, args, command } commandData Environment variables and command data
- * @param { redemptionId, rewardId, userName } rewardData Reward redemption data
- */
-async function _callCommandByRedeemption(
-    callCommand: MessageHandler,
-    authProvider: RefreshingAuthProvider,
-    { env, args = '', command }: { env: ParsedEnvObject; args: string; command: string },
-    { redemptionId, rewardId, userName }: { redemptionId: string; rewardId: string; userName: string }
-): Promise<void> {
-    try {
-        // In case the method does not end or error in X seconds, it is considered fulfilled
-        // For example, !sendloop request do not resolve until another request comes along
-        setTimeout(() => _updateRedeemIdStatus(authProvider, env.TARGET_CHANNEL, { rewardId, redemptionId, status: 'FULFILLED' }), CONFIG.FULFILL_TIMEOUT_MS);
-        // Execute command and mark as fulfilled once finished
-        await callCommand(`${GLOBAL.POUND}${env.TARGET_CHANNEL}`, userName, `${command} ${args}`);
-        await _updateRedeemIdStatus(authProvider, env.TARGET_CHANNEL, { rewardId, redemptionId, status: 'FULFILLED' });
-    } catch {
-        // Cancel redemption if any error occurs
-        await _updateRedeemIdStatus(authProvider, env.TARGET_CHANNEL, { rewardId, redemptionId, status: 'CANCELED' });
-    }
-}
-
-/**
  * Creates a set of rewards with the content provided in rewards file
  * @param authProvider Authentication Provider
  * @param username Broadcaster username
@@ -130,6 +104,7 @@ export async function toggleRewardsStatus(authProvider: RefreshingAuthProvider, 
     }
     areRewardsOn = isEnabled;
 }
+
 /**
  * Reloads the rewards from the rewards file
  * @param authProvider Authentication provider
@@ -146,6 +121,32 @@ export async function reloadRewards(authProvider: RefreshingAuthProvider, target
     await createRewards(authProvider, targetChannel);
     // Now re-enable only if rewards were enabled before, otherwise, disable them again
     await toggleRewardsStatus(authProvider, targetChannel, { isEnabled: wereRewardsOn });
+}
+
+/**
+ * Calls a command and manages the status of the redemption depending on the output
+ * @param callCommand MessageHandler
+ * @param authProvider Broadcaster authentication provider
+ * @param { env, args, command } commandData Environment variables and command data
+ * @param { redemptionId, rewardId, userName } rewardData Reward redemption data
+ */
+async function _callCommandByRedeemption(
+    callCommand: MessageHandler,
+    authProvider: RefreshingAuthProvider,
+    { env, args = '', command }: { env: ParsedEnvObject; args: string; command: string },
+    { redemptionId, rewardId, userName }: { redemptionId: string; rewardId: string; userName: string }
+): Promise<void> {
+    try {
+        // In case the method does not end or error in X seconds, it is considered fulfilled
+        // For example, !sendloop request do not resolve until another request comes along
+        setTimeout(() => _updateRedeemIdStatus(authProvider, env.TARGET_CHANNEL, { rewardId, redemptionId, status: 'FULFILLED' }), CONFIG.FULFILL_TIMEOUT_MS);
+        // Execute command and mark as fulfilled once finished
+        await callCommand(`${GLOBAL.POUND}${env.TARGET_CHANNEL}`, userName, `${command} ${args}`);
+        await _updateRedeemIdStatus(authProvider, env.TARGET_CHANNEL, { rewardId, redemptionId, status: 'FULFILLED' });
+    } catch {
+        // Cancel redemption if any error occurs
+        await _updateRedeemIdStatus(authProvider, env.TARGET_CHANNEL, { rewardId, redemptionId, status: 'CANCELED' });
+    }
 }
 
 /**
