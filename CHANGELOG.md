@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [TwitchMIDI]
 
-## [3.0.0] - 2025-01-05
+## [3.0.0] - 2025-01-12
 ### Added
 - Repetitions per loop, now each loop repeats itself 4 times by default before moving to the next loop in queue. It can be customized via REPETITIONS_PER_LOOP at .env file
 - Limit to one request in queue per user. Now if there's a request in queue by a particular user, that user has to wait until it's played or call !wrongrequest and try again
