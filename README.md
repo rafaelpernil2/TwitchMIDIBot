@@ -11,7 +11,7 @@ A full-featured configurable Twitch bot to connect with your MIDI equipment whil
   - [Table of Contents](#table-of-contents)
   - [Download](#download)
   - [Installation](#installation)
-    - [Binary without external dependencies (recommended)](#binary-without-external-dependencies-recommended)
+    - [Executable without external dependencies (recommended)](#executable-without-external-dependencies-recommended)
     - [Using Node.js](#using-nodejs)
   - [Update](#update)
   - [Why?](#why)
@@ -55,7 +55,7 @@ Latest release - [TwitchMIDI for Windows, Linux & MacOS (x86-64)](https://github
 
 ## Installation
 
-### Binary without external dependencies (recommended)
+### Executable without external dependencies (recommended)
 
 * Extract the zip
 * Run TwitchMIDI-yourplatform (e.g TwitchMIDI-win.exe)
