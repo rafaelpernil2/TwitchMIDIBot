@@ -25,7 +25,6 @@ export async function getAuthProvider(
     });
 
     // Due to the way twurple.js defines onRefresh, its return value is considered "any" and ESLint throws an error
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     authProvider.onRefresh(async (_: unknown, newTokenData: AccessToken) => await _writeTokens(newTokenData, tokensPath));
 
     // Initialization

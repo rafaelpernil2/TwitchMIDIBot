@@ -28,7 +28,6 @@ export function initializeChatMode(broadcasterAuthProvider: RefreshingAuthProvid
     // Chat code
 
     // Due to the way twurple.js defines onMessage, its return value is considered "any" and ESLint throws an error
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     chatClient.onMessage(onMessageHandlerClosure(broadcasterAuthProvider, chatClient, env, RequestSource.CHAT));
 }
 
