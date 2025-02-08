@@ -58,6 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Now !fetchdb also disables and regenerates rewards on Twitch in case there is a change
 - Improved readability of initial setup links using magenta background as highlight and other text color changes
 - Migrated from @vercel/pkg to @yao/pkg due to deprecation
+- Migrated Twitch PubSub to EventSub due to deprecation on April 14th 2025
 ### Fixed
 - !midion with virtual MIDI device inactive or non existent would not throw an error. Now it does and helps the streamer find out what is wrong
 - !syncmidi logic. nanotimer does not work as expected when calling .clearInterval, so I needed to invalidate the clock at synchronization
@@ -65,7 +66,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Control Change error handling, now requests without value give a meaningful error
 - Bad request bug. If you request "H" it is registered as a valid chord however, JZZ treats it as invalid and the queue stops working. Now it works well!
 - !midion or non secure commands on !midipause did not work for mods. Now it does. If requests are paused but you are a mod, you can access
-- Migrated Twitch PubSub to EventSub due to deprecation on April 14th 2025
 ### Removed
 - BREAKING CHANGE: !sendchord command
 - Documentation page from this repository. Now any documentation change does not require a new version release
