@@ -1,5 +1,5 @@
 import { ChatClient } from '@twurple/chat';
-import { PubSubClient, PubSubRedemptionMessage } from '@twurple/pubsub';
+import { EventSubWsListener } from '@twurple/eventsub-ws';
 import { getCommandList } from '../../command/utils.js';
 import { REWARDS_DB, ERROR_MSG, CONFIG, GLOBAL } from '../../configuration/constants.js';
 import { ParsedEnvObject } from '../../configuration/env/types.js';
@@ -29,10 +29,12 @@ export async function initializeRewardsMode(broadcasterAuthProvider: RefreshingA
     await toggleRewardsStatus(broadcasterAuthProvider, env.TARGET_CHANNEL, { isEnabled: false });
 
     // Now let's add an onRedemption listener for the rewards
-    const pubSubClient = new PubSubClient({ authProvider: broadcasterAuthProvider });
+    const apiClient = new ApiClient({ authProvider: broadcasterAuthProvider });
+    const pubSubClient = new EventSubWsListener({ apiClient });
     const broadcasterUserId = await _getBroadcasterId(broadcasterAuthProvider, env.TARGET_CHANNEL);
 
-    pubSubClient.onRedemption(broadcasterUserId, async ({ id: redemptionId, rewardId, rewardTitle, message: args, userName }: PubSubRedemptionMessage) => {
+    pubSubClient.start();
+    pubSubClient.onChannelRedemptionAdd(broadcasterUserId, async ({ id: redemptionId, rewardId, input: args, rewardTitle, userName }) => {
         // Look up the command
         const [command] = REWARDS_DB.select(REWARD_TITLE_COMMAND, rewardTitle) ?? [];
 
