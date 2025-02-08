@@ -30,11 +30,11 @@ export async function initializeRewardsMode(broadcasterAuthProvider: RefreshingA
 
     // Now let's add an onRedemption listener for the rewards
     const apiClient = new ApiClient({ authProvider: broadcasterAuthProvider });
-    const pubSubClient = new EventSubWsListener({ apiClient });
+    const eventSubListener = new EventSubWsListener({ apiClient });
     const broadcasterUserId = await _getBroadcasterId(broadcasterAuthProvider, env.TARGET_CHANNEL);
 
-    pubSubClient.start();
-    pubSubClient.onChannelRedemptionAdd(broadcasterUserId, async ({ id: redemptionId, rewardId, input: args, rewardTitle, userName }) => {
+    eventSubListener.start();
+    eventSubListener.onChannelRedemptionAdd(broadcasterUserId, async ({ id: redemptionId, rewardId, input: args, rewardTitle, userName }) => {
         // Look up the command
         const [command] = REWARDS_DB.select(REWARD_TITLE_COMMAND, rewardTitle) ?? [];
 
