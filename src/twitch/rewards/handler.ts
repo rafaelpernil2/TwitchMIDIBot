@@ -29,7 +29,7 @@ export async function initializeRewardsMode(broadcasterAuthProvider: RefreshingA
     await toggleRewardsStatus(broadcasterAuthProvider, env.TARGET_CHANNEL, { isEnabled: false });
 
     // Now let's add an onRedemption listener for the rewards
-    const apiClient = new ApiClient({ authProvider: broadcasterAuthProvider });
+    const apiClient = _getApiClient(broadcasterAuthProvider)
     const eventSubListener = new EventSubWsListener({ apiClient });
     const broadcasterUserId = await _getBroadcasterId(broadcasterAuthProvider, env.TARGET_CHANNEL);
 
