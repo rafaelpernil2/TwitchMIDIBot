@@ -65,6 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Control Change error handling, now requests without value give a meaningful error
 - Bad request bug. If you request "H" it is registered as a valid chord however, JZZ treats it as invalid and the queue stops working. Now it works well!
 - !midion or non secure commands on !midipause did not work for mods. Now it does. If requests are paused but you are a mod, you can access
+- Migrated Twitch PubSub to EventSub due to deprecation on April 14th 2025
 ### Removed
 - BREAKING CHANGE: !sendchord command
 - Documentation page from this repository. Now any documentation change does not require a new version release
