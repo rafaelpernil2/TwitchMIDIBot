@@ -290,6 +290,14 @@ So far, this first version does all that, keep reading the features for more det
 
 ## Troubleshooting
 
+Question: Where are my settings? It asked me at first but now I can't change them.
+
+Answer:
+
+>Your settings are inside the file `.env` within your TwitchMIDI folder. You can change any setting there, if there's an invalid value, TwitchMIDI will ask you to correct it on boot.
+
+---
+
 Question: I get authentication errors each time I open the app. What can I do?
 
 Answer:
